@@ -1,6 +1,7 @@
 <?php get_header(); ?>
 
 <main>
+
     <?php if ( have_posts() ) : ?>
         <?php while ( have_posts() ) : the_post(); ?>
             <article <?php post_class(); ?>>
@@ -11,6 +12,7 @@
     <?php else : ?>
         <p>No posts found.</p>
     <?php endif; ?>
+    
 </main>
 
 <?php get_footer(); ?>
