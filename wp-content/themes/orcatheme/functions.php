@@ -2,6 +2,9 @@
 
 function orca_theme_setup() {
     add_theme_support('title-tag');
+    register_nav_menus(array(
+        'primary' => 'Primary Menu',
+    ));
 }
 add_action('after_setup_theme', 'orca_theme_setup');
 

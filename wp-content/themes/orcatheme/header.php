@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -9,21 +8,24 @@
 <body <?php body_class(); ?>>
 
 <header class="site-header">
-    <div class="container">
+    <div class="container header-inner">
         <div class="logo">
             <a href="<?php echo esc_url(home_url('/')); ?>">
                 <?php bloginfo('name'); ?>
             </a>
         </div>
 
-        <nav class="main-nav">
+        <nav class="main-nav" aria-label="Main navigation">
             <?php
             wp_nav_menu(array(
                 'theme_location' => 'primary',
                 'container'      => false,
                 'fallback_cb'    => false,
+                'menu_class'     => 'nav-menu',
             ));
             ?>
         </nav>
+
+        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="header-button">Contact Us</a>
     </div>
 </header>
