@@ -2,6 +2,11 @@
 
 <main>
 
+    <section class="testimonial-form">
+        <h2>Leave a Review</h2>
+        <?php echo do_shortcode('[testimonial_form]'); ?>
+    </section>
+
     <?php if ( have_posts() ) : ?>
         <?php while ( have_posts() ) : the_post(); ?>
             <article <?php post_class(); ?>>
@@ -11,8 +16,7 @@
         <?php endwhile; ?>
     <?php else : ?>
         <p>No posts found.</p>
-    <?php endif; ?>
-    
+    <?php endif; ?>    
 </main>
 
 <?php get_footer(); ?>
