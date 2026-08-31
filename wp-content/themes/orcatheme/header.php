@@ -11,7 +11,8 @@
     <div class="container header-inner">
         <div class="logo">
             <a href="<?php echo esc_url(home_url('/')); ?>">
-                <?php bloginfo('name'); ?>
+                <span class="brand-name"><?php bloginfo('name'); ?></span>
+                <span class="tagline"><?php bloginfo('description'); ?></span>
             </a>
         </div>
 
