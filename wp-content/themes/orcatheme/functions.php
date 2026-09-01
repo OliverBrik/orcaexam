@@ -39,50 +39,6 @@ function orca_disable_gutenberg_for_testimonials($can_edit, $post_type) {
 add_filter('use_block_editor_for_post_type', 'orca_disable_gutenberg_for_testimonials', 10, 2);
 add_filter('gutenberg_can_edit_post_type', 'orca_disable_gutenberg_for_testimonials', 10, 2);
 
-function orca_testimonial_form() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['testimonial_submit'])) {
-        $name = sanitize_text_field($_POST['testimonial_name']);
-        $review = sanitize_textarea_field($_POST['testimonial_review']);
-
-        if ($name && $review) {
-            $post_id = wp_insert_post(array(
-                'post_title'   => $name,
-                'post_content' => $review,
-                'post_type'    => 'testimonial',
-                'post_status'  => 'pending',
-            ));
-
-            if ($post_id) {
-                echo '<p>Thank you! Your review has been submitted for approval.</p>';
-            } else {
-                echo '<p>There was a problem submitting your review.</p>';
-            }
-        } else {
-            echo '<p>Please enter your name and review.</p>';
-        }
-    }
-
-    ob_start();
-    ?>
-    <form method="post" style="max-width:600px; margin-top:30px;">
-        <p>
-            <label for="testimonial_name">Your Name</label><br>
-            <input type="text" name="testimonial_name" id="testimonial_name" required style="width:100%; padding:10px;">
-        </p>
-
-        <p>
-            <label for="testimonial_review">Your Review</label><br>
-            <textarea name="testimonial_review" id="testimonial_review" rows="5" required style="width:100%; padding:10px;"></textarea>
-        </p>
-
-        <p>
-            <button type="submit" name="testimonial_submit">Send Review</button>
-        </p>
-    </form>
-    <?php
-    return ob_get_clean();
-}
-add_shortcode('testimonial_form', 'orca_testimonial_form');
 
 function orca_testimonial_admin_row_actions($actions, $post) {
     if ($post->post_type !== 'testimonial') {

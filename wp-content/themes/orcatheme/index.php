@@ -1,6 +1,9 @@
 <?php get_header(); ?>
 
 <main>
+
+/* Displays testimonaisl on frontpage*/
+
     <section class="testimonial-form">
         <h2>Leave a Review</h2>
         <?php echo do_shortcode('[testimonial_form]'); ?>
@@ -32,6 +35,9 @@
             <?php
         endif;
         ?>
+
+/* End of testimonial display ^ */
+
     </section>
 </main>
 
