@@ -94,6 +94,9 @@ body {
         justify-content: center;
     }
 }
+
+
+
 /* Scoped styling for the contact page. */
 .orca-contact { --ink:#102c32; --ocean:#006c72; --mint:#77ddca; --line:#cddbd6; max-width:none; padding:0; color:var(--ink); background:#fbfcf9; }
 .orca-contact *, .orca-contact *::before, .orca-contact *::after { box-sizing:border-box; }
@@ -138,3 +141,63 @@ body {
 .orca-contact__direct p { margin:0 0 .4rem; color:#b9cdca; }
 .orca-contact__direct a { color:var(--mint); font-size:clamp(1.5rem,4vw,2.7rem); font-weight:800; letter-spacing:-.03em; }
 @media (max-width:680px) { .orca-contact__tabs,.orca-form__grid { grid-template-columns:1fr; } .orca-form__full { grid-column:auto; } .orca-contact__hero { padding-top:4rem; padding-bottom:4rem; } }
+
+/*style for testimonials on frontpage*/
+
+
+.testimonial-section {
+    background: #fbfcf9;
+    padding: clamp(4rem, 8vw, 7rem) 1.5rem;
+}
+
+.testimonial-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.testimonial-section h2 {
+    margin: 0 0 2rem;
+    font-size: clamp(2rem, 4vw, 3.3rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    color: #102c32;
+}
+
+.testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.testimonial-card {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border: 1px solid #d9e2de;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 28px 70px rgba(17, 44, 49, 0.1);
+}
+
+.testimonial-quote-mark {
+    font-size: 3rem;
+    line-height: 1;
+    color: #0b8f73;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.testimonial-content {
+    color: #36464b;
+    margin-bottom: 1.25rem;
+}
+
+.testimonial-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #102c32;
+}

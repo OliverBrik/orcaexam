@@ -4,40 +4,38 @@
 
 <!-- Displays testimonials on frontpage -->
 
-    <section class="testimonials">
-        <h2>Testimonials</h2>
-        <p>Here are some of our customer reviews:</p>
-        <?php
-        $testimonial_query = new WP_Query(array(
-            'post_type' => 'testimonial',
-            'post_status' => 'publish',
-            'posts_per_page' => 10,
-        ));
 
-/* Loops through each testimonial and print the review title and content.*/
+    <section class="testimonial-section">
+        <div class="testimonial-wrap">
+            <p class="orca-contact__kicker">Testimonials</p>
+            <h2>What our clients say</h2>
 
-        if ($testimonial_query->have_posts()) :
-            while ($testimonial_query->have_posts()) : $testimonial_query->the_post();
-                ?>
-                <article class="testimonial">
-                    <h3><?php the_title(); ?></h3>
-                    <div><?php the_content(); ?></div>
-                </article>
+            <div class="testimonial-grid">
                 <?php
-            endwhile;
-            wp_reset_postdata();
-        else :
+                $testimonial_query = new WP_Query(array(
+                    'post_type' => 'testimonial',
+                    'post_status' => 'publish',
+                    'posts_per_page' => 10,
+                ));
 
- /* if there is no apporoved reviews, it will display a message "No approved reviews yet." */
-            ?>
-            <p>No testimonials yet.</p>
-            <?php
-        endif;
-        ?>
-
-<!--End of testimonial display ^ -->
-
+                if ($testimonial_query->have_posts()) :
+                    while ($testimonial_query->have_posts()) : $testimonial_query->the_post();
+                        ?>
+                        <article class="testimonial-card">
+                            <div class="testimonial-quote-mark">“</div>
+                            <div class="testimonial-content"><?php the_content(); ?></div>
+                            <h3><?php the_title(); ?></h3>
+                        </article>
+                        <?php
+                    endwhile;
+                    wp_reset_postdata();
+                endif;
+                ?>
+            </div>
+        </div>
     </section>
+
+ <!-- End of testimonials display on frontpage -->   
 </main>
 
 <?php get_footer(); ?>
