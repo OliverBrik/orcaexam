@@ -26,6 +26,9 @@
             ?>
         </nav>
 
-        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="header-button">Contact Us</a>
+        <div class="header-actions">
+            <a href="<?php echo esc_url(home_url('/leave-a-review')); ?>" class="header-button">Leave a review</a>
+            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="header-button">Contact Us</a>
+        </div>
     </div>
 </header>

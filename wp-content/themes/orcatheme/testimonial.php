@@ -1,8 +1,7 @@
 <?php
-/**
- * This template is used for a separate page where users can leave a review.
- */
-
+/*
+Template Name: Submit Testimonial
+*/
 get_header();
 ?>
 
