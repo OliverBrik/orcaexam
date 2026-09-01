@@ -1,4 +1,5 @@
 <?php
+/**Set up the theme: enable the title tag and register the main navigation menu. */
 
 function orca_theme_setup() {
     add_theme_support('title-tag');
@@ -8,10 +9,13 @@ function orca_theme_setup() {
 }
 add_action('after_setup_theme', 'orca_theme_setup');
 
+/*Loads the theme stylesheet so the CSS is included.*/
 function orca_theme_styles() {
     wp_enqueue_style('orca-theme-style', get_stylesheet_uri());
 }
 add_action('wp_enqueue_scripts', 'orca_theme_styles');
+
+/*Create a custom post type called "testimonial" so reviews are stored separately from normal posts.*/
 
 function orca_register_testimonials() {
     register_post_type('testimonial', array(
@@ -29,6 +33,9 @@ function orca_register_testimonials() {
 }
 add_action('init', 'orca_register_testimonials');
 
+/* Disable Gutenberg for testimonial posts */
+
+
 function orca_disable_gutenberg_for_testimonials($can_edit, $post_type) {
     if ($post_type === 'testimonial') {
         return false;
@@ -39,6 +46,7 @@ function orca_disable_gutenberg_for_testimonials($can_edit, $post_type) {
 add_filter('use_block_editor_for_post_type', 'orca_disable_gutenberg_for_testimonials', 10, 2);
 add_filter('gutenberg_can_edit_post_type', 'orca_disable_gutenberg_for_testimonials', 10, 2);
 
+/* Add approve/decline links to the testimonial list in the WordPress admin.*/
 
 function orca_testimonial_admin_row_actions($actions, $post) {
     if ($post->post_type !== 'testimonial') {
@@ -54,6 +62,9 @@ function orca_testimonial_admin_row_actions($actions, $post) {
     return $actions;
 }
 add_filter('post_row_actions', 'orca_testimonial_admin_row_actions', 10, 2);
+
+/* Approve a testimonial by changing its status from pending to published.*/
+
 
 function orca_approve_testimonial_request() {
     if (!isset($_GET['post_id'])) {
@@ -80,6 +91,8 @@ function orca_approve_testimonial_request() {
 }
 add_action('admin_post_orca_approve_testimonial', 'orca_approve_testimonial_request');
 
+/* Decline a testimonial by setting it back to draft so it doesn't show publicly. */
+
 function orca_decline_testimonial_request() {
     if (!isset($_GET['post_id'])) {
         return;
@@ -104,6 +117,8 @@ function orca_decline_testimonial_request() {
     exit;
 }
 add_action('admin_post_orca_decline_testimonial', 'orca_decline_testimonial_request');
+
+/* Handle the contact form submission and send the message by email. */
 
 function orca_handle_contact_form() {
     $referer      = wp_get_referer();
