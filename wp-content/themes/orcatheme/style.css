@@ -184,7 +184,7 @@ body {
 }
 
 .testimonial-quote-mark {
-    font-size: 3rem;
+    font-size: 5rem;
     line-height: 1;
     color: #0b8f73;
     font-weight: 800;
@@ -192,6 +192,7 @@ body {
 }
 
 .testimonial-content {
+    font-style: italic;
     color: #36464b;
     margin-bottom: 1.25rem;
 }

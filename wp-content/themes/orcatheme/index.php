@@ -7,7 +7,7 @@
 
     <section class="testimonial-section">
         <div class="testimonial-wrap">
-            <p class="orca-contact__kicker">Testimonials</p>
+            <p class="orca-contact__kicker">Reviews</p>
             <h2>What our clients say</h2>
 
             <div class="testimonial-grid">
@@ -23,8 +23,12 @@
                         ?>
                         <article class="testimonial-card">
                             <div class="testimonial-quote-mark">“</div>
-                            <div class="testimonial-content"><?php the_content(); ?></div>
-                            <h3><?php the_title(); ?></h3>
+                            <div class="testimonial-content">
+
+                            <!-- Edits the styling review so that there is a capital letter first and no html tags are displayed.-->
+                                <?php echo ucfirst(trim(strip_tags(get_the_content()))); ?>
+                            </div>
+                            <h3>- <?php the_title(); ?></h3>
                         </article>
                         <?php
                     endwhile;
