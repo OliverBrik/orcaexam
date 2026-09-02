@@ -54,9 +54,10 @@ body {
 }
 
 .site-header {
-    background: var(--navy);
+    background: var(--ink);
     color: var(--white);
     padding: 1rem 0;
+    border-bottom: 1px solid var(--ocean);
 }
 
 .header-inner {
