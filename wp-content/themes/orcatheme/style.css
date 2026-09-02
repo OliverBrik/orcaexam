@@ -331,3 +331,297 @@ body {
 .orca-form__submit:hover {
     background: var(--ocean);
 }
+
+/* Community blog */
+.orca-blog {
+    color: var(--ink);
+    background: var(--paper);
+}
+
+.orca-blog__hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(4.5rem, 9vw, 8rem) 1.5rem;
+    color: var(--white);
+    background: radial-gradient(circle at 83% 14%, rgba(68, 194, 178, .32), transparent 25%), linear-gradient(125deg, #071f25 0%, #0b3e45 65%, #076a70 100%);
+}
+
+.orca-blog__hero::after {
+    position: absolute;
+    right: -10vw;
+    bottom: -18vw;
+    width: 48vw;
+    height: 48vw;
+    border: 1px solid rgba(255, 255, 255, .13);
+    border-radius: 50%;
+    box-shadow: 0 0 0 5vw rgba(255, 255, 255, .025), 0 0 0 10vw rgba(255, 255, 255, .018);
+    content: "";
+}
+
+.orca-blog__hero-inner,
+.orca-blog__shell {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.orca-blog__eyebrow {
+    margin: 0 0 1rem;
+    color: var(--mint);
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.orca-blog__hero h1 {
+    max-width: 850px;
+    margin: 0;
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    line-height: .95;
+    letter-spacing: -.055em;
+}
+
+.orca-blog__hero p:last-child {
+    max-width: 620px;
+    margin: 1.75rem 0 0;
+    color: var(--hero-copy);
+    font-size: clamp(1rem, 2vw, 1.2rem);
+}
+
+.orca-blog__content {
+    padding: clamp(3rem, 7vw, 6rem) 1.5rem;
+}
+
+.orca-card,
+.orca-filter {
+    margin: 0 0 1.5rem;
+    padding: clamp(1.35rem, 3vw, 2.25rem);
+    border: 1px solid var(--panel-line);
+    border-radius: 18px;
+    background: var(--white);
+    box-shadow: 0 20px 60px rgba(17, 44, 49, .07);
+}
+
+.orca-card h2 {
+    margin: 0 0 .5rem;
+    color: var(--ink);
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -.03em;
+}
+
+.orca-meta,
+.orca-empty {
+    color: var(--soft-ink);
+}
+
+.orca-categories,
+.orca-actions,
+.orca-sort-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .6rem;
+}
+
+.orca-categories {
+    margin: 0 0 1rem;
+}
+
+.orca-category-tag {
+    display: inline-block;
+    padding: .3rem .65rem;
+    border-radius: 999px;
+    color: var(--ink);
+    font-size: .78rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.orca-content {
+    margin: 1.25rem 0;
+}
+
+.orca-content > :first-child {
+    margin-top: 0;
+}
+
+.orca-content > :last-child {
+    margin-bottom: 0;
+}
+
+.orca-post-image,
+.orca-post-video {
+    margin: 1.25rem 0;
+}
+
+.orca-post-image img,
+.orca-post-video video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+.orca-actions {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--panel-line);
+    color: var(--soft-ink);
+}
+
+.orca-blog button,
+.orca-filter a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: .7rem 1rem;
+    border: 0;
+    border-radius: 8px;
+    color: var(--white);
+    background: var(--ink);
+    font: inherit;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.orca-blog button:hover,
+.orca-filter a:hover {
+    background: var(--ocean);
+    transform: translateY(-1px);
+}
+
+.orca-filter summary,
+.orca-new-post summary,
+.orca-comments summary {
+    color: var(--ink);
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.orca-filter summary,
+.orca-new-post summary {
+    font-size: 1.1rem;
+}
+
+.orca-filter form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 1rem;
+    padding-top: 1.25rem;
+}
+
+.orca-blog .orca-filter label,
+.orca-blog .orca-form label {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    color: var(--label-copy);
+    font-size: .86rem;
+    font-weight: 700;
+}
+
+.orca-blog input:not([type="checkbox"]),
+.orca-blog input[type="file"],
+.orca-blog select,
+.orca-blog textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: .75rem .9rem;
+    border: 1px solid var(--field-border);
+    border-radius: 8px;
+    outline: none;
+    color: var(--ink);
+    background: #fbfcfb;
+    font: inherit;
+}
+
+.orca-blog input[type="file"] {
+    max-width: 100%;
+}
+
+.orca-blog textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.orca-blog input:focus,
+.orca-blog select:focus,
+.orca-blog textarea:focus {
+    border-color: var(--ocean);
+    box-shadow: 0 0 0 3px rgba(0, 108, 114, .12);
+}
+
+.orca-category-picker {
+    margin: 1rem 0;
+    padding: 0;
+    border: 0;
+}
+
+.orca-category-picker legend {
+    margin-bottom: .5rem;
+    color: var(--label-copy);
+    font-size: .86rem;
+    font-weight: 700;
+}
+
+.orca-category-picker label {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin: 0 .85rem .55rem 0;
+    color: var(--soft-ink);
+    font-size: .9rem;
+    font-weight: 400;
+}
+
+.orca-category-picker input {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    accent-color: var(--ocean);
+}
+
+.orca-comments {
+    margin-top: 1.25rem;
+}
+
+.orca-comments summary {
+    padding: .8rem 0;
+}
+
+.orca-comment {
+    padding: 1rem 0;
+    border-top: 1px solid var(--panel-line);
+}
+
+.orca-comment p {
+    margin: .35rem 0 0;
+}
+
+.orca-blog .orca-form {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.orca-message {
+    margin: 0 0 1.5rem;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+}
+
+.orca-success { color: var(--success-text); background: var(--success-bg); }
+.orca-error { color: var(--error-text); background: var(--error-bg); }
+.orca-required { color: var(--error-text); }
+
+@media (max-width: 680px) {
+    .orca-blog__hero { padding-top: 4rem; padding-bottom: 4rem; }
+    .orca-filter form { align-items: stretch; }
+    .orca-filter form > * { width: 100%; }
+}
