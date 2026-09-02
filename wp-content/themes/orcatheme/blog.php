@@ -5,6 +5,7 @@
  * - remove approval requirements for comments
  * - Add a devider between each post (Line or something)
  * - Only we need to be able to make posts, not other people
+ * - Fix the filter options so that the page only reloads when the "apply filter" is clicked and gives a preview of the filter before pressing apply
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -35,8 +36,8 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
     $action = sanitize_key( wp_unslash( $_POST['orca_blog_action'] ) );
 
     if ( 'create_post' === $action ) {
-        if ( ! is_user_logged_in() || ! current_user_can( 'publish_posts' ) ) {
-            $error = 'Please sign in with an account that can publish posts.';
+        if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
+            $error = 'Only site administrators can publish posts.';
         } elseif ( ! isset( $_POST['orca_blog_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['orca_blog_nonce'] ) ), 'orca_create_blog_post' ) ) {
             $error = 'Your session expired. Please try again.';
         } else {
@@ -117,16 +118,35 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
         }
     }
 
-    if ( 'like' === $action ) {
-        $post_id = absint( $_POST['post_id'] ?? 0 );
+    if ( in_array( $action, array( 'like', 'unlike' ), true ) ) {
+        $post_id  = absint( $_POST['post_id'] ?? 0 );
+        $is_ajax  = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) );
         if ( ! isset( $_POST['orca_blog_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['orca_blog_nonce'] ) ), 'orca_like_' . $post_id ) || 'post' !== get_post_type( $post_id ) ) {
+            if ( $is_ajax ) {
+                wp_send_json_error( array( 'message' => 'That like could not be saved. Please try again.' ), 400 );
+            }
             $error = 'That like could not be saved. Please refresh and try again.';
-        } elseif ( isset( $_COOKIE['orca_liked_' . $post_id] ) ) {
+        } elseif ( 'like' === $action && isset( $_COOKIE['orca_liked_' . $post_id] ) ) {
+            if ( $is_ajax ) {
+                wp_send_json_success( array( 'likes' => (int) get_post_meta( $post_id, '_orca_likes', true ), 'liked' => true ) );
+            }
             $notice = 'You have already liked this post.';
+        } elseif ( 'unlike' === $action ) {
+            $likes = max( 0, (int) get_post_meta( $post_id, '_orca_likes', true ) - 1 );
+            update_post_meta( $post_id, '_orca_likes', $likes );
+            setcookie( 'orca_liked_' . $post_id, '', time() - YEAR_IN_SECONDS, COOKIEPATH ?: '/', COOKIE_DOMAIN, is_ssl(), true );
+            if ( $is_ajax ) {
+                wp_send_json_success( array( 'likes' => $likes, 'liked' => false ) );
+            }
+            wp_safe_redirect( add_query_arg( 'blog_notice', 'unliked', $page_url ) . '#post-' . $post_id );
+            exit;
         } else {
             $likes = (int) get_post_meta( $post_id, '_orca_likes', true );
             update_post_meta( $post_id, '_orca_likes', $likes + 1 );
             setcookie( 'orca_liked_' . $post_id, '1', time() + YEAR_IN_SECONDS, COOKIEPATH ?: '/', COOKIE_DOMAIN, is_ssl(), true );
+            if ( $is_ajax ) {
+                wp_send_json_success( array( 'likes' => $likes + 1, 'liked' => true ) );
+            }
             wp_safe_redirect( add_query_arg( 'blog_notice', 'liked', $page_url ) . '#post-' . $post_id );
             exit;
         }
@@ -151,7 +171,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
                     'comment_author'       => is_user_logged_in() ? $user->display_name : $name,
                     'comment_author_email' => is_user_logged_in() ? $user->user_email : $email,
                     'user_id'              => is_user_logged_in() ? $user->ID : 0,
-                    'comment_approved'     => 0,
+                    'comment_approved'     => 1,
                 ) );
                 if ( $comment_id ) {
                     wp_safe_redirect( add_query_arg( 'blog_notice', 'commented', $page_url ) . '#post-' . $post_id );
@@ -168,16 +188,17 @@ if ( 'published' === ( $_GET['blog_notice'] ?? '' ) ) {
 } elseif ( 'liked' === ( $_GET['blog_notice'] ?? '' ) ) {
     $notice = 'Thanks for liking this post!';
 } elseif ( 'commented' === ( $_GET['blog_notice'] ?? '' ) ) {
-    $notice = 'Thanks! Your comment is awaiting moderation.';
+    $notice = 'Thanks! Your comment has been posted.';
 }
 
 $filter_category = absint( $_GET['blog_category'] ?? 0 );
-$filter_sort     = sanitize_key( wp_unslash( $_GET['blog_sort'] ?? 'newest' ) );
+$applied_sort    = sanitize_key( wp_unslash( $_GET['blog_sort'] ?? '' ) );
 $filter_sorts    = array( 'newest', 'oldest', 'most-liked', 'least-liked', 'most-commented', 'least-commented' );
 
-if ( ! in_array( $filter_sort, $filter_sorts, true ) ) {
-    $filter_sort = 'newest';
+if ( ! in_array( $applied_sort, $filter_sorts, true ) ) {
+    $applied_sort = '';
 }
+$filter_sort = $applied_sort ?: 'newest';
 if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
     $filter_category = 0;
 }
@@ -187,9 +208,8 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
 <main id="primary" class="orca-blog">
     <section class="orca-blog__hero">
         <div class="orca-blog__hero-inner">
-            <p class="orca-blog__eyebrow">Community</p>
             <h1><?php echo esc_html( get_the_title() ?: 'Community Blog' ); ?></h1>
-            <p>Ideas, updates, and conversations from the Orca community.</p>
+            <p>Ideas, updates, and conversations from the Orca team.</p>
         </div>
     </section>
 
@@ -199,14 +219,15 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
     <?php if ( $notice ) : ?><p class="orca-message orca-success"><?php echo esc_html( $notice ); ?></p><?php endif; ?>
     <?php if ( $error ) : ?><p class="orca-message orca-error"><?php echo esc_html( $error ); ?></p><?php endif; ?>
 
-    <?php if ( is_user_logged_in() && current_user_can( 'publish_posts' ) ) : ?>
+    <div class="orca-blog__tools">
+    <?php if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) : ?>
         <details class="orca-card orca-new-post" <?php echo $error && 'create_post' === ( $_POST['orca_blog_action'] ?? '' ) ? 'open' : ''; ?> >
             <summary>Write a post</summary>
             <form method="post" enctype="multipart/form-data">
                 <?php wp_nonce_field( 'orca_create_blog_post', 'orca_blog_nonce' ); ?>
                 <input type="hidden" name="orca_blog_action" value="create_post">
-                <label>Title <span class="orca-required" aria-hidden="true">*</span><input name="post_title" required value="<?php echo esc_attr( wp_unslash( $_POST['post_title'] ?? '' ) ); ?>"></label>
-                <label>Your post <span class="orca-required" aria-hidden="true">*</span><textarea name="post_content" required><?php echo esc_textarea( wp_unslash( $_POST['post_content'] ?? '' ) ); ?></textarea></label>
+                <label><span class="orca-field-label">Title <span class="orca-required" aria-hidden="true">*</span></span><input name="post_title" required value="<?php echo esc_attr( wp_unslash( $_POST['post_title'] ?? '' ) ); ?>"></label>
+                <label><span class="orca-field-label">Your post <span class="orca-required" aria-hidden="true">*</span></span><textarea name="post_content" required><?php echo esc_textarea( wp_unslash( $_POST['post_content'] ?? '' ) ); ?></textarea></label>
                 <fieldset class="orca-category-picker">
                     <legend>Categories <span class="orca-required" aria-hidden="true">*</span></legend>
                     <?php
@@ -235,15 +256,17 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
             <div>
                 <strong>Sort by</strong>
                 <div class="orca-sort-options">
-                    <button class="<?php echo in_array( $filter_sort, array( 'most-liked', 'least-liked' ), true ) ? 'orca-active-sort' : ''; ?>" type="submit" name="blog_sort" value="<?php echo 'most-liked' === $filter_sort ? 'least-liked' : 'most-liked'; ?>">Likes<?php if ( in_array( $filter_sort, array( 'most-liked', 'least-liked' ), true ) ) : ?> <?php echo 'most-liked' === $filter_sort ? '↓' : '↑'; ?><?php endif; ?></button>
-                    <button class="<?php echo in_array( $filter_sort, array( 'most-commented', 'least-commented' ), true ) ? 'orca-active-sort' : ''; ?>" type="submit" name="blog_sort" value="<?php echo 'most-commented' === $filter_sort ? 'least-commented' : 'most-commented'; ?>">Comments<?php if ( in_array( $filter_sort, array( 'most-commented', 'least-commented' ), true ) ) : ?> <?php echo 'most-commented' === $filter_sort ? '↓' : '↑'; ?><?php endif; ?></button>
-                    <button class="<?php echo in_array( $filter_sort, array( 'newest', 'oldest' ), true ) ? 'orca-active-sort' : ''; ?>" type="submit" name="blog_sort" value="<?php echo 'newest' === $filter_sort ? 'oldest' : 'newest'; ?>">Date<?php if ( in_array( $filter_sort, array( 'newest', 'oldest' ), true ) ) : ?> <?php echo 'newest' === $filter_sort ? '↓' : '↑'; ?><?php endif; ?></button>
+                    <button class="<?php echo in_array( $applied_sort, array( 'most-liked', 'least-liked' ), true ) ? 'orca-active-sort' : ''; ?>" type="button" data-sort-desc="most-liked" data-sort-asc="least-liked">Likes <span class="orca-sort-arrow" aria-hidden="true"><?php echo 'most-liked' === $applied_sort ? '↓' : ( 'least-liked' === $applied_sort ? '↑' : '' ); ?></span></button>
+                    <button class="<?php echo in_array( $applied_sort, array( 'most-commented', 'least-commented' ), true ) ? 'orca-active-sort' : ''; ?>" type="button" data-sort-desc="most-commented" data-sort-asc="least-commented">Comments <span class="orca-sort-arrow" aria-hidden="true"><?php echo 'most-commented' === $applied_sort ? '↓' : ( 'least-commented' === $applied_sort ? '↑' : '' ); ?></span></button>
+                    <button class="<?php echo in_array( $applied_sort, array( 'newest', 'oldest' ), true ) ? 'orca-active-sort' : ''; ?>" type="button" data-sort-desc="newest" data-sort-asc="oldest">Date <span class="orca-sort-arrow" aria-hidden="true"><?php echo 'newest' === $applied_sort ? '↓' : ( 'oldest' === $applied_sort ? '↑' : '' ); ?></span></button>
                 </div>
             </div>
-            <button type="submit" name="blog_sort" value="<?php echo esc_attr( $filter_sort ); ?>">Apply category</button>
+            <input type="hidden" name="blog_sort" value="<?php echo esc_attr( $applied_sort ); ?>">
+            <button type="submit">Apply filter</button>
             <a href="<?php echo esc_url( $page_url ); ?>">Reset</a>
         </form>
     </details>
+    </div>
 
     <?php
     $post_query_args = array( 'post_type' => 'post', 'post_status' => 'publish', 'posts_per_page' => -1, 'ignore_sticky_posts' => true );
@@ -291,16 +314,31 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
                     <form method="post">
                         <?php wp_nonce_field( 'orca_like_' . $post_id, 'orca_blog_nonce' ); ?>
                         <input type="hidden" name="orca_blog_action" value="like"><input type="hidden" name="post_id" value="<?php echo esc_attr( $post_id ); ?>">
-                        <button type="submit" <?php disabled( isset( $_COOKIE['orca_liked_' . $post_id] ) ); ?>>♥ Like</button>
+                        <?php $already_liked = isset( $_COOKIE['orca_liked_' . $post_id] ); ?>
+                        <button class="<?php echo $already_liked ? 'orca-liked' : ''; ?>" type="submit" data-orca-like><?php echo $already_liked ? '♥ Liked' : '♥ Like'; ?></button>
                     </form>
-                    <span><?php echo esc_html( $likes ); ?> <?php echo 1 === $likes ? 'like' : 'likes'; ?></span>
+                    <span class="orca-like-count"><?php echo esc_html( $likes ); ?> <?php echo 1 === $likes ? 'like' : 'likes'; ?></span>
                 </div>
                 <details class="orca-comments" <?php echo $error && 'comment' === ( $_POST['orca_blog_action'] ?? '' ) && $post_id === absint( $_POST['post_id'] ?? 0 ) ? 'open' : ''; ?>>
                     <summary>Comments (<?php echo esc_html( get_comments_number( $post_id ) ); ?>)</summary>
                     <?php
                     $comments = get_comments( array( 'post_id' => $post_id, 'status' => 'approve', 'order' => 'ASC' ) );
-                    foreach ( $comments as $comment ) : ?>
-                        <div class="orca-comment"><strong><?php echo esc_html( $comment->comment_author ); ?></strong><p><?php echo esc_html( $comment->comment_content ); ?></p></div>
+                    foreach ( $comments as $comment ) :
+                        $comment_timestamp = get_comment_date( 'U', $comment, false );
+                        $comment_age       = max( 0, current_time( 'timestamp' ) - (int) $comment_timestamp );
+                        if ( $comment_age < MINUTE_IN_SECONDS ) {
+                            $comment_time = $comment_age . ' ' . ( 1 === $comment_age ? 'second' : 'seconds' ) . ' ago';
+                        } elseif ( $comment_age < HOUR_IN_SECONDS ) {
+                            $comment_minutes = (int) floor( $comment_age / MINUTE_IN_SECONDS );
+                            $comment_time    = $comment_minutes . ' ' . ( 1 === $comment_minutes ? 'minute' : 'minutes' ) . ' ago';
+                        } elseif ( $comment_age < DAY_IN_SECONDS ) {
+                            $comment_hours = (int) floor( $comment_age / HOUR_IN_SECONDS );
+                            $comment_time  = $comment_hours . ' ' . ( 1 === $comment_hours ? 'hour' : 'hours' ) . ' ago';
+                        } else {
+                            $comment_time = wp_date( 'F j - Y', (int) $comment_timestamp );
+                        }
+                        ?>
+                        <div class="orca-comment"><strong><?php echo esc_html( $comment->comment_author ); ?></strong> <span class="orca-comment-time"><?php echo esc_html( $comment_time ); ?></span><p><?php echo esc_html( $comment->comment_content ); ?></p></div>
                     <?php endforeach; ?>
                     <?php if ( comments_open( $post_id ) ) : ?>
                         <form class="orca-form" method="post">
@@ -320,6 +358,91 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
     </section>
 </main>
 
+<script>
+(function () {
+    document.querySelectorAll('.orca-actions form').forEach(function (form) {
+        const button = form.querySelector('[data-orca-like]');
+        const count = form.closest('.orca-actions').querySelector('.orca-like-count');
+        if (!button || !count) {
+            return;
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            button.disabled = true;
+            const formData = new FormData(form);
+            formData.set('orca_blog_action', button.classList.contains('orca-liked') ? 'unlike' : 'like');
+
+            fetch(window.location.href, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData
+            })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (response) {
+                    if (!response.success || !response.data || typeof response.data.liked !== 'boolean') {
+                        throw new Error('Like could not be saved.');
+                    }
+
+                    const likes = Number(response.data.likes);
+                    button.textContent = response.data.liked ? '♥ Liked' : '♥ Like';
+                    button.classList.toggle('orca-liked', response.data.liked);
+                    button.disabled = false;
+                    count.textContent = likes + ' ' + (1 === likes ? 'like' : 'likes');
+                })
+                .catch(function () {
+                    button.disabled = false;
+                });
+        });
+    });
+
+})();
+
+(function () {
+    const filterPanel = document.querySelector('.orca-filter');
+    const filterForm = document.querySelector('.orca-filter form');
+    if (!filterPanel || !filterForm) {
+        return;
+    }
+
+    const sortButtons = filterForm.querySelectorAll('[data-sort-desc]');
+    const sortInput = filterForm.querySelector('input[name="blog_sort"]');
+
+    sortButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            if (!sortInput) {
+                return;
+            }
+
+            const arrow = button.querySelector('.orca-sort-arrow');
+            const currentState = arrow ? arrow.textContent.trim() : '';
+            const selectedSort = '↓' === currentState
+                ? button.getAttribute('data-sort-asc')
+                : '↑' === currentState
+                    ? ''
+                    : button.getAttribute('data-sort-desc');
+
+            sortButtons.forEach(function (item) {
+                const itemArrow = item.querySelector('.orca-sort-arrow');
+                const isSelected = item === button && selectedSort;
+                item.classList.toggle('orca-active-sort', Boolean(isSelected));
+                if (itemArrow) {
+                    itemArrow.textContent = isSelected ? (selectedSort === item.getAttribute('data-sort-desc') ? '↓' : '↑') : '';
+                }
+            });
+            sortInput.value = selectedSort || '';
+        });
+    });
+
+    document.addEventListener('click', function (event) {
+        if (filterPanel.open && !filterPanel.contains(event.target)) {
+            filterPanel.removeAttribute('open');
+        }
+    });
+})();
+</script>
 <?php wp_footer(); ?>
 </body>
 </html>

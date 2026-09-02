@@ -394,6 +394,140 @@ body {
     padding: clamp(3rem, 7vw, 6rem) 1.5rem;
 }
 
+.orca-blog__tools {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.orca-blog__tools details {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.orca-blog__tools .orca-filter {
+    order: 1;
+}
+
+.orca-blog__tools summary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: .7rem 1rem;
+    border: 1px solid var(--panel-line);
+    border-radius: 8px;
+    color: var(--ink);
+    background: var(--white);
+    font-size: .9rem;
+    font-weight: 800;
+    list-style: none;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.orca-blog__tools summary::-webkit-details-marker {
+    display: none;
+}
+
+.orca-blog__tools summary:hover {
+    border-color: var(--ocean);
+    transform: translateY(-1px);
+}
+
+.orca-blog__tools .orca-new-post summary {
+    border-color: var(--ink);
+    color: var(--white);
+    background: var(--ink);
+}
+
+.orca-blog__tools .orca-new-post summary:hover {
+    border-color: var(--ocean);
+    background: var(--ocean);
+}
+
+.orca-blog__tools .orca-new-post {
+    position: relative;
+    z-index: 3;
+}
+
+.orca-blog__tools:has(.orca-new-post[open]) {
+    display: block;
+}
+
+.orca-blog__tools .orca-new-post[open] {
+    width: 100%;
+}
+
+.orca-blog__tools:has(.orca-new-post[open]) .orca-filter {
+    position: absolute;
+    top: 0;
+    left: 166px;
+}
+
+.orca-blog__tools form {
+    position: absolute;
+    top: calc(100% + .7rem);
+    left: 0;
+    z-index: 10;
+    width: min(440px, calc(100vw - 3rem));
+    margin: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--panel-line);
+    border-radius: 14px;
+    background: var(--white);
+    box-shadow: 0 20px 60px rgba(17, 44, 49, .18);
+}
+
+.orca-blog__tools .orca-new-post form {
+    position: static;
+    left: 0;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 1.5rem 1.5rem 1.1rem;
+    border: 1px solid var(--panel-line);
+    border-radius: 18px;
+    background: var(--white);
+    box-shadow: 0 22px 60px rgba(17, 44, 49, .12);
+    display: grid;
+    gap: 1rem;
+}
+
+.orca-blog__tools .orca-new-post form input,
+.orca-blog__tools .orca-new-post form textarea,
+.orca-blog__tools .orca-new-post form select,
+.orca-blog__tools .orca-new-post form button,
+.orca-blog__tools .orca-new-post form fieldset {
+    border-radius: 12px;
+}
+
+.orca-blog__tools .orca-new-post form button[type="submit"] {
+    justify-self: flex-start;
+    min-width: 180px;
+}
+
+.orca-blog__tools .orca-new-post form > label {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    color: var(--label-copy);
+    font-size: .86rem;
+    font-weight: 700;
+}
+
+.orca-blog__tools .orca-new-post .orca-field-label {
+    display: inline-flex;
+    gap: .2rem;
+}
+
 .orca-card,
 .orca-filter {
     margin: 0 0 1.5rem;
@@ -410,6 +544,22 @@ body {
     font-size: clamp(1.45rem, 3vw, 2rem);
     line-height: 1.1;
     letter-spacing: -.03em;
+}
+
+.orca-card + .orca-card {
+    position: relative;
+    margin-top: 3.5rem;
+    padding-top: 3rem;
+}
+
+.orca-card + .orca-card::before {
+    position: absolute;
+    top: -1.8rem;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--panel-line);
+    content: "";
 }
 
 .orca-meta,
@@ -472,7 +622,8 @@ body {
 }
 
 .orca-blog button,
-.orca-filter a {
+.orca-filter a,
+.orca-filter form button[type="submit"] {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -490,9 +641,39 @@ body {
 }
 
 .orca-blog button:hover,
-.orca-filter a:hover {
+.orca-filter a:hover,
+.orca-filter form button[type="submit"]:hover {
     background: var(--ocean);
     transform: translateY(-1px);
+}
+
+.orca-actions button {
+    box-sizing: border-box;
+    width: 125px;
+    border: 2px solid transparent;
+}
+
+.orca-actions button.orca-liked,
+.orca-actions button.orca-liked:hover,
+.orca-actions button.orca-liked:disabled {
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    background: var(--white);
+    cursor: default;
+    transform: none;
+}
+
+.orca-filter .orca-sort-options button {
+    border: 1px solid var(--panel-line);
+    color: #000;
+    background: var(--white);
+    font-weight: 700;
+}
+
+.orca-filter .orca-sort-options button:hover {
+    border-color: var(--panel-line);
+    color: #000;
+    background: var(--white);
 }
 
 .orca-filter summary,
@@ -604,6 +785,11 @@ body {
     margin: .35rem 0 0;
 }
 
+.orca-comment-time {
+    display: block;
+    opacity: .5;
+}
+
 .orca-blog .orca-form {
     display: grid;
     gap: 1rem;
@@ -622,6 +808,9 @@ body {
 
 @media (max-width: 680px) {
     .orca-blog__hero { padding-top: 4rem; padding-bottom: 4rem; }
+    .orca-blog__tools form,
+    .orca-blog__tools .orca-new-post form { right: 0; left: auto; }
+    .orca-blog__tools:has(.orca-new-post[open]) .orca-filter { left: 144px; }
     .orca-filter form { align-items: stretch; }
     .orca-filter form > * { width: 100%; }
 }
