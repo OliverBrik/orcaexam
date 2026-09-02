@@ -1,6 +1,30 @@
 <?php get_header(); ?>
 
 <main>
+    <section class="frontpage-hero">
+        <div class="frontpage-hero__inner container">
+            <div class="frontpage-hero__content">
+                <p class="orca-contact__kicker">Trusted by growing businesses</p>
+                <h1>We help companies move forward with confidence.</h1>
+                <p class="frontpage-hero__text">
+                    Orca helps businesses build stronger customer experiences, better processes,
+                    and more reliable support from day one.
+                </p>
+
+                <ul class="frontpage-hero__facts">
+                    <li>Fast onboarding</li>
+                    <li>Clear communication</li>
+                    <li>Results-focused service</li>
+                </ul>
+            </div>
+
+            <div class="frontpage-hero__media">
+                <div class="frontpage-hero__image-wrap">
+                    <img src="https://picsum.photos/seed/orca-frontpage/900/760" alt="Business team smiling together" />
+                </div>
+            </div>
+        </div>
+    </section>
 
 <!-- Displays testimonials on frontpage -->
 
