@@ -295,8 +295,21 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
     $posts->rewind_posts();
     if ( $posts->have_posts() ) :
         while ( $posts->have_posts() ) : $posts->the_post();
-            $post_id = get_the_ID();
-            $likes   = (int) get_post_meta( $post_id, '_orca_likes', true );
+            $post_id            = get_the_ID();
+            $likes              = (int) get_post_meta( $post_id, '_orca_likes', true );
+            $post_timestamp     = get_post_time( 'U', true );
+            $post_age           = max( 0, current_time( 'timestamp', true ) - (int) $post_timestamp );
+            if ( $post_age < MINUTE_IN_SECONDS ) {
+                $post_time = $post_age . ' ' . ( 1 === $post_age ? 'second' : 'seconds' ) . ' ago';
+            } elseif ( $post_age < HOUR_IN_SECONDS ) {
+                $post_minutes = (int) floor( $post_age / MINUTE_IN_SECONDS );
+                $post_time    = $post_minutes . ' ' . ( 1 === $post_minutes ? 'minute' : 'minutes' ) . ' ago';
+            } elseif ( $post_age < DAY_IN_SECONDS ) {
+                $post_hours = (int) floor( $post_age / HOUR_IN_SECONDS );
+                $post_time  = $post_hours . ' ' . ( 1 === $post_hours ? 'hour' : 'hours' ) . ' ago';
+            } else {
+                $post_time = wp_date( 'F j - Y', (int) $post_timestamp );
+            }
             ?>
             <article class="orca-card" id="post-<?php echo esc_attr( $post_id ); ?>">
                 <h2><?php the_title(); ?></h2>
@@ -308,7 +321,7 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-                <p class="orca-meta">By <?php the_author(); ?> · <?php echo esc_html( get_the_date() ); ?></p>
+                <p class="orca-meta">By <?php the_author(); ?> · <?php echo esc_html( $post_time ); ?></p>
                 <div class="orca-content"><?php the_content(); ?></div>
                 <div class="orca-actions">
                     <form method="post">
