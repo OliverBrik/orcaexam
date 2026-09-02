@@ -19,7 +19,7 @@
 
             <div class="frontpage-hero__media">
                 <div class="frontpage-hero__image-wrap">
-                    <img src="https://picsum.photos/seed/orca-frontpage/900/760" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" />
+                    <img src="https://media.licdn.com/dms/image/v2/D4E22AQGF0-2mpZ_4rQ/feedshare-shrink_1280/B4EZ5MMp_CIwAQ-/0/1779394847558?e=1790208000&v=beta&t=px_g0WTCfoyk8IHBBO1NTAeLR9ff9NpvdhL6kfwyHm0" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" />
                 </div>
             </div>
         </div>
