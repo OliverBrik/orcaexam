@@ -11,7 +11,7 @@ get_header();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['testimonial_submit'])) {
         if (!isset($_POST['orca_testimonial_nonce']) || !wp_verify_nonce($_POST['orca_testimonial_nonce'], 'orca_submit_testimonial')) {
-            $message = 'Security check failed.';
+            $message = orca_text('Sikkerhedskontrollen mislykkedes.', 'Security check failed.');
         } else {
             $name = sanitize_text_field(wp_unslash($_POST['testimonial_name']));
             $review = sanitize_textarea_field(wp_unslash($_POST['testimonial_review']));
@@ -25,19 +25,19 @@ get_header();
                 ));
 
                 if ($post_id) {
-                    $message = 'Thank you! Your review has been submitted for approval.';
+                    $message = orca_text('Tak! Din anmeldelse er sendt til godkendelse.', 'Thank you! Your review has been submitted for approval.');
                 } else {
-                    $message = 'There was a problem submitting your review.';
+                    $message = orca_text('Der opstod et problem med at sende din anmeldelse.', 'There was a problem submitting your review.');
                 }
             } else {
-                $message = 'Please enter your name and review.';
+                $message = orca_text('Indtast dit navn og din anmeldelse.', 'Please enter your name and review.');
             }
         }
     }
     ?>
 
     <section class="testimonial-form">
-        <h2>Leave a Review</h2>
+        <h2><?php echo esc_html(orca_text('Skriv en anmeldelse', 'Leave a Review')); ?></h2>
 
         <?php if ($message) : ?>
             <p><?php echo esc_html($message); ?></p>
@@ -47,17 +47,17 @@ get_header();
             <?php wp_nonce_field('orca_submit_testimonial', 'orca_testimonial_nonce'); ?>
 
             <p>
-                <label for="testimonial_name">Your Name</label><br>
+                <label for="testimonial_name"><?php echo esc_html(orca_text('Dit navn', 'Your Name')); ?></label><br>
                 <input type="text" name="testimonial_name" id="testimonial_name" value="" required>
             </p>
 
             <p>
-                <label for="testimonial_review">Your Review</label><br>
+                <label for="testimonial_review"><?php echo esc_html(orca_text('Din anmeldelse', 'Your Review')); ?></label><br>
                 <textarea name="testimonial_review" id="testimonial_review" rows="5" required></textarea>
             </p>
 
             <p>
-                <button class="testimonial-entry-form__submit" type="submit" name="testimonial_submit">Send Review</button>
+                <button class="testimonial-entry-form__submit" type="submit" name="testimonial_submit"><?php echo esc_html(orca_text('Send anmeldelse', 'Send Review')); ?></button>
             </p>
         </form>
     </section>

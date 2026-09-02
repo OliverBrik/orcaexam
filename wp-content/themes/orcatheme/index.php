@@ -4,23 +4,22 @@
     <section class="frontpage-hero">
         <div class="frontpage-hero__inner container">
             <div class="frontpage-hero__content">
-                <p class="orca-contact__kicker">Trusted by growing businesses</p>
-                <h1>We help companies move forward with confidence.</h1>
+                <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Betroet af virksomheder i vækst', 'Trusted by growing businesses')); ?></p>
+                <h1><?php echo esc_html(orca_text('Vi hjælper virksomheder sikkert fremad.', 'We help companies move forward with confidence.')); ?></h1>
                 <p class="frontpage-hero__text">
-                    Orca helps businesses build stronger customer experiences, better processes,
-                    and more reliable support from day one.
+                    <?php echo esc_html(orca_text('Orca hjælper virksomheder med at skabe stærkere kundeoplevelser, bedre processer og mere pålidelig support fra første dag.', 'Orca helps businesses build stronger customer experiences, better processes, and more reliable support from day one.')); ?>
                 </p>
 
                 <ul class="frontpage-hero__facts">
-                    <li>Fast onboarding</li>
-                    <li>Clear communication</li>
-                    <li>Results-focused service</li>
+                    <li><?php echo esc_html(orca_text('Hurtig opstart', 'Fast onboarding')); ?></li>
+                    <li><?php echo esc_html(orca_text('Tydelig kommunikation', 'Clear communication')); ?></li>
+                    <li><?php echo esc_html(orca_text('Resultatorienteret service', 'Results-focused service')); ?></li>
                 </ul>
             </div>
 
             <div class="frontpage-hero__media">
                 <div class="frontpage-hero__image-wrap">
-                    <img src="https://picsum.photos/seed/orca-frontpage/900/760" alt="Business team smiling together" />
+                    <img src="https://picsum.photos/seed/orca-frontpage/900/760" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" />
                 </div>
             </div>
         </div>
@@ -31,8 +30,8 @@
 
     <section class="testimonial-section">
         <div class="testimonial-wrap">
-            <p class="orca-contact__kicker">Reviews</p>
-            <h2>What our clients say</h2>
+            <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Anmeldelser', 'Reviews')); ?></p>
+            <h2><?php echo esc_html(orca_text('Det siger vores kunder', 'What our clients say')); ?></h2>
 
             <div class="testimonial-grid">
                 <?php
