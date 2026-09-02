@@ -5,33 +5,329 @@ Description: A bare-bones starter theme for the Orca website
 Version: 1.0
 */
 
+:root {
+    --navy: #12233d;
+    --navy-soft: #edf3ff;
+    --accent: #0b8f73;
+    --text: #1a1a1a;
+    --muted: #5b6470;
+    --white: #ffffff;
+    --border: #dfe7f1;
+    --lightnavy: #4b81ff;
+    --ink: #102c32;
+    --ocean: #006c72;
+    --mint: #77ddca;
+    --line: #cddbd6;
+    --paper: #fbfcf9;
+    --panel-line: #d9e2de;
+    --soft-ink: #53676a;
+    --slate: #647477;
+    --field-border: #becdca;
+    --label-copy: #29474b;
+    --form-copy: #627174;
+    --success-text: #16483e;
+    --success-bg: #daf3e9;
+    --error-text: #752d29;
+    --error-bg: #fae3e0;
+    --dark-card-text: #36464b;
+    --page-bg: #f5f5f5;
+    --hero-copy: #dbe8e5;
+    --muted-contrast: #b9cdca;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    background: #f5f5f5;
-    color: #111;
+    background: var(--page-bg);
+    color: var(--text);
 }
 
-main {
+.container {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 0 1rem;
 }
 
-article {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+.site-header {
+    background: var(--ink);
+    color: var(--white);
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--ocean);
 }
 
-h2 {
-    margin-top: 0;
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
-a {
-    color: #0d6efd;
+.logo a {
+    display: inline-flex;
+    flex-direction: column;
+    color: var(--white);
     text-decoration: none;
+    line-height: 1.1;
+}
+
+.brand-name {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.tagline {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-top: 0.2rem;
+}
+
+.main-nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.header-button {
+    color: var(--white);
+    text-decoration: none;
+    padding: 0.75rem 1.2rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .header-inner {
+        flex-direction: column;
+    }
+
+    .nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+
+
+/* Scoped styling for the contact page. */
+.orca-contact { max-width:none; padding:0; color:var(--ink); background:var(--paper); }
+.orca-contact *, .orca-contact *::before, .orca-contact *::after { box-sizing:border-box; }
+.orca-contact__hero { position:relative; overflow:hidden; padding:clamp(5rem,10vw,9rem) max(1.5rem,calc((100vw - 1120px)/2)); color:var(--white); background:radial-gradient(circle at 83% 14%,rgba(68,194,178,.32),transparent 25%),linear-gradient(125deg,#071f25 0%,#0b3e45 65%,#076a70 100%); }
+.orca-contact__hero::after { content:""; position:absolute; right:-10vw; bottom:-18vw; width:48vw; height:48vw; border:1px solid rgba(255,255,255,.13); border-radius:50%; box-shadow:0 0 0 5vw rgba(255,255,255,.025),0 0 0 10vw rgba(255,255,255,.018); }
+.orca-contact__eyebrow,.orca-contact__kicker { margin-bottom:1rem; color:var(--mint); font-size:.78rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+.orca-contact__hero h1 { position:relative; z-index:1; max-width:850px; margin:0; font-size:clamp(3rem,7vw,6.5rem); line-height:.95; letter-spacing:-.055em; }
+.orca-contact__hero h1 span { color:var(--mint); }
+.orca-contact__hero>p { position:relative; z-index:1; max-width:680px; margin:2rem 0; color:var(--hero-copy); font-size:clamp(1rem,2vw,1.25rem); }
+.orca-contact__facts { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:1rem 2rem; font-size:.9rem; }
+.orca-contact__facts span::before { content:"✓"; margin-right:.55rem; color:var(--mint); font-weight:900; }
+.orca-contact__workspace { max-width:1000px; margin:0 auto; padding:clamp(4rem,8vw,7rem) 1.5rem; }
+.orca-contact__intro { max-width:700px; }
+.orca-contact__intro h2 { margin:0 0 .75rem; font-size:clamp(2rem,4vw,3.4rem); line-height:1.05; letter-spacing:-.04em; }
+.orca-contact__intro>p:last-child { color:var(--soft-ink); font-size:1.08rem; }
+.orca-contact__kicker { color:var(--ocean); }
+.orca-contact__tabs { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:2.5rem 0 1.5rem; }
+.orca-contact__tab { display:flex; align-items:center; gap:1rem; width:100%; padding:1.35rem; border:1px solid var(--line); border-radius:14px; color:var(--ink); background:var(--white); text-align:left; cursor:pointer; transition:.2s ease; }
+.orca-contact__tab:hover { transform:translateY(-2px); border-color:var(--ocean); }
+.orca-contact__tab.is-active { border-color:var(--ocean); box-shadow:0 9px 30px rgba(0,69,73,.1); }
+.orca-contact__tab-icon { display:grid; flex:0 0 44px; height:44px; place-items:center; border-radius:50%; color:var(--white); background:var(--ocean); font-size:1.3rem; font-weight:700; }
+.orca-contact__tab strong,.orca-contact__tab small { display:block; }
+.orca-contact__tab strong { margin-bottom:.15rem; font-size:1rem; }
+.orca-contact__tab small { color:var(--slate); font-size:.82rem; }
+.orca-contact__panel { padding:clamp(1.5rem,4vw,3rem); border:1px solid var(--panel-line); border-radius:18px; background:var(--white); box-shadow:0 20px 60px rgba(17,44,49,.07); }
+.orca-form__grid { display:grid; grid-template-columns:1fr 1fr; gap:1.35rem; }
+.orca-form label { display:flex; flex-direction:column; gap:.45rem; color:var(--label-copy); font-size:.86rem; font-weight:700; }
+.orca-form label>span { color:var(--ocean); }
+.orca-form__full { grid-column:1/-1; }
+.orca-form input:not([type="checkbox"]),.orca-form select,.orca-form textarea { width:100%; min-height:50px; padding:.8rem .95rem; border:1px solid var(--field-border); border-radius:8px; outline:none; color:var(--ink); background:#fbfcfb; font:inherit; font-weight:400; transition:.2s ease; }
+.orca-form textarea { resize:vertical; }
+.orca-form input:focus,.orca-form select:focus,.orca-form textarea:focus { border-color:var(--ocean); box-shadow:0 0 0 3px rgba(0,108,114,.12); }
+.orca-form__consent { flex-direction:row!important; align-items:flex-start; margin:1.35rem 0; color:var(--form-copy)!important; font-weight:400!important; }
+.orca-form__consent input { width:17px; height:17px; margin-top:.18rem; accent-color:var(--ocean); }
+.orca-form__consent>span { color:inherit!important; }
+.orca-form__submit { display:inline-flex; align-items:center; gap:2.5rem; padding:.9rem 1.25rem; border:0; border-radius:8px; color:var(--white); background:var(--ink); font-weight:800; cursor:pointer; transition:.2s ease; }
+.orca-form__submit:hover { transform:translateY(-1px); background:var(--ocean); }
+.orca-notice { display:flex; flex-direction:column; gap:.2rem; margin-top:2rem; padding:1rem 1.2rem; border-radius:10px; }
+.orca-notice--success { color:var(--success-text); background:var(--success-bg); }
+.orca-notice--error { color:var(--error-text); background:var(--error-bg); }
+.orca-contact__direct { padding:3.5rem 1.5rem; color:var(--white); background:var(--ink); text-align:center; }
+.orca-contact__direct p { margin:0 0 .4rem; color:var(--muted-contrast); }
+.orca-contact__direct a { color:var(--mint); font-size:clamp(1.5rem,4vw,2.7rem); font-weight:800; letter-spacing:-.03em; }
+@media (max-width:680px) { .orca-contact__tabs,.orca-form__grid { grid-template-columns:1fr; } .orca-form__full { grid-column:auto; } .orca-contact__hero { padding-top:4rem; padding-bottom:4rem; } }
+
+/*style for testimonials on frontpage*/
+
+
+.testimonial-section {
+    background: var(--paper);
+    padding: clamp(4rem, 8vw, 7rem) 1.5rem;
+}
+
+.testimonial-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.testimonial-section h2 {
+    margin: 0 0 2rem;
+    font-size: clamp(2rem, 4vw, 3.3rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+}
+
+.testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.testimonial-card {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border: 1px solid var(--panel-line);
+    border-radius: 18px;
+    background: var(--white);
+    box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 28px 70px rgba(17, 44, 49, 0.1);
+}
+
+.testimonial-quote-mark {
+    font-size: 5rem;
+    line-height: 1;
+    color: var(--accent);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.testimonial-content {
+    font-style: italic;
+    color: var(--dark-card-text);
+    margin-bottom: 1.25rem;
+}
+
+.testimonial-card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--ink);
+}
+
+.testimonial-page {
+    background: var(--paper);
+    padding: clamp(4rem, 8vw, 7rem) 1.5rem;
+}
+
+.testimonial-shell {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.testimonial-form {
+    padding: clamp(1.75rem, 4vw, 3rem);
+    border: 1px solid var(--panel-line);
+    border-radius: 18px;
+    background: var(--white);
+    box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
+}
+
+.testimonial-form h2 {
+    margin: 0 0 1.5rem;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+}
+
+.orca-form {
+    display: block;
+}
+
+.orca-form__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+.orca-form__full {
+    width: 100%;
+}
+
+.orca-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    color: var(--label-copy);
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.orca-form input,
+.orca-form textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 0.8rem 0.95rem;
+    border: 1px solid var(--field-border);
+    border-radius: 8px;
+    background: #fbfcfb;
+    color: var(--ink);
+    font: inherit;
+}
+
+.orca-form textarea {
+    resize: vertical;
+}
+
+.orca-form input:focus,
+.orca-form textarea:focus {
+    outline: none;
+    border-color: var(--ocean);
+    box-shadow: 0 0 0 3px rgba(0,108,114,.12);
+}
+
+.orca-form__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding: 0.9rem 1.3rem;
+    border: 0;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--white);
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.orca-form__submit:hover {
+    background: var(--ocean);
 }
