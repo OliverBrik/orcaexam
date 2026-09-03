@@ -1,5 +1,7 @@
 <?php
 /**
+ * Template Name: Blog
+ *
  * Notes for later: 
  * - The filter optioins shouldnt close when changing filters
  * - remove approval requirements for comments
