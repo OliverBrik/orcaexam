@@ -184,11 +184,20 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
 }
 ?>
 <?php get_header(); ?>
-    <style>
+    <?php /* Legacy inline blog styling removed; styles are provided by style.css.
         body{margin:0;background:#f4f7fb;color:#18202a;font:16px/1.55 Arial,sans-serif}.orca-blog{max-width:800px;margin:0 auto;padding:48px 20px 72px}.orca-blog h1{font-size:2.3rem;margin:0 0 28px}.orca-card{background:#fff;border:1px solid #dfe6ee;border-radius:14px;padding:26px;margin:0 0 22px;box-shadow:0 5px 18px #15263a0d}.orca-card h2{margin:0 0 6px;font-size:1.45rem}.orca-meta{color:#607080;font-size:.9rem;margin:0 0 18px}.orca-categories{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px}.orca-category-tag{display:inline-block;padding:4px 9px;border-radius:3px;color:#132016;font-size:.82rem;font-weight:700;line-height:1.2}.orca-required{color:#d7263d}.orca-category-picker{border:0;padding:0;margin:0 0 13px}.orca-category-picker legend{font-weight:700;margin-bottom:5px}.orca-category-picker label{display:inline-flex;align-items:center;gap:6px;margin:0 14px 7px 0;white-space:nowrap}.orca-category-picker input{width:auto;margin:0}.orca-filter{margin-bottom:28px}.orca-filter summary{display:inline-block;cursor:pointer;background:#1769d1;color:#fff;border-radius:7px;padding:9px 14px;font-weight:700}.orca-filter form{display:flex;flex-wrap:wrap;align-items:end;gap:12px;padding-top:14px}.orca-filter label{font-weight:700}.orca-filter select{display:block;min-width:180px;margin-top:5px;padding:9px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;font:inherit}.orca-sort-options{display:flex;gap:7px}.orca-filter .orca-sort-options button{background:#e7edf5;color:#18202a}.orca-filter .orca-sort-options button:hover{background:#d4dfed}.orca-filter .orca-sort-options .orca-active-sort{background:#1769d1;color:#fff}.orca-filter a{padding:9px 0}.orca-content{margin-bottom:20px}.orca-post-image,.orca-post-video{margin:18px 0}.orca-post-image img,.orca-post-video video{display:block;max-width:100%;height:auto;border-radius:10px}.orca-actions{display:flex;align-items:center;gap:12px;border-top:1px solid #e7ecf1;padding-top:16px}.orca-blog button{cursor:pointer;background:#1769d1;color:#fff;border:0;border-radius:7px;padding:9px 14px;font-weight:700}.orca-blog button:hover{background:#1055aa}.orca-blog input,.orca-blog textarea{box-sizing:border-box;width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:10px;font:inherit;margin:5px 0 13px}.orca-blog textarea{min-height:120px;resize:vertical}.orca-comments{margin-top:22px}.orca-comments summary{cursor:pointer;font-size:1.05rem;font-weight:700;padding:12px 0}.orca-comment{border-top:1px solid #e7ecf1;padding:13px 0}.orca-comment p{margin:4px 0}.orca-form{margin-top:16px}.orca-message{padding:12px 15px;border-radius:8px;margin:0 0 20px}.orca-success{background:#e9f8ee;color:#176534}.orca-error{background:#fff0f0;color:#a12525}.orca-new-post{margin-bottom:30px}.orca-new-post summary{cursor:pointer;font-size:1.2rem;font-weight:700;margin-bottom:18px}.orca-empty{color:#607080}
-    </style>
+    */ ?>
+<section class="orca-blog-hero">
+    <div class="orca-blog-hero__inner">
+        <div class="orca-blog-hero__content">
+            <p class="orca-contact__kicker"><?php echo esc_html( orca_text('Orca fællesskab', 'Orca community') ); ?></p>
+            <h1><?php echo esc_html( get_the_title() ?: orca_text('Fællesskabsblog', 'Community Blog') ); ?></h1>
+            <p><?php echo esc_html( orca_text('Læs nyt, få inspiration, og del erfaringer med andre i Orca-fællesskabet.', 'Read updates, find inspiration, and share experiences with the Orca community.') ); ?></p>
+        </div>
+    </div>
+</section>
+
 <main class="orca-blog">
-    <h1><?php echo esc_html( get_the_title() ?: orca_text('Fællesskabsblog', 'Community Blog') ); ?></h1>
 
     <?php if ( $notice ) : ?><p class="orca-message orca-success"><?php echo esc_html( $notice ); ?></p><?php endif; ?>
     <?php if ( $error ) : ?><p class="orca-message orca-error"><?php echo esc_html( $error ); ?></p><?php endif; ?>
@@ -285,7 +294,7 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
                     <form method="post">
                         <?php wp_nonce_field( 'orca_like_' . $post_id, 'orca_blog_nonce' ); ?>
                         <input type="hidden" name="orca_blog_action" value="like"><input type="hidden" name="post_id" value="<?php echo esc_attr( $post_id ); ?>">
-                        <button type="submit" <?php disabled( isset( $_COOKIE['orca_liked_' . $post_id] ) ); ?>>♥ <?php echo esc_html( orca_text('Like', 'Like') ); ?></button>
+                        <button class="orca-like-button" type="submit" <?php disabled( isset( $_COOKIE['orca_liked_' . $post_id] ) ); ?>>♥ <?php echo esc_html( orca_text('Like', 'Like') ); ?></button>
                     </form>
                     <span><?php echo esc_html( $likes ); ?> <?php echo esc_html( 1 === $likes ? orca_text('like', 'like') : orca_text('likes', 'likes') ); ?></span>
                 </div>
