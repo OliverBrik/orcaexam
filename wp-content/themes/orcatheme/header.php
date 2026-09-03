@@ -28,6 +28,7 @@
         </nav>
 
         <div class="header-actions">
+            <a href="<?php echo esc_url(home_url('/blog')); ?>" class="header-button"><?php echo esc_html(orca_text('Blog', 'Blog')); ?></a>
             <a href="<?php echo esc_url(home_url('/leave-a-review')); ?>" class="header-button"><?php echo esc_html(orca_text('Skriv en anmeldelse', 'Leave a review')); ?></a>
             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="header-button"><?php echo esc_html(orca_text('Kontakt os', 'Contact us')); ?></a>
             <nav class="language-switcher" aria-label="<?php echo esc_attr(orca_text('Vælg sprog', 'Choose language')); ?>">
