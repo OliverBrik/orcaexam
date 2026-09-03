@@ -658,6 +658,195 @@ body {
     padding: clamp(1.5rem, 4vw, 2.5rem);
 }
 
+.orca-new-post {
+    margin: 0 0 3rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid var(--panel-line);
+    border-top: 5px solid var(--ocean);
+    border-radius: 14px;
+    background: var(--white);
+    box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
+}
+
+.orca-new-post > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--ink);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.orca-new-post > summary::after {
+    content: "+";
+    color: var(--ocean);
+    font-size: 1.8rem;
+    font-weight: 400;
+}
+
+.orca-new-post[open] > summary::after {
+    content: "-";
+}
+
+.orca-new-post form {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.orca-new-post form > label {
+    display: block;
+    color: var(--label-copy);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.orca-blog .orca-new-post input[name="post_title"] {
+    display: block;
+    min-height: 68px;
+    margin-top: 0.55rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--field-border);
+    border-radius: 8px;
+    color: var(--ink);
+    background: var(--paper);
+    font-size: clamp(1.25rem, 3vw, 1.6rem);
+    font-weight: 700;
+}
+
+.orca-blog .orca-new-post textarea[name="post_content"] {
+    display: block;
+    width: 100%;
+    min-height: 300px;
+    margin-top: 0.55rem;
+    padding: 1rem;
+    border: 1px solid var(--field-border);
+    border-radius: 8px;
+    color: var(--ink);
+    background: var(--paper);
+    font: inherit;
+    line-height: 1.7;
+    resize: vertical;
+}
+
+.orca-blog .orca-new-post input[name="post_title"]:focus,
+.orca-blog .orca-new-post textarea[name="post_content"]:focus {
+    border-color: var(--ocean);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 108, 114, 0.12);
+}
+
+.orca-editor-categories {
+    margin: 0;
+    padding: 1.25rem 1.25rem 1.35rem;
+    border: 1px solid var(--panel-line);
+    border-radius: 8px;
+    background: var(--white);
+}
+
+.orca-editor-categories legend {
+    margin-bottom: 0.7rem;
+    padding: 0;
+    color: var(--label-copy);
+    font-weight: 800;
+}
+
+.orca-editor-categories label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 42px;
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--label-copy);
+    background: var(--paper);
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.18s ease;
+}
+
+.orca-editor-categories label:hover {
+    border-color: var(--ocean);
+    background: var(--navy-soft);
+}
+
+.orca-editor-categories label:has(input:checked) {
+    border-color: var(--ocean);
+    color: var(--ink);
+    background: var(--success-bg);
+}
+
+.orca-editor-categories input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+    accent-color: var(--ocean);
+}
+
+.orca-editor-categories {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+}
+
+.orca-editor-categories legend {
+    grid-column: 1 / -1;
+}
+
+.orca-blog .orca-new-post input[type="file"] {
+    display: block;
+    width: 100%;
+    margin-top: 0.55rem;
+    padding: 0.85rem;
+    border: 1px dashed var(--field-border);
+    border-radius: 8px;
+    color: var(--soft-ink);
+    background: var(--paper);
+}
+
+.orca-blog .orca-new-post button {
+    justify-self: start;
+    min-width: 160px;
+    padding: 0.95rem 1.4rem;
+}
+
+.orca-post-form__writing {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.orca-post-form__options {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.65fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.orca-post-form__options > label {
+    padding: 1.25rem;
+    border: 1px dashed var(--field-border);
+    border-radius: 8px;
+    background: var(--paper);
+}
+
+.orca-post-form__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+}
+
+.orca-post-form__footer span {
+    max-width: 420px;
+    color: var(--soft-ink);
+    font-size: 0.86rem;
+}
+
 .orca-blog h2 {
     color: var(--ink);
 }
@@ -721,6 +910,164 @@ body {
 .orca-blog .orca-comment {
     border-left-color: var(--mint);
     background: var(--paper);
+}
+
+.orca-blog .orca-card h2 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.orca-blog .orca-card h2 a:hover {
+    color: var(--ocean);
+}
+
+.orca-edit-post {
+    margin: 1.25rem 0;
+    padding: 1rem 1.25rem;
+    border-color: var(--line);
+    box-shadow: none;
+}
+
+.orca-edit-post form {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.orca-delete-post {
+    margin: 0 0 1.25rem;
+}
+
+.orca-delete-post button {
+    color: var(--error-text);
+    background: var(--error-bg);
+}
+
+.orca-delete-post button:hover {
+    color: var(--white);
+    background: var(--error-text);
+}
+
+/* Individual blog posts */
+.orca-single-post {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(3rem, 7vw, 6rem) 1.5rem;
+    color: var(--ink);
+}
+
+.orca-single-post__content {
+    max-width: 760px;
+    margin: 0 auto 4rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid var(--panel-line);
+    border-radius: 14px;
+    background: var(--white);
+    box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
+    color: var(--dark-card-text);
+    font-size: 1.1rem;
+}
+
+.orca-single-post__content h1 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+}
+
+.orca-single-post__content .orca-meta {
+    margin: 1rem 0 2rem;
+    color: var(--slate);
+    font-size: 0.9rem;
+}
+
+.orca-single-post__content img,
+.orca-single-post__content video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+}
+
+.orca-single-post__content a {
+    color: var(--ocean);
+}
+
+.orca-discussion {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    border: 1px solid var(--panel-line);
+    border-radius: 14px;
+    background: var(--white);
+    box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
+}
+
+.orca-discussion h2 {
+    margin: 0 0 1.5rem;
+    color: var(--ink);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+}
+
+.orca-discussion__form {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.orca-discussion__form label {
+    display: block;
+    color: var(--label-copy);
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.orca-discussion__form input,
+.orca-discussion__form textarea {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 0.4rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--field-border);
+    border-radius: 8px;
+    color: var(--ink);
+    background: #fbfcfb;
+    font: inherit;
+}
+
+.orca-discussion__form textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.orca-discussion__form input:focus,
+.orca-discussion__form textarea:focus {
+    border-color: var(--ocean);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 108, 114, 0.12);
+}
+
+.orca-discussion__form button {
+    width: fit-content;
+    padding: 0.9rem 1.25rem;
+    border: 0;
+    border-radius: 8px;
+    color: var(--white);
+    background: var(--ink);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.orca-discussion__form button:hover {
+    background: var(--ocean);
+    transform: translateY(-1px);
 }
 
 /* Shared cards */
@@ -876,7 +1223,8 @@ body {
 
 @media (max-width: 680px) {
     .orca-contact__tabs,
-    .orca-contact .orca-form__grid {
+    .orca-contact .orca-form__grid,
+    .orca-post-form__options {
         grid-template-columns: 1fr;
     }
 
@@ -884,8 +1232,21 @@ body {
         grid-column: auto;
     }
 
+    .orca-editor-categories {
+        grid-template-columns: 1fr;
+    }
+
     .orca-contact__hero {
         padding-top: 4rem;
         padding-bottom: 4rem;
+    }
+
+    .orca-post-form__footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .orca-post-form__footer button {
+        width: 100%;
     }
 }

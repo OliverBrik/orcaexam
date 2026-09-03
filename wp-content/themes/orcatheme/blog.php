@@ -118,6 +118,53 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
         }
     }
 
+    if ( in_array( $action, array( 'update_post', 'delete_post' ), true ) ) {
+        $post_id = absint( $_POST['post_id'] ?? 0 );
+
+        if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+            $error = orca_text('Du har ikke tilladelse til at ændre dette indlæg.', 'You are not allowed to change this post.');
+        } elseif ( ! isset( $_POST['orca_blog_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['orca_blog_nonce'] ) ), 'orca_manage_post_' . $post_id ) ) {
+            $error = orca_text('Din session er udløbet. Prøv igen.', 'Your session expired. Please try again.');
+        } elseif ( 'delete_post' === $action ) {
+            if ( wp_trash_post( $post_id ) ) {
+                wp_safe_redirect( add_query_arg( 'blog_notice', 'deleted', $page_url ) );
+                exit;
+            }
+            $error = orca_text('Indlægget kunne ikke slettes. Prøv igen.', 'The post could not be deleted. Please try again.');
+        } else {
+            $title        = sanitize_text_field( wp_unslash( $_POST['post_title'] ?? '' ) );
+            $content      = wp_kses_post( wp_unslash( $_POST['post_content'] ?? '' ) );
+            $category_ids = isset( $_POST['post_categories'] ) && is_array( $_POST['post_categories'] )
+                ? array_filter( array_map( 'absint', wp_unslash( $_POST['post_categories'] ) ) )
+                : array();
+            $category_ids = get_terms( array(
+                'taxonomy'   => 'category',
+                'include'    => $category_ids,
+                'exclude'    => array( (int) get_option( 'default_category' ) ),
+                'fields'     => 'ids',
+                'hide_empty' => false,
+            ) );
+
+            if ( '' === $title || '' === trim( wp_strip_all_tags( $content ) ) || empty( $category_ids ) ) {
+                $error = orca_text('Tilføj titel, tekst og mindst én kategori.', 'Add a title, post text, and at least one category.');
+            } else {
+                $updated = wp_update_post( array(
+                    'ID'           => $post_id,
+                    'post_title'   => $title,
+                    'post_content' => $content,
+                ), true );
+
+                if ( is_wp_error( $updated ) ) {
+                    $error = orca_text('Indlægget kunne ikke opdateres. Prøv igen.', 'The post could not be updated. Please try again.');
+                } else {
+                    wp_set_post_categories( $post_id, $category_ids, false );
+                    wp_safe_redirect( add_query_arg( 'blog_notice', 'updated', $page_url ) . '#post-' . $post_id );
+                    exit;
+                }
+            }
+        }
+    }
+
     if ( 'like' === $action ) {
         $post_id = absint( $_POST['post_id'] ?? 0 );
         if ( ! isset( $_POST['orca_blog_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['orca_blog_nonce'] ) ), 'orca_like_' . $post_id ) || 'post' !== get_post_type( $post_id ) ) {
@@ -170,6 +217,10 @@ if ( 'published' === ( $_GET['blog_notice'] ?? '' ) ) {
     $notice = orca_text('Tak for dit like!', 'Thanks for liking this post!');
 } elseif ( 'commented' === ( $_GET['blog_notice'] ?? '' ) ) {
     $notice = orca_text('Tak! Din kommentar afventer godkendelse.', 'Thanks! Your comment is awaiting moderation.');
+} elseif ( 'updated' === ( $_GET['blog_notice'] ?? '' ) ) {
+    $notice = orca_text('Indlægget er opdateret.', 'The post has been updated.');
+} elseif ( 'deleted' === ( $_GET['blog_notice'] ?? '' ) ) {
+    $notice = orca_text('Indlægget er flyttet til papirkurven.', 'The post has been moved to the trash.');
 }
 
 $filter_category = absint( $_GET['blog_category'] ?? 0 );
@@ -203,23 +254,30 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
     <?php if ( $error ) : ?><p class="orca-message orca-error"><?php echo esc_html( $error ); ?></p><?php endif; ?>
 
     <?php if ( is_user_logged_in() && current_user_can( 'publish_posts' ) ) : ?>
-        <details class="orca-card orca-new-post" <?php echo $error && 'create_post' === ( $_POST['orca_blog_action'] ?? '' ) ? 'open' : ''; ?> >
+        <details class="orca-new-post" <?php echo $error && 'create_post' === ( $_POST['orca_blog_action'] ?? '' ) ? 'open' : ''; ?> >
             <summary><?php echo esc_html( orca_text('Skriv et indlæg', 'Write a post') ); ?></summary>
-            <form method="post" enctype="multipart/form-data">
+            <form class="orca-post-form" method="post" enctype="multipart/form-data">
                 <?php wp_nonce_field( 'orca_create_blog_post', 'orca_blog_nonce' ); ?>
                 <input type="hidden" name="orca_blog_action" value="create_post">
-                <label><?php echo esc_html( orca_text('Titel', 'Title') ); ?> <span class="orca-required" aria-hidden="true">*</span><input name="post_title" required value="<?php echo esc_attr( wp_unslash( $_POST['post_title'] ?? '' ) ); ?>"></label>
-                <label><?php echo esc_html( orca_text('Dit indlæg', 'Your post') ); ?> <span class="orca-required" aria-hidden="true">*</span><textarea name="post_content" required><?php echo esc_textarea( wp_unslash( $_POST['post_content'] ?? '' ) ); ?></textarea></label>
-                <fieldset class="orca-category-picker">
+                <div class="orca-post-form__writing">
+                    <label class="orca-editor-title"><?php echo esc_html( orca_text('Titel', 'Title') ); ?> <span class="orca-required" aria-hidden="true">*</span><input name="post_title" required value="<?php echo esc_attr( wp_unslash( $_POST['post_title'] ?? '' ) ); ?>"></label>
+                    <label class="orca-editor-content"><?php echo esc_html( orca_text('Dit indlæg', 'Your post') ); ?> <span class="orca-required" aria-hidden="true">*</span><textarea name="post_content" required><?php echo esc_textarea( wp_unslash( $_POST['post_content'] ?? '' ) ); ?></textarea></label>
+                </div>
+                <div class="orca-post-form__options">
+                    <fieldset class="orca-category-picker orca-editor-categories">
                     <legend><?php echo esc_html( orca_text('Kategorier', 'Categories') ); ?> <span class="orca-required" aria-hidden="true">*</span></legend>
                     <?php
                     $selected_categories = isset( $_POST['post_categories'] ) && is_array( $_POST['post_categories'] ) ? array_map( 'absint', wp_unslash( $_POST['post_categories'] ) ) : array();
                     foreach ( get_categories( array( 'hide_empty' => false, 'exclude' => array( (int) get_option( 'default_category' ) ) ) ) as $category ) : ?>
                         <label><input type="checkbox" name="post_categories[]" value="<?php echo esc_attr( $category->term_id ); ?>" <?php checked( in_array( $category->term_id, $selected_categories, true ) ); ?>><?php echo esc_html( $category->name ); ?></label>
                     <?php endforeach; ?>
-                </fieldset>
-                <label><?php echo esc_html( orca_text('Tilføj billeder eller videoer', 'Add photos or videos') ); ?><input type="file" name="post_media[]" accept="image/*,video/*" multiple></label>
-                <button type="submit"><?php echo esc_html( orca_text('Udgiv indlæg', 'Publish post') ); ?></button>
+                    </fieldset>
+                    <label><?php echo esc_html( orca_text('Tilføj billeder eller videoer', 'Add photos or videos') ); ?><input type="file" name="post_media[]" accept="image/*,video/*" multiple></label>
+                </div>
+                <div class="orca-post-form__footer">
+                    <span><?php echo esc_html( orca_text('Dit indlæg bliver sendt til godkendelse.', 'Your post will be submitted for publishing.') ); ?></span>
+                    <button type="submit"><?php echo esc_html( orca_text('Udgiv indlæg', 'Publish post') ); ?></button>
+                </div>
             </form>
         </details>
     <?php endif; ?>
@@ -279,7 +337,7 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
             $likes   = (int) get_post_meta( $post_id, '_orca_likes', true );
             ?>
             <article class="orca-card" id="post-<?php echo esc_attr( $post_id ); ?>">
-                <h2><?php the_title(); ?></h2>
+                <h2><a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>"><?php the_title(); ?></a></h2>
                 <?php $post_categories = get_the_category( $post_id ); if ( $post_categories ) : ?>
                     <div class="orca-categories">
                         <?php foreach ( $post_categories as $post_category ) :
@@ -289,6 +347,31 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
                     </div>
                 <?php endif; ?>
                 <p class="orca-meta"><?php echo esc_html( orca_text('Af', 'By') ); ?> <?php the_author(); ?> · <?php echo esc_html( get_the_date() ); ?></p>
+                <?php if ( current_user_can( 'edit_post', $post_id ) ) : ?>
+                    <details class="orca-card orca-edit-post">
+                        <summary><?php echo esc_html( orca_text('Rediger indlæg', 'Edit post') ); ?></summary>
+                        <form method="post">
+                            <?php wp_nonce_field( 'orca_manage_post_' . $post_id, 'orca_blog_nonce' ); ?>
+                            <input type="hidden" name="orca_blog_action" value="update_post">
+                            <input type="hidden" name="post_id" value="<?php echo esc_attr( $post_id ); ?>">
+                            <label><?php echo esc_html( orca_text('Titel', 'Title') ); ?><input name="post_title" required value="<?php echo esc_attr( get_the_title() ); ?>"></label>
+                            <label><?php echo esc_html( orca_text('Indhold', 'Content') ); ?><textarea name="post_content" required><?php echo esc_textarea( get_the_content() ); ?></textarea></label>
+                            <fieldset class="orca-category-picker">
+                                <legend><?php echo esc_html( orca_text('Kategorier', 'Categories') ); ?></legend>
+                                <?php foreach ( get_categories( array( 'hide_empty' => false, 'exclude' => array( (int) get_option( 'default_category' ) ) ) ) as $edit_category ) : ?>
+                                    <label><input type="checkbox" name="post_categories[]" value="<?php echo esc_attr( $edit_category->term_id ); ?>" <?php checked( has_category( $edit_category->term_id, $post_id ) ); ?>><?php echo esc_html( $edit_category->name ); ?></label>
+                                <?php endforeach; ?>
+                            </fieldset>
+                            <button type="submit"><?php echo esc_html( orca_text('Gem ændringer', 'Save changes') ); ?></button>
+                        </form>
+                    </details>
+                    <form class="orca-delete-post" method="post" onsubmit="return confirm('<?php echo esc_js( orca_text('Er du sikker på, at du vil flytte dette indlæg til papirkurven?', 'Are you sure you want to move this post to the trash?') ); ?>');">
+                        <?php wp_nonce_field( 'orca_manage_post_' . $post_id, 'orca_blog_nonce' ); ?>
+                        <input type="hidden" name="orca_blog_action" value="delete_post">
+                        <input type="hidden" name="post_id" value="<?php echo esc_attr( $post_id ); ?>">
+                        <button type="submit"><?php echo esc_html( orca_text('Slet indlæg', 'Delete post') ); ?></button>
+                    </form>
+                <?php endif; ?>
                 <div class="orca-content"><?php the_content(); ?></div>
                 <div class="orca-actions">
                     <form method="post">
