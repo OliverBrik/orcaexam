@@ -18,8 +18,34 @@
             </div>
 
             <div class="frontpage-hero__media">
-                <div class="frontpage-hero__image-wrap">
-                    <img src="https://media.licdn.com/dms/image/v2/D4E22AQGF0-2mpZ_4rQ/feedshare-shrink_1280/B4EZ5MMp_CIwAQ-/0/1779394847558?e=1790208000&v=beta&t=px_g0WTCfoyk8IHBBO1NTAeLR9ff9NpvdhL6kfwyHm0" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" />
+                <?php
+                $gallery_directory = trailingslashit( get_stylesheet_directory() ) . 'gallery/';
+                $gallery_url       = trailingslashit( get_stylesheet_directory_uri() ) . 'gallery/';
+                $gallery_files     = glob( $gallery_directory . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE );
+                $gallery_files     = is_array( $gallery_files ) ? $gallery_files : array();
+                sort( $gallery_files, SORT_NATURAL | SORT_FLAG_CASE );
+                ?>
+                <div class="frontpage-hero__gallery" aria-label="<?php echo esc_attr( orca_text('Billedgalleri', 'Photo gallery') ); ?>">
+                    <?php if ( $gallery_files ) : ?>
+                        <div class="frontpage-hero__image-wrap">
+                            <a href="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_files[0] ) ) ); ?>">
+                                <img src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_files[0] ) ) ); ?>" alt="<?php echo esc_attr( orca_text('Billede fra Orca-galleriet', 'Image from the Orca gallery') ); ?>" />
+                            </a>
+                        </div>
+                        <?php if ( count( $gallery_files ) > 1 ) : ?>
+                            <div class="frontpage-hero__gallery-strip">
+                                <?php foreach ( array_slice( $gallery_files, 1 ) as $gallery_index => $gallery_file ) : ?>
+                                    <a href="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>">
+                                        <img src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>" alt="<?php echo esc_attr( sprintf( '%s %d', orca_text('Billede fra galleriet', 'Gallery image'), $gallery_index + 2 ) ); ?>" loading="lazy" />
+                                    </a>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    <?php else : ?>
+                        <div class="frontpage-hero__image-wrap">
+                            <img src="https://media.licdn.com/dms/image/v2/D4E22AQGF0-2mpZ_4rQ/feedshare-shrink_1280/B4EZ5MMp_CIwAQ-/0/1779394847558?e=1790208000&v=beta&t=px_g0WTCfoyk8IHBBO1NTAeLR9ff9NpvdhL6kfwyHm0" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" />
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
