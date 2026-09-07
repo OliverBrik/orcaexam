@@ -92,3 +92,49 @@
 </main>
 
 <?php get_footer(); ?>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const gallery = document.querySelector('.frontpage-hero__gallery');
+    const mainLink = gallery?.querySelector('.frontpage-hero__image-wrap a');
+    const mainImage = gallery?.querySelector('.frontpage-hero__image-wrap img');
+    const thumbnails = gallery?.querySelectorAll('.frontpage-hero__gallery-strip a');
+
+    if (!mainLink || !mainImage || !thumbnails?.length) {
+        return;
+    }
+
+    const images = Array.from(thumbnails).map(function (thumbnail) {
+        return {
+            src: thumbnail.href,
+            alt: thumbnail.querySelector('img').alt
+        };
+    });
+
+    let currentIndex = 0;
+
+    setInterval(function () {
+        const nextImage = images[currentIndex];
+        const preloadedImage = new Image();
+
+        preloadedImage.onload = function () {
+            mainImage.classList.add('is-changing');
+
+            setTimeout(function () {
+                mainLink.href = nextImage.src;
+                mainImage.src = nextImage.src;
+                mainImage.alt = nextImage.alt;
+
+                requestAnimationFrame(function () {
+                    mainImage.classList.remove('is-changing');
+                });
+            }, 900);
+        };
+
+        preloadedImage.src = nextImage.src;
+        currentIndex = (currentIndex + 1) % images.length;
+    }, 5000);   
+});
+</script>
