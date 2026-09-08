@@ -301,10 +301,7 @@ body {
 }
 
 .frontpage-hero__gallery-strip {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.65rem;
-    margin-top: 0.65rem;
+    display: none;
 }
 
 .frontpage-hero__gallery-strip a {

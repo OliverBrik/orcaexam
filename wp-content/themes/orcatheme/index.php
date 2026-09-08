@@ -106,16 +106,23 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    const images = Array.from(thumbnails).map(function (thumbnail) {
-        return {
-            src: thumbnail.href,
-            alt: thumbnail.querySelector('img').alt
-        };
-    });
+    const images = [
+        {
+            src: mainLink.href,
+            alt: mainImage.alt
+        },
+        ...Array.from(thumbnails).map(function (thumbnail) {
+            return {
+                src: thumbnail.href,
+                alt: thumbnail.querySelector('img').alt
+            };
+        })
+    ];
 
     let currentIndex = 0;
 
     setInterval(function () {
+        currentIndex = (currentIndex + 1) % images.length;
         const nextImage = images[currentIndex];
         const preloadedImage = new Image();
 
@@ -134,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         preloadedImage.src = nextImage.src;
-        currentIndex = (currentIndex + 1) % images.length;
     }, 5000);   
 });
 </script>
