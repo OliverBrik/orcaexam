@@ -35,8 +35,8 @@
                         <?php if ( count( $gallery_files ) > 1 ) : ?>
                             <div class="frontpage-hero__gallery-strip">
                                 <?php foreach ( array_slice( $gallery_files, 1 ) as $gallery_index => $gallery_file ) : ?>
-                                    <a href="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>">
-                                        <img src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>" alt="<?php echo esc_attr( sprintf( '%s %d', orca_text('Billede fra galleriet', 'Gallery image'), $gallery_index + 2 ) ); ?>" loading="lazy" />
+                                    <a href="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>" data-gallery-src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>">
+                                        <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="<?php echo esc_attr( sprintf( '%s %d', orca_text('Billede fra galleriet', 'Gallery image'), $gallery_index + 2 ) ); ?>" data-gallery-lazy="true" />
                                     </a>
                                 <?php endforeach; ?>
                             </div>
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         ...Array.from(thumbnails).map(function (thumbnail) {
             return {
-                src: thumbnail.href,
+                src: thumbnail.dataset.gallerySrc,
                 alt: thumbnail.querySelector('img').alt
             };
         })
@@ -137,6 +137,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 requestAnimationFrame(function () {
                     mainImage.classList.remove('is-changing');
                 });
+
+                preloadedImage.onload = null;
+                preloadedImage.removeAttribute('src');
             }, 900);
         };
 
