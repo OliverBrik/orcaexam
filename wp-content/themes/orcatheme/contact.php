@@ -1,4 +1,4 @@
-<?php
+git <?php
 /**
  * Template Name: Kontakt
  *
@@ -83,6 +83,36 @@ get_header();
                 <label class="orca-form__consent"><input type="checkbox" name="consent" value="1" required><span><?php echo esc_html(orca_text('Jeg accepterer, at Orca må behandle mine oplysninger for at besvare henvendelsen. *', 'I agree that Orca may process my information to respond to my enquiry. *')); ?></span></label>
                 <button class="orca-form__submit" type="submit"><?php echo esc_html(orca_text('Send supportsag', 'Send support request')); ?> <span aria-hidden="true">→</span></button>
             </form>
+        </div>
+    </section>
+
+    <section class="orca-contact__gallery" aria-labelledby="contact-gallery-title">
+        <div class="orca-contact__intro">
+            <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Mennesker, idéer og samarbejde', 'People, ideas and collaboration')); ?></p>
+            <h2 id="contact-gallery-title"><?php echo esc_html(orca_text('Mød os, før du skriver', 'Meet us before you get in touch')); ?></h2>
+        </div>
+        <div class="orca-contact__gallery-grid">
+            <figure class="orca-contact__gallery-card">
+                <img src="<?php echo esc_url(get_theme_file_uri('/gallery/orca-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Orca-teamet samlet omkring et bord med laptops', 'The Orca team gathered around a table with laptops')); ?>" width="2048" height="1536" loading="lazy" decoding="async">
+                <figcaption>
+                    <h3><?php echo esc_html(orca_text('Teamet bag Orca', 'The team behind Orca')); ?></h3>
+                    <p><?php echo esc_html(orca_text('Vi glæder os til at høre om dit projekt.', 'We look forward to hearing about your project.')); ?></p>
+                </figcaption>
+            </figure>
+            <figure class="orca-contact__gallery-card">
+                <img src="<?php echo esc_url(get_theme_file_uri('/gallery/orca-digital-loesning.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Skærme med kode og grafisk arbejde på en digital løsning', 'Screens showing code and graphic work on a digital solution')); ?>" width="5825" height="3883" loading="lazy" decoding="async">
+                <figcaption>
+                    <h3><?php echo esc_html(orca_text('Fra idé til digital løsning', 'From idea to digital solution')); ?></h3>
+                    <p><?php echo esc_html(orca_text('Vi bringer design og udvikling sammen i løsninger til din virksomhed.', 'We bring design and development together in solutions for your business.')); ?></p>
+                </figcaption>
+            </figure>
+            <figure class="orca-contact__gallery-card">
+                <img src="<?php echo esc_url(get_theme_file_uri('/gallery/orca-samtale-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Fire medlemmer af Orca-teamet drøfter et projekt med en laptop og skitser på bordet', 'Four members of the Orca team discussing a project with a laptop and sketches on the table')); ?>" width="1536" height="1024" loading="lazy" decoding="async">
+                <figcaption>
+                    <h3><?php echo esc_html(orca_text('Dit projekt starter med en samtale', 'Your project starts with a conversation')); ?></h3>
+                    <p><?php echo esc_html(orca_text('Sammen afklarer vi dine ønsker og næste skridt.', 'Together we clarify your needs and the next steps.')); ?></p>
+                </figcaption>
+            </figure>
         </div>
     </section>
 
