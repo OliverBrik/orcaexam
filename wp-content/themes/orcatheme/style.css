@@ -5,6 +5,8 @@ Description: A bare-bones starter theme for the Orca website
 Version: 1.0
 */
 
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700&display=swap');
+
 :root {
     --navy: #12233d;
     --navy-soft: #edf3ff;
@@ -88,6 +90,9 @@ body {
 .brand-name {
     font-weight: 700;
     font-size: 1.4rem;
+    font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .tagline {
