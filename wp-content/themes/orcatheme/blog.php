@@ -18,13 +18,12 @@ $error    = '';
 $orca_category_colours = array(
     'updates'     => '#60d96a',
     'events'      => '#f4a261',
-    'study-tips'  => '#63b3ed',
     'announcements' => '#c084fc',
 );
 
 /* Create a few useful categories once when an administrator visits the blog. */
 if ( current_user_can( 'manage_categories' ) ) {
-    foreach ( array( 'Updates', 'Events', 'Study Tips', 'Announcements' ) as $orca_category_name ) {
+    foreach ( array( 'Updates', 'Events', 'Announcements' ) as $orca_category_name ) {
         if ( ! term_exists( $orca_category_name, 'category' ) ) {
             wp_insert_term( $orca_category_name, 'category' );
         }
