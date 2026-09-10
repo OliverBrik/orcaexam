@@ -91,6 +91,12 @@ get_header();
             <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Mennesker, idéer og samarbejde', 'People, ideas and collaboration')); ?></p>
             <h2 id="contact-gallery-title"><?php echo esc_html(orca_text('Mød os, før du skriver', 'Meet us before you get in touch')); ?></h2>
         </div>
+        <div class="orca-contact__video">
+            <a class="orca-contact__video-play" href="<?php echo esc_url(get_theme_file_uri('/gallery/kontakt-os.mp4')); ?>" data-contact-video aria-controls="contact-video-player" aria-expanded="false">
+                <span aria-hidden="true">▶</span> <?php echo esc_html(orca_text('Se vores kontaktvideo', 'Watch our contact video')); ?>
+            </a>
+            <div id="contact-video-player" hidden data-video-label="<?php echo esc_attr(orca_text('Kontakt Orca', 'Contact Orca')); ?>"></div>
+        </div>
         <div class="orca-contact__gallery-grid">
             <figure class="orca-contact__gallery-card">
                 <img src="<?php echo esc_url(get_theme_file_uri('/gallery/orca-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Orca-teamet samlet omkring et bord med laptops', 'The Orca team gathered around a table with laptops')); ?>" width="2048" height="1536" loading="lazy" decoding="async">
@@ -121,6 +127,28 @@ get_header();
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const videoLink = document.querySelector('[data-contact-video]');
+    const videoContainer = document.getElementById('contact-video-player');
+    if (videoLink && videoContainer) {
+        videoLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            const video = document.createElement('video');
+            video.controls = true;
+            video.playsInline = true;
+            video.preload = 'none';
+            video.setAttribute('aria-label', videoContainer.dataset.videoLabel);
+            video.setAttribute('tabindex', '0');
+            video.src = videoLink.href;
+            videoContainer.appendChild(video);
+            videoContainer.hidden = false;
+            videoLink.setAttribute('aria-expanded', 'true');
+            videoLink.hidden = true;
+            video.focus();
+            video.play().catch(function () {
+                // Native controls remain available if automatic playback is blocked.
+            });
+        }, { once: true });
+    }
     const tabs = document.querySelectorAll('[data-contact-tab]');
     const panels = document.querySelectorAll('.orca-contact__panel');
     tabs.forEach(function (tab) {
