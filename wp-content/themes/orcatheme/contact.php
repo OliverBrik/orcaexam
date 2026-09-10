@@ -114,7 +114,7 @@ get_header();
             </figure>
             <figure class="orca-contact__gallery-card">
                 <img src="<?php echo esc_url(get_theme_file_uri('/contact-media/orca-samtale-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Fire medlemmer af Orca-teamet drøfter et projekt med en laptop og skitser på bordet', 'Four members of the Orca team discussing a project with a laptop and sketches on the table')); ?>" width="1536" height="1024" loading="lazy" decoding="async">
-                <figcaption>
+                 <figcaption>
                     <h3><?php echo esc_html(orca_text('Dit projekt starter med en samtale', 'Your project starts with a conversation')); ?></h3>
                     <p><?php echo esc_html(orca_text('Sammen afklarer vi dine ønsker og næste skridt.', 'Together we clarify your needs and the next steps.')); ?></p>
                 </figcaption>

@@ -173,7 +173,9 @@ function orca_decline_testimonial_request() {
 }
 add_action('admin_post_orca_decline_testimonial', 'orca_decline_testimonial_request');
 
-/* Handle the contact form submission and send the message by email. */
+require_once get_theme_file_path('/contact-inbox.php');
+
+/* Save contact submissions in the private inbox, then send an email notification. */
 
 function orca_handle_contact_form() {
     $referer      = wp_get_referer();
@@ -211,9 +213,27 @@ function orca_handle_contact_form() {
     }
 
     $body[] = "\nBesked:\n" . $message;
-    $sent   = wp_mail(get_option('admin_email'), $subject, implode("\n", $body), array('Reply-To: ' . $name . ' <' . $email . '>'));
+    $inquiry_id = wp_insert_post(wp_slash(array(
+        'post_type' => 'orca_inquiry',
+        'post_status' => 'private',
+        'post_title' => $subject,
+        'post_content' => implode("\n", $body),
+        'meta_input' => array(
+            '_orca_type' => $type,
+            '_orca_email' => $email,
+            '_orca_consent' => '1',
+        ),
+    )), true);
 
-    wp_safe_redirect(add_query_arg(array('contact-status' => $sent ? 'success' : 'error', 'contact-type' => $type), $redirect_url));
+    if (is_wp_error($inquiry_id) || ! $inquiry_id) {
+        wp_safe_redirect(add_query_arg(array('contact-status' => 'error', 'contact-type' => $type), $redirect_url));
+        exit;
+    }
+
+    $sent   = wp_mail(get_option('admin_email'), $subject, implode("\n", $body), array('Reply-To: ' . $name . ' <' . $email . '>'));
+    update_post_meta($inquiry_id, '_orca_mail_sent', $sent ? '1' : '0');
+
+    wp_safe_redirect(add_query_arg(array('contact-status' => 'success', 'contact-type' => $type), $redirect_url));
     exit;
 }
 add_action('admin_post_orca_submit_contact', 'orca_handle_contact_form');

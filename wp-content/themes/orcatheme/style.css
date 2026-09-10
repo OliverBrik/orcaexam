@@ -59,12 +59,17 @@ body {
     color: var(--text);
 }
 
+/* Heading and navigation font */
 h1,
 h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+.brand-name,
+.nav-menu a,
+.header-button,
+.language-switcher {
     font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif;
 }
 
@@ -99,7 +104,6 @@ h6 {
 .brand-name {
     font-weight: 700;
     font-size: 1.4rem;
-    font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -124,12 +128,6 @@ h6 {
     gap: 1.5rem;
     margin: 0;
     padding: 0;
-}
-
-.nav-menu a,
-.header-button,
-.language-switcher {
-    font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif;
 }
 
 .nav-menu a,
@@ -205,23 +203,35 @@ h6 {
     font-weight: 800;
 }
 
-.frontpage-hero {
+/* Shared hero layout */
+.frontpage-hero,
+.orca-contact__hero,
+.orca-blog__hero {
     position: relative;
     overflow: hidden;
-    padding: clamp(4rem, 8vw, 7rem) 0;
     color: var(--white);
+}
+
+.frontpage-hero {
+    padding: clamp(4rem, 8vw, 7rem) 0;
     background: radial-gradient(circle at 85% 10%, var(--mint-soft), transparent 22%), linear-gradient(125deg, var(--deep-teal) 0%, var(--mid-teal) 65%, var(--ocean) 100%);
 }
 
-.frontpage-hero::after {
+/* Shared hero decoration */
+.frontpage-hero::after,
+.orca-contact__hero::after,
+.orca-blog__hero::after {
     content: "";
     position: absolute;
+    border-radius: 50%;
+}
+
+.frontpage-hero::after {
     right: -10vw;
     bottom: -15vw;
     width: 42vw;
     height: 42vw;
     border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 50%;
     box-shadow: 0 0 0 5vw var(--white-glow), 0 0 0 10vw var(--white-ring);
 }
 
@@ -301,11 +311,16 @@ h6 {
     border-radius: 18px;
 }
 
-.frontpage-hero__image-wrap img {
+/* Cover images */
+.frontpage-hero__image-wrap img,
+.orca-sustainability__feature figure img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.frontpage-hero__image-wrap img {
     object-position: center;
     transition: opacity 900ms ease-in-out;
 }
@@ -324,22 +339,6 @@ h6 {
     display: none;
 }
 
-.frontpage-hero__gallery-strip [data-gallery-src] {
-    overflow: hidden;
-    aspect-ratio: 1;
-    border: 1px solid var(--white-border-soft);
-    border-radius: 10px;
-    background: var(--white-soft);
-    transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.frontpage-hero__gallery-strip img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 @media (max-width: 768px) {
     .header-inner {
         flex-direction: column;
@@ -352,10 +351,6 @@ h6 {
 
     .frontpage-hero__inner {
         grid-template-columns: 1fr;
-    }
-
-    .frontpage-hero__gallery-strip {
-        grid-template-columns: repeat(3, 1fr);
     }
 
     .orca-sustainability__intro,
@@ -377,30 +372,27 @@ h6 {
 }
 
 /* Contact page */
-.orca-contact {
+/* Contact and blog page base */
+.orca-contact,
+.orca-blog {
     max-width: none;
     padding: 0;
     color: var(--ink);
     background: var(--paper);
 }
+
 /* Contact hero */
 .orca-contact__hero {
-    position: relative;
-    overflow: hidden;
     padding: clamp(5rem, 10vw, 9rem) max(1.5rem, calc((100vw - 1120px) / 2));
-    color: var(--white);
     background: radial-gradient(circle at 83% 14%, rgba(68, 194, 178, 0.32), transparent 25%), linear-gradient(125deg, #071f25 0%, #0b3e45 65%, #076a70 100%);
 }
 
 .orca-contact__hero::after {
-    content: "";
-    position: absolute;
     right: -10vw;
     bottom: -18vw;
     width: 48vw;
     height: 48vw;
     border: 1px solid rgba(255, 255, 255, 0.13);
-    border-radius: 50%;
     box-shadow: 0 0 0 5vw rgba(255, 255, 255, 0.025), 0 0 0 10vw rgba(255, 255, 255, 0.018);
 }
 
@@ -414,7 +406,9 @@ h6 {
     text-transform: uppercase;
 }
 
-.orca-contact__hero h1 {
+/* Contact and blog hero headings */
+.orca-contact__hero h1,
+.orca-blog__hero h1 {
     position: relative;
     z-index: 1;
     max-width: 850px;
@@ -428,12 +422,17 @@ h6 {
     color: var(--mint);
 }
 
-.orca-contact__hero > p {
+/* Hero introduction text */
+.orca-contact__hero > p,
+.orca-blog__hero p:last-child {
     position: relative;
     z-index: 1;
+    color: var(--hero-copy);
+}
+
+.orca-contact__hero > p {
     max-width: 680px;
     margin: 2rem 0;
-    color: var(--hero-copy);
     font-size: clamp(1rem, 2vw, 1.25rem);
 }
 
@@ -548,11 +547,19 @@ h6 {
     gap: 1.35rem;
 }
 
-.orca-contact .orca-form label {
-    display: block;
+/* Shared form labels */
+.orca-contact .orca-form label,
+.orca-discussion__form label,
+.testimonial-entry-form label {
     color: var(--label-copy);
     font-size: 0.86rem;
     font-weight: 700;
+}
+
+/* Block form labels */
+.orca-contact .orca-form label,
+.orca-discussion__form label {
+    display: block;
 }
 
 .orca-contact .orca-form label > span {
@@ -563,31 +570,60 @@ h6 {
     grid-column: 1 / -1;
 }
 
+/* Shared form fields */
 .orca-contact .orca-form input:not([type="checkbox"]),
 .orca-contact .orca-form select,
-.orca-contact .orca-form textarea {
+.orca-contact .orca-form textarea,
+.orca-discussion__form input,
+.orca-discussion__form textarea,
+.testimonial-entry-form input,
+.testimonial-entry-form textarea {
     width: 100%;
-    min-height: 50px;
-    display: block;
-    margin-top: 0.45rem;
-    padding: 0.8rem 0.95rem;
     border: 1px solid var(--field-border);
     border-radius: 8px;
-    outline: none;
     color: var(--ink);
     background: #fbfcfb;
     font: inherit;
-    font-weight: 400;
+}
+
+/* Contact and review field sizing */
+.orca-contact .orca-form input:not([type="checkbox"]),
+.orca-contact .orca-form select,
+.orca-contact .orca-form textarea,
+.testimonial-entry-form input,
+.testimonial-entry-form textarea {
+    min-height: 50px;
+    padding: 0.8rem 0.95rem;
+    outline: none;
     transition: 0.2s ease;
 }
 
+.orca-contact .orca-form input:not([type="checkbox"]),
+.orca-contact .orca-form select,
 .orca-contact .orca-form textarea {
+    display: block;
+    margin-top: 0.45rem;
+    font-weight: 400;
+}
+
+/* Resizable text fields */
+.orca-contact .orca-form textarea,
+.orca-discussion__form textarea,
+.testimonial-entry-form textarea,
+.orca-blog .orca-comments .orca-form textarea {
     resize: vertical;
 }
 
+/* Shared field focus */
 .orca-contact .orca-form input:focus,
 .orca-contact .orca-form select:focus,
-.orca-contact .orca-form textarea:focus {
+.orca-contact .orca-form textarea:focus,
+.orca-discussion__form input:focus,
+.orca-discussion__form textarea:focus,
+.testimonial-entry-form input:focus,
+.testimonial-entry-form textarea:focus,
+.orca-blog .orca-new-post input[name="post_title"]:focus,
+.orca-blog .orca-new-post textarea[name="post_content"]:focus {
     border-color: var(--ocean);
     box-shadow: 0 0 0 3px rgba(0, 108, 114, 0.12);
 }
@@ -613,11 +649,10 @@ h6 {
     color: inherit;
 }
 
-.orca-contact .orca-form__submit {
-    display: inline-flex;
-    align-items: center;
-    gap: 2.5rem;
-    padding: 0.9rem 1.25rem;
+/* Shared submit buttons */
+.orca-contact .orca-form__submit,
+.orca-discussion__form button,
+.testimonial-entry-form__submit {
     border: 0;
     border-radius: 8px;
     color: var(--white);
@@ -627,7 +662,17 @@ h6 {
     transition: 0.2s ease;
 }
 
-.orca-contact .orca-form__submit:hover {
+.orca-contact .orca-form__submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 0.9rem 1.25rem;
+}
+
+/* Shared submit hover */
+.orca-contact .orca-form__submit:hover,
+.orca-discussion__form button:hover,
+.testimonial-entry-form__submit:hover {
     transform: translateY(-1px);
     background: var(--ocean);
 }
@@ -799,13 +844,6 @@ h6 {
     font-size: clamp(1rem, 2vw, 1.2rem);
 }
 
-.orca-sustainability__feature figure img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 .orca-sustainability__intro {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
@@ -944,30 +982,20 @@ h6 {
 
 /* Blog page */
 .orca-blog {
-    max-width: none;
     margin: 0;
-    padding: 0;
-    color: var(--ink);
-    background: var(--paper);
 }
 
 .orca-blog__hero {
-    position: relative;
-    overflow: hidden;
     padding: clamp(4rem, 8vw, 6rem) 1.5rem;
-    color: var(--white);
     background: radial-gradient(circle at 86% 12%, var(--mint-soft), transparent 24%), linear-gradient(125deg, var(--deep-teal) 0%, var(--mid-teal) 65%, var(--ocean) 100%);
 }
 
 .orca-blog__hero::after {
-    content: "";
-    position: absolute;
     right: -12vw;
     bottom: -22vw;
     width: 50vw;
     height: 50vw;
     border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 50%;
     box-shadow: 0 0 0 5vw var(--white-glow), 0 0 0 10vw var(--white-ring);
 }
 
@@ -979,22 +1007,9 @@ h6 {
     margin: 0 auto;
 }
 
-.orca-blog__hero h1 {
-    position: relative;
-    z-index: 1;
-    max-width: 850px;
-    margin: 0;
-    font-size: clamp(3rem, 7vw, 6.5rem);
-    line-height: .95;
-    letter-spacing: -.055em;
-}
-
 .orca-blog__hero p:last-child {
-    position: relative;
-    z-index: 1;
     max-width: 620px;
     margin: 1.75rem 0 0;
-    color: var(--hero-copy);
     font-size: clamp(1rem, 2vw, 1.2rem);
 }
 
@@ -1038,12 +1053,6 @@ h6 {
 
 .orca-blog__tools summary::-webkit-details-marker {
     display: none;
-}
-
-.orca-blog__tools .orca-new-post summary {
-    border-color: var(--ink);
-    color: var(--white);
-    background: var(--ink);
 }
 
 .orca-blog__tools .orca-new-post {
@@ -1122,29 +1131,28 @@ h6 {
     font-weight: 800;
 }
 
-.orca-blog .orca-new-post input[name="post_title"] {
+/* Post editor fields */
+.orca-blog .orca-new-post input[name="post_title"],
+.orca-blog .orca-new-post textarea[name="post_content"] {
     display: block;
-    min-height: 68px;
     margin-top: 0.55rem;
-    padding: 0.9rem 1rem;
     border: 1px solid var(--field-border);
     border-radius: 8px;
     color: var(--ink);
     background: var(--paper);
+}
+
+.orca-blog .orca-new-post input[name="post_title"] {
+    min-height: 68px;
+    padding: 0.9rem 1rem;
     font-size: clamp(1.25rem, 3vw, 1.6rem);
     font-weight: 700;
 }
 
 .orca-blog .orca-new-post textarea[name="post_content"] {
-    display: block;
     width: 100%;
     min-height: 300px;
-    margin-top: 0.55rem;
     padding: 1rem;
-    border: 1px solid var(--field-border);
-    border-radius: 8px;
-    color: var(--ink);
-    background: var(--paper);
     font: inherit;
     line-height: 1.7;
     resize: vertical;
@@ -1152,9 +1160,7 @@ h6 {
 
 .orca-blog .orca-new-post input[name="post_title"]:focus,
 .orca-blog .orca-new-post textarea[name="post_content"]:focus {
-    border-color: var(--ocean);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 108, 114, 0.12);
 }
 
 .orca-editor-categories {
@@ -1340,6 +1346,135 @@ h6 {
     background: var(--paper);
 }
 
+.orca-blog .orca-comments {
+    margin-top: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--paper);
+}
+
+.orca-blog .orca-comments summary {
+    padding: 1.15rem 1.5rem;
+    border-radius: 16px;
+}
+
+.orca-blog .orca-comments summary:focus-visible {
+    outline: 3px solid var(--ocean);
+    outline-offset: 3px;
+}
+
+.orca-blog .orca-comments[open] summary {
+    border-bottom: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+}
+
+.orca-blog .orca-comments .orca-comment {
+    margin: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--mint);
+    border-radius: 0 10px 10px 0;
+    background: var(--white);
+    overflow-wrap: anywhere;
+}
+
+.orca-blog .orca-comments .orca-comment-time {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--soft-ink);
+    font-size: 0.85rem;
+}
+
+.orca-blog .orca-comments .orca-comment p {
+    margin: 0.75rem 0 0;
+    white-space: pre-wrap;
+}
+
+.orca-blog .orca-comments .orca-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.orca-blog .orca-comments__heading {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 1.6rem;
+    color: var(--ink);
+}
+
+.orca-blog .orca-comments .orca-form label {
+    display: block;
+    min-width: 0;
+    color: var(--label-copy);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.orca-blog .orca-comments .orca-form label > span {
+    color: var(--ocean);
+}
+
+.orca-blog .orca-comments__message {
+    grid-column: 1 / -1;
+}
+
+.orca-blog .orca-comments .orca-form input:not([type="hidden"]),
+.orca-blog .orca-comments .orca-form textarea {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--field-border);
+    border-radius: 10px;
+    background: var(--white);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 400;
+}
+
+.orca-blog .orca-comments .orca-form textarea {
+    min-height: 140px;
+}
+
+.orca-blog .orca-comments .orca-form input:focus,
+.orca-blog .orca-comments .orca-form textarea:focus {
+    outline: 2px solid var(--ocean);
+    outline-offset: 2px;
+}
+
+.orca-blog .orca-comments .orca-form button {
+    grid-column: 1 / -1;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 48px;
+    padding: 0.9rem 1.5rem;
+    border: 0;
+    border-radius: 10px;
+    color: var(--white);
+    background: var(--ink);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.orca-blog .orca-comments .orca-form button:hover {
+    background: var(--ocean);
+}
+
+.orca-blog .orca-comments .orca-form button:focus-visible {
+    outline: 3px solid var(--ocean);
+    outline-offset: 3px;
+}
+
+@media (max-width: 680px) {
+    .orca-blog .orca-comments .orca-form {
+        grid-template-columns: 1fr;
+    }
+}
+
 .orca-blog .orca-card h2 a {
     color: inherit;
     text-decoration: none;
@@ -1429,12 +1564,21 @@ h6 {
     padding: 1.25rem;
 }
 
+/* Shared card surfaces */
+.orca-single-post__content,
+.orca-discussion,
+.orca-contact__panel,
+.testimonial-card,
+.testimonial-form,
+.orca-blog__shell > .orca-card {
+    border: 1px solid var(--panel-line);
+    background: var(--white);
+}
+
 .orca-blog__shell > .orca-card {
     margin: 0 0 1.5rem;
     padding: clamp(1.35rem, 3vw, 2.25rem);
-    border: 1px solid var(--panel-line);
     border-radius: 18px;
-    background: var(--white);
     box-shadow: 0 20px 60px rgba(17, 44, 49, .07);
 }
 
@@ -1517,9 +1661,7 @@ h6 {
     max-width: 760px;
     margin: 0 auto 4rem;
     padding: clamp(1.5rem, 4vw, 3rem);
-    border: 1px solid var(--panel-line);
     border-radius: 14px;
-    background: var(--white);
     box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
     color: var(--dark-card-text);
     font-size: 1.1rem;
@@ -1556,13 +1698,13 @@ h6 {
     max-width: 760px;
     margin: 0 auto;
     padding: clamp(1.5rem, 4vw, 2.75rem);
-    border: 1px solid var(--panel-line);
     border-radius: 14px;
-    background: var(--white);
     box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
 }
 
-.orca-discussion h2 {
+/* Discussion and review headings */
+.orca-discussion h2,
+.testimonial-form h2 {
     margin: 0 0 1.5rem;
     color: var(--ink);
     font-size: clamp(2rem, 4vw, 3.2rem);
@@ -1576,69 +1718,41 @@ h6 {
     margin-top: 1.5rem;
 }
 
-.orca-discussion__form label {
-    display: block;
-    color: var(--label-copy);
-    font-size: 0.86rem;
-    font-weight: 700;
-}
-
 .orca-discussion__form input,
 .orca-discussion__form textarea {
     display: block;
-    width: 100%;
     min-height: 48px;
     margin-top: 0.4rem;
     padding: 0.75rem 0.85rem;
-    border: 1px solid var(--field-border);
-    border-radius: 8px;
-    color: var(--ink);
-    background: #fbfcfb;
-    font: inherit;
 }
 
 .orca-discussion__form textarea {
     min-height: 140px;
-    resize: vertical;
 }
 
 .orca-discussion__form input:focus,
 .orca-discussion__form textarea:focus {
-    border-color: var(--ocean);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 108, 114, 0.12);
 }
 
 .orca-discussion__form button {
     width: fit-content;
     padding: 0.9rem 1.25rem;
-    border: 0;
-    border-radius: 8px;
-    color: var(--white);
-    background: var(--ink);
     font: inherit;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.orca-discussion__form button:hover {
-    background: var(--ocean);
-    transform: translateY(-1px);
 }
 
 /* Shared cards */
 .orca-contact__panel,
 .testimonial-card,
 .testimonial-form {
-    border: 1px solid var(--panel-line);
     border-radius: 18px;
-    background: var(--white);
     box-shadow: 0 20px 60px rgba(17, 44, 49, 0.07);
 }
 
 /* Testimonials */
-.testimonial-section {
+/* Testimonial sections */
+.testimonial-section,
+.testimonial-page {
     background: var(--paper);
     padding: clamp(4rem, 8vw, 7rem) 1.5rem;
 }
@@ -1692,11 +1806,6 @@ h6 {
     color: var(--ink);
 }
 
-.testimonial-page {
-    background: var(--paper);
-    padding: clamp(4rem, 8vw, 7rem) 1.5rem;
-}
-
 .testimonial-shell {
     max-width: 900px;
     margin: 0 auto;
@@ -1706,77 +1815,17 @@ h6 {
     padding: clamp(1.75rem, 4vw, 3rem);
 }
 
-.testimonial-form h2 {
-    margin: 0 0 1.5rem;
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    line-height: 1.05;
-    letter-spacing: -0.04em;
-    color: var(--ink);
-}
-
 .testimonial-entry-form {
     max-width: 600px;
     margin-top: 1.875rem;
 }
 
-.testimonial-entry-form label {
-    color: var(--label-copy);
-    font-size: 0.86rem;
-    font-weight: 700;
-}
-
-.testimonial-entry-form input,
-.testimonial-entry-form textarea {
-    width: 100%;
-    min-height: 50px;
-    padding: 0.8rem 0.95rem;
-    border: 1px solid var(--field-border);
-    border-radius: 8px;
-    outline: none;
-    color: var(--ink);
-    background: #fbfcfb;
-    font: inherit;
-    transition: 0.2s ease;
-}
-
-.testimonial-entry-form textarea {
-    resize: vertical;
-}
-
-.testimonial-entry-form input:focus,
-.testimonial-entry-form textarea:focus {
-    border-color: var(--ocean);
-    box-shadow: 0 0 0 3px rgba(0, 108, 114, 0.12);
-}
-
 .testimonial-entry-form__submit {
     padding: 0.9rem 1.3rem;
-    border: 0;
-    border-radius: 8px;
-    color: var(--white);
-    background: var(--ink);
     font: inherit;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.testimonial-entry-form__submit:hover {
-    transform: translateY(-1px);
-    background: var(--ocean);
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .header-inner {
-        flex-direction: column;
-    }
-
-    .nav-menu {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-}
 
 @media (max-width: 680px) {
     .orca-contact__tabs,

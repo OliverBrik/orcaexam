@@ -356,8 +356,13 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
                         <form class="orca-form" method="post">
                             <?php wp_nonce_field( 'orca_comment_' . $post_id, 'orca_blog_nonce' ); ?>
                             <input type="hidden" name="orca_blog_action" value="comment"><input type="hidden" name="post_id" value="<?php echo esc_attr( $post_id ); ?>">
-                            <?php if ( ! is_user_logged_in() ) : ?><label>Name<input name="comment_author" required></label><label>Email<input type="email" name="comment_email" required></label><?php endif; ?>
-                            <label><?php echo esc_html( orca_text('Deltag i samtalen', 'Join the conversation') ); ?><textarea name="comment" required></textarea></label><button type="submit"><?php echo esc_html( orca_text('Send kommentar', 'Post comment') ); ?></button>
+                            <h3 class="orca-comments__heading"><?php echo esc_html( orca_text('Deltag i samtalen', 'Join the conversation') ); ?></h3>
+                            <?php if ( ! is_user_logged_in() ) : ?>
+                                <label><?php echo esc_html( orca_text('Navn', 'Name') ); ?> <span>*</span><input name="comment_author" autocomplete="name" required></label>
+                                <label><?php echo esc_html( orca_text('E-mail', 'Email') ); ?> <span>*</span><input type="email" name="comment_email" autocomplete="email" required></label>
+                            <?php endif; ?>
+                            <label class="orca-comments__message"><?php echo esc_html( orca_text('Din kommentar', 'Your comment') ); ?> <span>*</span><textarea name="comment" rows="5" placeholder="<?php echo esc_attr( orca_text('Del dine tanker om indlægget…', 'Share your thoughts on this post…') ); ?>" required></textarea></label>
+                            <button type="submit"><?php echo esc_html( orca_text('Send kommentar', 'Post comment') ); ?> <span aria-hidden="true">→</span></button>
                         </form>
                     <?php endif; ?>
                 </details>
