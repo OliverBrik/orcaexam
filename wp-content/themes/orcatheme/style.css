@@ -127,6 +127,12 @@ h6 {
 }
 
 .nav-menu a,
+.header-button,
+.language-switcher {
+    font-family: 'Archivo Narrow', 'Arial Narrow', sans-serif;
+}
+
+.nav-menu a,
 .header-button {
     position: relative;
     display: inline-block;
