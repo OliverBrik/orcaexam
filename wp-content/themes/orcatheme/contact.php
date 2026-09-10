@@ -92,28 +92,28 @@ get_header();
             <h2 id="contact-gallery-title"><?php echo esc_html(orca_text('Mød os, før du skriver', 'Meet us before you get in touch')); ?></h2>
         </div>
         <div class="orca-contact__video">
-            <a class="orca-contact__video-play" href="<?php echo esc_url(get_theme_file_uri('/gallery/kontakt-os.mp4')); ?>" data-contact-video aria-controls="contact-video-player" aria-expanded="false">
+            <a class="orca-contact__video-play" href="<?php echo esc_url(get_theme_file_uri('/contact-media/kontakt-os.mp4')); ?>" data-contact-video aria-controls="contact-video-player" aria-expanded="false">
                 <span aria-hidden="true">▶</span> <?php echo esc_html(orca_text('Se vores kontaktvideo', 'Watch our contact video')); ?>
             </a>
             <div id="contact-video-player" hidden data-video-label="<?php echo esc_attr(orca_text('Kontakt Orca', 'Contact Orca')); ?>"></div>
         </div>
         <div class="orca-contact__gallery-grid">
             <figure class="orca-contact__gallery-card">
-                <img src="<?php echo esc_url(get_theme_file_uri('/gallery/orca-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Orca-teamet samlet omkring et bord med laptops', 'The Orca team gathered around a table with laptops')); ?>" width="2048" height="1536" loading="lazy" decoding="async">
+                <img src="<?php echo esc_url(get_theme_file_uri('/contact-media/orca-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Orca-teamet samlet omkring et bord med laptops', 'The Orca team gathered around a table with laptops')); ?>" width="2048" height="1536" loading="lazy" decoding="async">
                 <figcaption>
                     <h3><?php echo esc_html(orca_text('Teamet bag Orca', 'The team behind Orca')); ?></h3>
                     <p><?php echo esc_html(orca_text('Vi glæder os til at høre om dit projekt.', 'We look forward to hearing about your project.')); ?></p>
                 </figcaption>
             </figure>
             <figure class="orca-contact__gallery-card">
-                <img src="<?php echo esc_url(get_theme_file_uri('/gallery/orca-digital-loesning.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Skærme med kode og grafisk arbejde på en digital løsning', 'Screens showing code and graphic work on a digital solution')); ?>" width="5825" height="3883" loading="lazy" decoding="async">
+                <img src="<?php echo esc_url(get_theme_file_uri('/contact-media/orca-digital-loesning.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Skærme med kode og grafisk arbejde på en digital løsning', 'Screens showing code and graphic work on a digital solution')); ?>" width="1200" height="800" loading="lazy" decoding="async">
                 <figcaption>
                     <h3><?php echo esc_html(orca_text('Fra idé til digital løsning', 'From idea to digital solution')); ?></h3>
                     <p><?php echo esc_html(orca_text('Vi bringer design og udvikling sammen i løsninger til din virksomhed.', 'We bring design and development together in solutions for your business.')); ?></p>
                 </figcaption>
             </figure>
             <figure class="orca-contact__gallery-card">
-                <img src="<?php echo esc_url(get_theme_file_uri('/gallery/orca-samtale-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Fire medlemmer af Orca-teamet drøfter et projekt med en laptop og skitser på bordet', 'Four members of the Orca team discussing a project with a laptop and sketches on the table')); ?>" width="1536" height="1024" loading="lazy" decoding="async">
+                <img src="<?php echo esc_url(get_theme_file_uri('/contact-media/orca-samtale-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Fire medlemmer af Orca-teamet drøfter et projekt med en laptop og skitser på bordet', 'Four members of the Orca team discussing a project with a laptop and sketches on the table')); ?>" width="1536" height="1024" loading="lazy" decoding="async">
                 <figcaption>
                     <h3><?php echo esc_html(orca_text('Dit projekt starter med en samtale', 'Your project starts with a conversation')); ?></h3>
                     <p><?php echo esc_html(orca_text('Sammen afklarer vi dine ønsker og næste skridt.', 'Together we clarify your needs and the next steps.')); ?></p>
