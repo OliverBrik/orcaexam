@@ -1,1 +1,0 @@
-Add JPG, JPEG, PNG, GIF, or WebP images to this folder. The first image alphabetically is shown as the main front-page gallery image; the remaining images appear as thumbnails.

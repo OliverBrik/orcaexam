@@ -62,7 +62,7 @@ get_header();
 
     <section class="orca-sustainability__feature">
         <figure>
-            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1400&q=85" alt="<?php echo esc_attr(orca_text('Hænder der passer på en lille plante', 'Hands caring for a small plant')); ?>" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fm=webp&fit=crop&w=800&q=60" alt="<?php echo esc_attr(orca_text('Hænder der passer på en lille plante', 'Hands caring for a small plant')); ?>" loading="lazy" />
         </figure>
         <div>
             <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Sammen om næste skridt', 'The next step, together')); ?></p>
