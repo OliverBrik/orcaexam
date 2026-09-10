@@ -28,16 +28,16 @@
                 <div class="frontpage-hero__gallery" aria-label="<?php echo esc_attr( orca_text('Billedgalleri', 'Photo gallery') ); ?>">
                     <?php if ( $gallery_files ) : ?>
                         <div class="frontpage-hero__image-wrap">
-                            <a href="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_files[0] ) ) ); ?>">
+                            <div class="frontpage-hero__image-frame">
                                 <img src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_files[0] ) ) ); ?>" alt="<?php echo esc_attr( orca_text('Billede fra Orca-galleriet', 'Image from the Orca gallery') ); ?>" />
-                            </a>
+                            </div>
                         </div>
                         <?php if ( count( $gallery_files ) > 1 ) : ?>
                             <div class="frontpage-hero__gallery-strip">
                                 <?php foreach ( array_slice( $gallery_files, 1 ) as $gallery_index => $gallery_file ) : ?>
-                                    <a href="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>" data-gallery-src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>">
+                                    <div data-gallery-src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_file ) ) ); ?>">
                                         <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="<?php echo esc_attr( sprintf( '%s %d', orca_text('Billede fra galleriet', 'Gallery image'), $gallery_index + 2 ) ); ?>" data-gallery-lazy="true" />
-                                    </a>
+                                    </div>
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
@@ -98,17 +98,16 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const gallery = document.querySelector('.frontpage-hero__gallery');
-    const mainLink = gallery?.querySelector('.frontpage-hero__image-wrap a');
     const mainImage = gallery?.querySelector('.frontpage-hero__image-wrap img');
-    const thumbnails = gallery?.querySelectorAll('.frontpage-hero__gallery-strip a');
+    const thumbnails = gallery?.querySelectorAll('.frontpage-hero__gallery-strip [data-gallery-src]');
 
-    if (!mainLink || !mainImage || !thumbnails?.length) {
+    if (!mainImage || !thumbnails?.length) {
         return;
     }
 
     const images = [
         {
-            src: mainLink.href,
+            src: mainImage.src,
             alt: mainImage.alt
         },
         ...Array.from(thumbnails).map(function (thumbnail) {
@@ -130,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
             mainImage.classList.add('is-changing');
 
             setTimeout(function () {
-                mainLink.href = nextImage.src;
                 mainImage.src = nextImage.src;
                 mainImage.alt = nextImage.alt;
 
