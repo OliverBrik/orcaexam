@@ -1,0 +1,277 @@
+{
+    "packages": [
+        {
+            "name": "donatj/phpuseragentparser",
+            "version": "v1.12.0",
+            "version_normalized": "1.12.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/donatj/PhpUserAgent.git",
+                "reference": "f76fed972ce4a3d7d58fe99a8627132606b58046"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/donatj/PhpUserAgent/zipball/f76fed972ce4a3d7d58fe99a8627132606b58046",
+                "reference": "f76fed972ce4a3d7d58fe99a8627132606b58046",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "camspiers/json-pretty": "~1.0",
+                "donatj/drop": "*",
+                "ext-json": "*",
+                "phpunit/phpunit": "~4.8|~8|~9"
+            },
+            "time": "2026-06-16T21:13:33+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "src/UserAgentParser.php"
+                ],
+                "psr-4": {
+                    "donatj\\UserAgent\\": "src/UserAgent"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jesse G. Donat",
+                    "email": "donatj@gmail.com",
+                    "homepage": "https://donatstudios.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Lightning fast, minimalist PHP UserAgent string parser.",
+            "homepage": "https://donatstudios.com/PHP-Parser-HTTP_USER_AGENT",
+            "keywords": [
+                "browser",
+                "browser detection",
+                "parser",
+                "user agent",
+                "useragent"
+            ],
+            "support": {
+                "issues": "https://github.com/donatj/PhpUserAgent/issues",
+                "source": "https://github.com/donatj/PhpUserAgent/tree/v1.12.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/donatj/15",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/donatj",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/donatj",
+                    "type": "ko_fi"
+                }
+            ],
+            "install-path": "../donatj/phpuseragentparser"
+        },
+        {
+            "name": "geoip2/geoip2",
+            "version": "v2.13.0",
+            "version_normalized": "2.13.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maxmind/GeoIP2-php.git",
+                "reference": "6a41d8fbd6b90052bc34dff3b4252d0f88067b23"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maxmind/GeoIP2-php/zipball/6a41d8fbd6b90052bc34dff3b4252d0f88067b23",
+                "reference": "6a41d8fbd6b90052bc34dff3b4252d0f88067b23",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "maxmind-db/reader": "~1.8",
+                "maxmind/web-service-common": "~0.8",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "3.*",
+                "phpstan/phpstan": "*",
+                "phpunit/phpunit": "^8.0 || ^9.0",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "time": "2022-08-05T20:32:58+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "GeoIp2\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Gregory J. Oschwald",
+                    "email": "goschwald@maxmind.com",
+                    "homepage": "https://www.maxmind.com/"
+                }
+            ],
+            "description": "MaxMind GeoIP2 PHP API",
+            "homepage": "https://github.com/maxmind/GeoIP2-php",
+            "keywords": [
+                "IP",
+                "geoip",
+                "geoip2",
+                "geolocation",
+                "maxmind"
+            ],
+            "support": {
+                "issues": "https://github.com/maxmind/GeoIP2-php/issues",
+                "source": "https://github.com/maxmind/GeoIP2-php/tree/v2.13.0"
+            },
+            "install-path": "../geoip2/geoip2"
+        },
+        {
+            "name": "matomo/referrer-spam-list",
+            "version": "4.0.5",
+            "version_normalized": "4.0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matomo-org/referrer-spam-list.git",
+                "reference": "e3254bf771f6520aa9701276a74c5a19df535d4a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matomo-org/referrer-spam-list/zipball/e3254bf771f6520aa9701276a74c5a19df535d4a",
+                "reference": "e3254bf771f6520aa9701276a74c5a19df535d4a",
+                "shasum": ""
+            },
+            "replace": {
+                "matomo/referrer-spam-blacklist": "*",
+                "piwik/referrer-spam-blacklist": "*"
+            },
+            "time": "2026-04-15T22:44:28+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC0-1.0"
+            ],
+            "description": "Community-contributed list of referrer spammers",
+            "support": {
+                "issues": "https://github.com/matomo-org/referrer-spam-list/issues",
+                "source": "https://github.com/matomo-org/referrer-spam-list/tree/4.0.5"
+            },
+            "install-path": "../matomo/referrer-spam-list"
+        },
+        {
+            "name": "matomo/searchengine-and-social-list",
+            "version": "3.14.0",
+            "version_normalized": "3.14.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matomo-org/searchengine-and-social-list.git",
+                "reference": "2331533592dbfc5df354fd2313136907b1a19075"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matomo-org/searchengine-and-social-list/zipball/2331533592dbfc5df354fd2313136907b1a19075",
+                "reference": "2331533592dbfc5df354fd2313136907b1a19075",
+                "shasum": ""
+            },
+            "replace": {
+                "piwik/searchengine-and-social-list": "*"
+            },
+            "time": "2023-01-20T11:12:22+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC0-1.0"
+            ],
+            "description": "Search engine and social network definitions used by Matomo (formerly Piwik)",
+            "support": {
+                "issues": "https://github.com/matomo-org/searchengine-and-social-list/issues",
+                "source": "https://github.com/matomo-org/searchengine-and-social-list/tree/3.14.0"
+            },
+            "install-path": "../matomo/searchengine-and-social-list"
+        },
+        {
+            "name": "maxmind-db/reader",
+            "version": "v1.14.0",
+            "version_normalized": "1.14.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maxmind/MaxMind-DB-Reader-php.git",
+                "reference": "f3c92f68b3bec42a9aa780368399e03dc6b91e89"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maxmind/MaxMind-DB-Reader-php/zipball/f3c92f68b3bec42a9aa780368399e03dc6b91e89",
+                "reference": "f3c92f68b3bec42a9aa780368399e03dc6b91e89",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "conflict": {
+                "ext-maxminddb": "<1.14.0 || >=2.0.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "3.*",
+                "phpstan/phpstan": "*",
+                "phpunit/phpunit": ">=8.0.0,<10.0.0",
+                "squizlabs/php_codesniffer": "4.*",
+                "symfony/polyfill-php80": "^1.33"
+            },
+            "suggest": {
+                "ext-bcmath": "bcmath or gmp is required for decoding larger integers with the pure PHP decoder",
+                "ext-gmp": "bcmath or gmp is required for decoding larger integers with the pure PHP decoder",
+                "ext-maxminddb": "A C-based database decoder that provides significantly faster lookups",
+                "maxmind-db/reader-ext": "C extension for significantly faster IP lookups (install via PIE: pie install maxmind-db/reader-ext)"
+            },
+            "time": "2026-09-10T22:02:38+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "MaxMind\\Db\\": "src/MaxMind/Db"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Gregory J. Oschwald",
+                    "email": "goschwald@maxmind.com",
+                    "homepage": "https://www.maxmind.com/en/home"
+                }
+            ],
+            "description": "MaxMind DB Reader API",
+            "homepage": "https://github.com/maxmind/MaxMind-DB-Reader-php",
+            "keywords": [
+                "database",
+                "geoip",
+                "geoip2",
+                "geolocation",
+                "maxmind"
+            ],
+            "support": {
+                "issues": "https://github.com/maxmind/MaxMind-DB-Reader-php/issues",
+                "source": "https://github.com/maxmind/MaxMind-DB-Reader-php/tree/v1.14.0"
+            },
+            "install-path": "../maxmind-db/reader"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}

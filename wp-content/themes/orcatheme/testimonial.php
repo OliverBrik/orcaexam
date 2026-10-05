@@ -10,21 +10,21 @@ get_header();
     $message = '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['testimonial_submit'])) {
-        if (!isset($_POST['orca_testimonial_nonce']) || !wp_verify_nonce($_POST['orca_testimonial_nonce'], 'orca_submit_testimonial')) {
+        if (!isset($_POST['orca_testimonial_nonce']) || !orca_verify_form_nonce($_POST['orca_testimonial_nonce'], 'orca_submit_testimonial')) {
             $message = orca_text('Sikkerhedskontrollen mislykkedes.', 'Security check failed.');
         } else {
-            $name = sanitize_text_field(wp_unslash($_POST['testimonial_name']));
-            $review = sanitize_textarea_field(wp_unslash($_POST['testimonial_review']));
+            $name = sanitize_text_field(wp_unslash($_POST['testimonial_name'] ?? ''));
+            $review = sanitize_textarea_field(wp_unslash($_POST['testimonial_review'] ?? ''));
 
             if ($name && $review) {
-                $post_id = wp_insert_post(array(
+                $post_id = wp_insert_post(wp_slash(array(
                     'post_title'   => $name,
                     'post_content' => $review,
                     'post_type'    => 'testimonial',
                     'post_status'  => 'pending',
-                ));
+                )), true);
 
-                if ($post_id) {
+                if ($post_id && ! is_wp_error($post_id)) {
                     $message = orca_text('Tak! Din anmeldelse er sendt til godkendelse.', 'Thank you! Your review has been submitted for approval.');
                 } else {
                     $message = orca_text('Der opstod et problem med at sende din anmeldelse.', 'There was a problem submitting your review.');

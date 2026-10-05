@@ -1,0 +1,580 @@
+0000.002 (0) Opened log file at time: Mon, 05 Oct 2026 09:51:46 +0000 on http://examreq.local
+0000.043 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.26.8 WP: 7.0.4 PHP: 8.2.27 (cgi-fcgi, Windows NT LAPTOP-K6LM0JNE 10.0 build 26200 (Windows 11) AMD64) MySQL: 8.4.11-11 (max packet size=104857600) WPLANG: en_US Server: nginx/1.26.1 safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 10.1M | 12M) multisite: N openssl: OpenSSL 3.0.15 3 Sep 2024 mcrypt: N LANG:  WP Proxy: disabled ZipArchive::addFile: Y
+0000.053 (0) Free space on disk containing Updraft's temporary directory: 664194.4 MB
+0000.097 (0) Tasks: Backup files: 1 (schedule: weekly) Backup DB: 1 (schedule: daily)
+0000.126 (0) Semaphore (fd, ourwpproject_options) being initialised
+0000.176 (0) Requesting semaphore lock (fd) (apparently not via scheduler)
+0000.217 (0) Set semaphore last lock (fd) time to 2026-10-05 09:51:46
+0000.227 (0) Semaphore lock (fd) complete
+0000.277 (0) Backup run: resumption=0, nonce=b4b2cfd61fde, file_nonce=b4b2cfd61fde begun at=1791193906 (0s ago), job type=backup
+0000.298 (0) Scheduling a resumption (1) after 300 seconds (1791194206) in case this run gets aborted
+0000.393 (0) Checking if we have a zip executable available
+0000.415 (0) Creation of backups of directories: beginning
+0000.458 (0) Beginning creation of dump of plugins (split every: 400 MB)
+0006.313 (0) Total entities for the zip file: 815 directories, 4795 files (0 skipped as non-modified), 80.1 MB
+0006.346 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 2.0 seconds have passed since the last write (0 MB, 1 (1) files added so far); re-opening (prior size: 0 KB)
+0006.721 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 100 files added (on-disk size: 152 KB)
+0006.925 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 200 files added (on-disk size: 152 KB)
+0007.140 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 300 files added (on-disk size: 152 KB)
+0007.339 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 400 files added (on-disk size: 152 KB)
+0007.562 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 500 files added (on-disk size: 152 KB)
+0007.806 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 600 files added (on-disk size: 152 KB)
+0008.016 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 700 files added (on-disk size: 152 KB)
+0008.224 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 800 files added (on-disk size: 152 KB)
+0008.430 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 900 files added (on-disk size: 152 KB)
+0008.649 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1000 files added (on-disk size: 152 KB)
+0008.667 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (17.8 MB, 4795 files batched, 1001 (1002) added so far); re-opening (prior size: 152 KB)
+0029.563 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1100 files added (on-disk size: 6303.4 KB)
+0029.803 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1200 files added (on-disk size: 6303.4 KB)
+0030.201 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1300 files added (on-disk size: 6303.4 KB)
+0030.484 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1400 files added (on-disk size: 6303.4 KB)
+0030.752 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1500 files added (on-disk size: 6303.4 KB)
+0030.999 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1600 files added (on-disk size: 6303.4 KB)
+0031.249 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1700 files added (on-disk size: 6303.4 KB)
+0031.490 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1800 files added (on-disk size: 6303.4 KB)
+0031.710 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 1900 files added (on-disk size: 6303.4 KB)
+0031.969 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2000 files added (on-disk size: 6303.4 KB)
+0031.990 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 2.0 seconds have passed since the last write (13.4 MB, 999 (2001) files added so far); re-opening (prior size: 6303.4 KB)
+0036.337 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2100 files added (on-disk size: 10921 KB)
+0036.561 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2200 files added (on-disk size: 10921 KB)
+0036.793 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2300 files added (on-disk size: 10921 KB)
+0037.013 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2400 files added (on-disk size: 10921 KB)
+0037.253 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2500 files added (on-disk size: 10921 KB)
+0037.490 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2600 files added (on-disk size: 10921 KB)
+0037.717 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2700 files added (on-disk size: 10921 KB)
+0037.977 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2800 files added (on-disk size: 10921 KB)
+0038.204 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 2900 files added (on-disk size: 10921 KB)
+0038.409 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3000 files added (on-disk size: 10921 KB)
+0038.432 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (18.2 MB, 4795 files batched, 1001 (3002) added so far); re-opening (prior size: 10921 KB)
+0046.827 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3100 files added (on-disk size: 15969.7 KB)
+0047.065 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3200 files added (on-disk size: 15969.7 KB)
+0047.287 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3300 files added (on-disk size: 15969.7 KB)
+0047.489 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3400 files added (on-disk size: 15969.7 KB)
+0047.748 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3500 files added (on-disk size: 15969.7 KB)
+0048.004 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3600 files added (on-disk size: 15969.7 KB)
+0048.238 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3700 files added (on-disk size: 15969.7 KB)
+0048.452 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3800 files added (on-disk size: 15969.7 KB)
+0048.682 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 3900 files added (on-disk size: 15969.7 KB)
+0048.840 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 25 MB added on this batch (25.6 MB, 4795 files batched, 973 (3975) added so far); re-opening (prior size: 15969.7 KB)
+0071.295 (0) A useful amount of data was added after this amount of zip processing: 25.3 s (normalised: 24.7 s, rate: 1035.2 KB/s)
+0071.516 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 4000 files added (on-disk size: 26180 KB)
+0071.770 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 4100 files added (on-disk size: 26180 KB)
+0072.020 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 4200 files added (on-disk size: 26180 KB)
+0072.251 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 4300 files added (on-disk size: 26180 KB)
+0072.501 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 4400 files added (on-disk size: 26180 KB)
+0072.791 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 4500 files added (on-disk size: 26180 KB)
+0073.039 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 4600 files added (on-disk size: 26180 KB)
+0073.268 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.tmp: 4700 files added (on-disk size: 26180 KB)
+0075.884 (0) Creating zip file manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.list-temp.tmp)
+0076.017 (0) Successfully created zip file manifest (size: 412196)
+0077.364 (0) Created plugins zip (0) - 29004.7 KB in 76.9 s (377.3 KB/s) (sha1: 3bb0aa2bb4f8e0084f7e849483bfb71699179216, sha256: 4c4c98af6bcea687b07d1f002f8e3948f4c8d3a412d14f37925a4c33c0a31314)
+0077.435 (0) Cloud backup selection (1/1): googledrive with instance (1/1) (last)
+0077.458 (0) Beginning dispatch of backup to remote (googledrive) (instance identifier s-29ff236cf2fccd18383f8cf964b72c16)
+0081.983 (0) Google Drive: creating path: /UpdraftPlus
+0086.013 (0) Google Drive: quota usage: used=1165.9 MB, total=15360 MB, available=14194.1 MB
+0086.024 (0) Google Drive: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip: Attempting to upload to Google Drive (into folder id: 1JM8LfxPPpfGvHIKJ3cKXqnxB_Qx0i6PI)
+0090.338 (0) Googledrive chunked upload: 3.5 % uploaded (1048576)
+0092.341 (0) Googledrive chunked upload: 7.1 % uploaded (2097152 - increasing chunk size to 2048 KB - memory usage: 11.4 / 14)
+0094.844 (0) Googledrive chunked upload: 14.1 % uploaded (4194304 - increasing chunk size to 4096 KB - memory usage: 11.4 / 14)
+0097.726 (0) Googledrive chunked upload: 28.2 % uploaded (8388608)
+0100.871 (0) Googledrive chunked upload: 42.4 % uploaded (12582912)
+0104.177 (0) Googledrive chunked upload: 56.5 % uploaded (16777216)
+0108.001 (0) Googledrive chunked upload: 70.6 % uploaded (20971520)
+0110.871 (0) Googledrive chunked upload: 84.7 % uploaded (25165824)
+0113.983 (0) Googledrive chunked upload: 98.9 % uploaded (29360128)
+0116.886 (0) Googledrive chunked upload: 100 % uploaded (29360128)
+0116.917 (0) Google Drive: OK: Archive backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip uploaded in 30.88 seconds
+0116.938 (0) Recording as successfully uploaded: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip
+0116.982 (0) Deleting local file: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip: OK
+0117.030 (0) Beginning creation of dump of themes (split every: 400 MB)
+0118.021 (0) Total entities for the zip file: 50 directories, 413 files (0 skipped as non-modified), 56.6 MB
+0118.058 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 25 MB added on this batch (42.1 MB, 413 files batched, 4 (4) added so far); re-opening (prior size: 0 KB)
+0118.688 (0) A useful amount of data was added after this amount of zip processing: 1.7 s (normalised: 1 s, rate: 25285 KB/s)
+0118.711 (0) Performance is good - will increase the amount of data we attempt to batch (time=1.7059350013733, normalised_time=1.0124563769335, max_time=118.69761800766, data points known=1, old_max_bytes=26214400, new_max_bytes=209715200)
+0119.125 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip.tmp: 100 files added (on-disk size: 43116.7 KB)
+0119.469 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip.tmp: 200 files added (on-disk size: 43116.7 KB)
+0119.754 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip.tmp: 300 files added (on-disk size: 43116.7 KB)
+0120.320 (0) Zip: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip.tmp: 400 files added (on-disk size: 43116.7 KB)
+0123.760 (0) Creating zip file manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip.list-temp.tmp)
+0123.799 (0) Successfully created zip file manifest (size: 28957)
+0126.124 (0) Created themes zip (0) - 56850.8 KB in 9.1 s (6271.3 KB/s) (sha1: a4d1404a7f2547443f9b20487f3e98d822b25e1e, sha256: 5ac6add88438636ecbf4c7516568a70873fdd070acbbb46f44322462065658d6)
+0126.206 (0) Cloud backup selection (1/1): googledrive with instance (1/1) (last)
+0126.220 (0) Beginning dispatch of backup to remote (googledrive) (instance identifier s-29ff236cf2fccd18383f8cf964b72c16)
+0128.128 (0) Google Drive: quota usage: used=1194.2 MB, total=15360 MB, available=14165.8 MB
+0128.140 (0) Google Drive: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip: Attempting to upload to Google Drive (into folder id: 1JM8LfxPPpfGvHIKJ3cKXqnxB_Qx0i6PI)
+0132.965 (0) Googledrive chunked upload: 1.8 % uploaded (1048576)
+0135.035 (0) Googledrive chunked upload: 3.6 % uploaded (2097152 - increasing chunk size to 2048 KB - memory usage: 10.7 / 16)
+0137.441 (0) Googledrive chunked upload: 7.2 % uploaded (4194304 - increasing chunk size to 4096 KB - memory usage: 10.7 / 16)
+0140.433 (0) Googledrive chunked upload: 14.4 % uploaded (8388608)
+0143.383 (0) Googledrive chunked upload: 21.6 % uploaded (12582912)
+0146.329 (0) Googledrive chunked upload: 28.8 % uploaded (16777216)
+0149.336 (0) Googledrive chunked upload: 36 % uploaded (20971520)
+0152.177 (0) Googledrive chunked upload: 43.2 % uploaded (25165824)
+0155.008 (0) Googledrive chunked upload: 50.4 % uploaded (29360128)
+0157.928 (0) Googledrive chunked upload: 57.6 % uploaded (33554432)
+0160.949 (0) Googledrive chunked upload: 64.8 % uploaded (37748736)
+0163.833 (0) Googledrive chunked upload: 72 % uploaded (41943040)
+0166.695 (0) Googledrive chunked upload: 79.3 % uploaded (46137344)
+0169.572 (0) Googledrive chunked upload: 86.5 % uploaded (50331648)
+0172.470 (0) Googledrive chunked upload: 93.7 % uploaded (54525952)
+0177.048 (0) Googledrive chunked upload: 100 % uploaded (54525952)
+0177.081 (0) Google Drive: OK: Archive backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip uploaded in 48.93 seconds
+0177.101 (0) Recording as successfully uploaded: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip
+0177.267 (0) Deleting local file: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip: OK
+0177.304 (0) Exclusion option setting (uploads): backup*,*backups,backwpup*,wp-clone,snapshots,wp-staging
+0177.314 (0) Looking for candidates to backup in: C:\Users\Agmog\Local Sites\examreq\app\public/wp-content/uploads
+0177.327 (0) finding files: 2026: adding to list (1)
+0177.337 (0) finding files: burst: adding to list (2)
+0177.347 (0) finding files: js: adding to list (3)
+0177.359 (0) finding files: wpo: adding to list (4)
+0177.370 (0) Beginning creation of dump of uploads (split every: 400 MB)
+0177.467 (0) Total entities for the zip file: 11 directories, 28 files (0 skipped as non-modified), 10.1 MB
+0194.366 (0) Creating zip file manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-uploads.zip.list-temp.tmp)
+0194.383 (0) Successfully created zip file manifest (size: 1595)
+0194.609 (0) Created uploads zip (0) - 5442.6 KB in 17.2 s (316.3 KB/s) (sha1: 8f4dc20f7a93b5e15c13d4c6bc93c2b075173602, sha256: af8f1c175c3549068089467339d7d685926a3d7f2e065c05fb74eef62c1cc4b2)
+0194.646 (0) Cloud backup selection (1/1): googledrive with instance (1/1) (last)
+0194.658 (0) Beginning dispatch of backup to remote (googledrive) (instance identifier s-29ff236cf2fccd18383f8cf964b72c16)
+0196.710 (0) Google Drive: quota usage: used=1249.7 MB, total=15360 MB, available=14110.3 MB
+0196.721 (0) Google Drive: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-uploads.zip: Attempting to upload to Google Drive (into folder id: 1JM8LfxPPpfGvHIKJ3cKXqnxB_Qx0i6PI)
+0201.134 (0) Googledrive chunked upload: 18.8 % uploaded (1048576)
+0203.112 (0) Googledrive chunked upload: 37.6 % uploaded (2097152 - increasing chunk size to 2048 KB - memory usage: 10.7 / 16)
+0205.376 (0) Googledrive chunked upload: 75.3 % uploaded (4194304 - increasing chunk size to 4096 KB - memory usage: 10.7 / 16)
+0208.279 (0) Googledrive chunked upload: 100 % uploaded (4194304)
+0208.314 (0) Google Drive: OK: Archive backup_2026-10-05-0951_ORCA_b4b2cfd61fde-uploads.zip uploaded in 11.58 seconds
+0208.335 (0) Recording as successfully uploaded: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-uploads.zip
+0208.367 (0) Deleting local file: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-uploads.zip: OK
+0208.407 (0) Beginning creation of dump of mu-plugins (split every: 400 MB)
+0208.438 (0) Total entities for the zip file: 1 directories, 1 files (0 skipped as non-modified), 0 MB
+0208.486 (0) Creating zip file manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-mu-plugins.zip.list-temp.tmp)
+0208.501 (0) Successfully created zip file manifest (size: 77)
+0208.553 (0) Created mu-plugins zip (0) - 4.3 KB in 0.1 s (35.5 KB/s) (sha1: 8bef804c32278591cf9f3f2774ffef58cc3e7ae4, sha256: a0815912ea3e7ca2c7b728b4828aa4fec0903ca4d18b90484ca7aacd218d6ec0)
+0208.590 (0) Cloud backup selection (1/1): googledrive with instance (1/1) (last)
+0208.606 (0) Beginning dispatch of backup to remote (googledrive) (instance identifier s-29ff236cf2fccd18383f8cf964b72c16)
+0210.378 (0) Google Drive: quota usage: used=1255 MB, total=15360 MB, available=14105 MB
+0210.390 (0) Google Drive: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-mu-plugins.zip: Attempting to upload to Google Drive (into folder id: 1JM8LfxPPpfGvHIKJ3cKXqnxB_Qx0i6PI)
+0215.084 (0) Googledrive chunked upload: 100 % uploaded
+0215.116 (0) Google Drive: OK: Archive backup_2026-10-05-0951_ORCA_b4b2cfd61fde-mu-plugins.zip uploaded in 4.71 seconds
+0215.136 (0) Recording as successfully uploaded: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-mu-plugins.zip
+0215.161 (0) Deleting local file: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-mu-plugins.zip: OK
+0215.200 (0) Beginning backup of other directories found in the content directory (index: 0)
+0215.212 (0) Exclusion option setting (others): upgrade,cache,updraft,backup*,*backups,mysql.sql,debug.log
+0215.222 (0) Looking for candidates to backup in: C:\Users\Agmog\Local Sites\examreq\app\public/wp-content
+0215.232 (0) finding files: index.php: adding to list (1)
+0215.243 (0) finding files: languages: adding to list (2)
+0215.255 (0) finding files: mu-plugins: skipping: this is the mu-plugins directory
+0215.267 (0) finding files: plugins: skipping: this is the plugins directory
+0215.277 (0) finding files: themes: skipping: this is the themes directory
+0215.288 (0) finding files: updraft: skipping: this is the updraft directory
+0215.298 (0) finding files: upgrade: skipping: excluded by options
+0215.308 (0) finding files: uploads: skipping: this is the uploads directory
+0215.321 (0) finding files: wflogs: adding to list (3)
+0215.704 (0) Total entities for the zip file: 2 directories, 88 files (0 skipped as non-modified), 14.6 MB
+0234.145 (0) Creating zip file manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-others.zip.list-temp.tmp)
+0234.164 (0) Successfully created zip file manifest (size: 5019)
+0234.464 (0) Created others zip (0) - 6118.4 KB in 19.1 s (321.1 KB/s) (sha1: e08a7e8ff5cc1d589548f59f64562dc3f9a6d0f6, sha256: 3171aad1235a7fce56e1a6b5bfe968977f92b2fc472d8005d00f09402200f78b)
+0234.508 (0) Cloud backup selection (1/1): googledrive with instance (1/1) (last)
+0234.520 (0) Beginning dispatch of backup to remote (googledrive) (instance identifier s-29ff236cf2fccd18383f8cf964b72c16)
+0236.510 (0) Google Drive: quota usage: used=1255 MB, total=15360 MB, available=14105 MB
+0236.524 (0) Google Drive: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-others.zip: Attempting to upload to Google Drive (into folder id: 1JM8LfxPPpfGvHIKJ3cKXqnxB_Qx0i6PI)
+0240.928 (0) Googledrive chunked upload: 16.7 % uploaded (1048576)
+0243.154 (0) Googledrive chunked upload: 33.5 % uploaded (2097152 - increasing chunk size to 2048 KB - memory usage: 10.7 / 16)
+0245.811 (0) Googledrive chunked upload: 66.9 % uploaded (4194304)
+0249.332 (0) Googledrive chunked upload: 100 % uploaded (4194304)
+0249.450 (0) Google Drive: OK: Archive backup_2026-10-05-0951_ORCA_b4b2cfd61fde-others.zip uploaded in 12.92 seconds
+0249.470 (0) Recording as successfully uploaded: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-others.zip
+0249.500 (0) Deleting local file: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-others.zip: OK
+0249.630 (0) Saving backup status to database (elements: 10)
+0249.720 (0) Beginning creation of database dump (WordPress DB)
+0249.751 (0) SQL compatibility mode is: NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+0249.941 (0) Table ourwpproject_options: Total expected rows (via COUNT): 335
+0249.951 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0250.480 (0) Table ourwpproject_options: Rows added in this batch (next record: 1115): 331 (uncompressed bytes in this segment=924757) in 0.59 seconds
+0250.557 (0) Table ourwpproject_options: finishing file(s) (2, 199 KB)
+0250.633 (0) Table ourwpproject_users: Total expected rows (via COUNT): 1
+0250.644 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0250.687 (0) Table ourwpproject_users: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=1469) in 0.09 seconds
+0250.756 (0) Table ourwpproject_users: finishing file(s) (2, 0.6 KB)
+0250.868 (0) Table ourwpproject_usermeta: Total expected rows (via COUNT): 20
+0250.879 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0250.913 (0) Table ourwpproject_usermeta: Rows added in this batch (next record: 20): 20 (uncompressed bytes in this segment=2607) in 0.10 seconds
+0250.979 (0) Table ourwpproject_usermeta: finishing file(s) (2, 1.2 KB)
+0251.091 (0) Table ourwpproject_actionscheduler_actions: Total expected rows (via COUNT): 3
+0251.101 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0251.135 (0) Table ourwpproject_actionscheduler_actions: Rows added in this batch (next record: 60): 3 (uncompressed bytes in this segment=3254) in 0.12 seconds
+0251.215 (0) Table ourwpproject_actionscheduler_actions: finishing file(s) (2, 0.9 KB)
+0251.279 (0) Table ourwpproject_actionscheduler_claims: Total expected rows (via COUNT): 0
+0251.320 (0) Table ourwpproject_actionscheduler_claims: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=680) in 0.07 seconds
+0251.426 (0) Table ourwpproject_actionscheduler_claims: finishing file(s) (2, 0.4 KB)
+0251.557 (0) Table ourwpproject_actionscheduler_groups: Total expected rows (via COUNT): 2
+0251.568 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0251.628 (0) Table ourwpproject_actionscheduler_groups: Rows added in this batch (next record: 2): 2 (uncompressed bytes in this segment=780) in 0.10 seconds
+0251.717 (0) Table ourwpproject_actionscheduler_groups: finishing file(s) (2, 0.4 KB)
+0251.795 (0) Table ourwpproject_actionscheduler_logs: Total expected rows (via COUNT): 7
+0251.809 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0251.847 (0) Table ourwpproject_actionscheduler_logs: Rows added in this batch (next record: 7): 7 (uncompressed bytes in this segment=1476) in 0.09 seconds
+0251.899 (0) Table ourwpproject_actionscheduler_logs: finishing file(s) (2, 0.6 KB)
+0252.002 (0) Table ourwpproject_commentmeta: Total expected rows (via COUNT): 0
+0252.039 (0) Table ourwpproject_commentmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=754) in 0.10 seconds
+0252.132 (0) Table ourwpproject_commentmeta: finishing file(s) (2, 0.4 KB)
+0252.241 (0) Table ourwpproject_comments: Total expected rows (via COUNT): 3
+0252.253 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0252.316 (0) Table ourwpproject_comments: Rows added in this batch (next record: 3): 3 (uncompressed bytes in this segment=2484) in 0.12 seconds
+0252.378 (0) Table ourwpproject_comments: finishing file(s) (2, 0.9 KB)
+0252.452 (0) Table ourwpproject_links: Total expected rows (via COUNT): 0
+0252.484 (0) Table ourwpproject_links: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1358) in 0.06 seconds
+0252.530 (0) Table ourwpproject_links: finishing file(s) (2, 0.5 KB)
+0252.618 (0) Table ourwpproject_postmeta: Total expected rows (via COUNT): 45
+0252.629 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0252.671 (0) Table ourwpproject_postmeta: Rows added in this batch (next record: 87): 45 (uncompressed bytes in this segment=6440) in 0.10 seconds
+0252.732 (0) Table ourwpproject_postmeta: finishing file(s) (2, 1.5 KB)
+0252.818 (0) Table ourwpproject_posts: Total expected rows (via COUNT): 35
+0252.830 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0252.863 (0) Table ourwpproject_posts: Rows added in this batch (next record: 56): 35 (uncompressed bytes in this segment=16499) in 0.09 seconds
+0252.944 (0) Table ourwpproject_posts: finishing file(s) (2, 2.9 KB)
+0252.999 (0) Table ourwpproject_term_relationships: Total expected rows (approximate): 10
+0253.041 (0) Table ourwpproject_term_relationships: Rows added in this batch (next record: 100000): 10 (uncompressed bytes in this segment=876) in 0.06 seconds
+0253.107 (0) Table ourwpproject_term_relationships: finishing file(s) (2, 0.4 KB)
+0253.194 (0) Table ourwpproject_term_taxonomy: Total expected rows (via COUNT): 9
+0253.212 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0253.257 (0) Table ourwpproject_term_taxonomy: Rows added in this batch (next record: 15): 9 (uncompressed bytes in this segment=1231) in 0.11 seconds
+0253.332 (0) Table ourwpproject_term_taxonomy: finishing file(s) (2, 0.5 KB)
+0253.426 (0) Table ourwpproject_termmeta: Total expected rows (via COUNT): 0
+0253.462 (0) Table ourwpproject_termmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=710) in 0.09 seconds
+0253.536 (0) Table ourwpproject_termmeta: finishing file(s) (2, 0.4 KB)
+0253.604 (0) Table ourwpproject_terms: Total expected rows (via COUNT): 9
+0253.615 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0253.653 (0) Table ourwpproject_terms: Rows added in this batch (next record: 15): 9 (uncompressed bytes in this segment=1093) in 0.08 seconds
+0253.707 (0) Table ourwpproject_terms: finishing file(s) (2, 0.6 KB)
+0253.787 (0) Table ourwpproject_burst_archived_months: Total expected rows (via COUNT): 0
+0253.821 (0) Table ourwpproject_burst_archived_months: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=739) in 0.08 seconds
+0253.878 (0) Table ourwpproject_burst_archived_months: finishing file(s) (2, 0.4 KB)
+0253.973 (0) Table ourwpproject_burst_browser_versions: Total expected rows (via COUNT): 0
+0253.994 (0) Table ourwpproject_burst_browser_versions: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=623) in 0.07 seconds
+0254.078 (0) Table ourwpproject_burst_browser_versions: finishing file(s) (2, 0.3 KB)
+0254.169 (0) Table ourwpproject_burst_browsers: Total expected rows (via COUNT): 0
+0254.189 (0) Table ourwpproject_burst_browsers: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=575) in 0.06 seconds
+0254.240 (0) Table ourwpproject_burst_browsers: finishing file(s) (2, 0.3 KB)
+0254.314 (0) Table ourwpproject_burst_devices: Total expected rows (via COUNT): 0
+0254.338 (0) Table ourwpproject_burst_devices: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=569) in 0.06 seconds
+0254.384 (0) Table ourwpproject_burst_devices: finishing file(s) (2, 0.3 KB)
+0254.464 (0) Table ourwpproject_burst_goal_statistics: Total expected rows (via COUNT): 0
+0254.487 (0) Table ourwpproject_burst_goal_statistics: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=726) in 0.06 seconds
+0254.557 (0) Table ourwpproject_burst_goal_statistics: finishing file(s) (2, 0.4 KB)
+0254.648 (0) Table ourwpproject_burst_goals: Total expected rows (via COUNT): 1
+0254.660 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0254.705 (0) Table ourwpproject_burst_goals: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=1318) in 0.10 seconds
+0254.751 (0) Table ourwpproject_burst_goals: finishing file(s) (2, 0.5 KB)
+0254.829 (0) Table ourwpproject_burst_imports: Total expected rows (via COUNT): 0
+0254.864 (0) Table ourwpproject_burst_imports: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1224) in 0.08 seconds
+0254.913 (0) Table ourwpproject_burst_imports: finishing file(s) (2, 0.5 KB)
+0254.996 (0) Table ourwpproject_burst_locations: Total expected rows (via COUNT): 253
+0255.007 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0255.059 (0) Table ourwpproject_burst_locations: Rows added in this batch (next record: -1): 253 (uncompressed bytes in this segment=8749) in 0.10 seconds
+0255.101 (0) The scheduled resumption is within 45 seconds - will reschedule
+0255.157 (0) Rescheduling resumption 1: moving to 345 seconds from now (1791194506)
+0255.193 (0) To decrease the likelihood of overlaps, increasing resumption interval to: 300 + 45 = 345
+0255.231 (0) Table ourwpproject_burst_locations: finishing file(s) (2, 1.7 KB)
+0255.303 (0) Table ourwpproject_burst_page_urls: Total expected rows (via COUNT): 0
+0255.336 (0) Table ourwpproject_burst_page_urls: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=716) in 0.06 seconds
+0255.384 (0) Table ourwpproject_burst_page_urls: finishing file(s) (2, 0.4 KB)
+0255.464 (0) Table ourwpproject_burst_platforms: Total expected rows (via COUNT): 0
+0255.486 (0) Table ourwpproject_burst_platforms: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=581) in 0.06 seconds
+0255.539 (0) Table ourwpproject_burst_platforms: finishing file(s) (2, 0.3 KB)
+0255.634 (0) Table ourwpproject_burst_query_stats: Total expected rows (via COUNT): 1
+0255.648 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0255.694 (0) Table ourwpproject_burst_query_stats: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=1362) in 0.11 seconds
+0255.754 (0) Table ourwpproject_burst_query_stats: finishing file(s) (2, 0.6 KB)
+0255.831 (0) Table ourwpproject_burst_referrers: Total expected rows (via COUNT): 0
+0255.863 (0) Table ourwpproject_burst_referrers: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=581) in 0.07 seconds
+0255.907 (0) Table ourwpproject_burst_referrers: finishing file(s) (2, 0.3 KB)
+0255.978 (0) Table ourwpproject_burst_report_logs: Total expected rows (via COUNT): 0
+0256.001 (0) Table ourwpproject_burst_report_logs: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1022) in 0.06 seconds
+0256.043 (0) Table ourwpproject_burst_report_logs: finishing file(s) (2, 0.4 KB)
+0256.132 (0) Table ourwpproject_burst_reports: Total expected rows (via COUNT): 0
+0256.155 (0) Table ourwpproject_burst_reports: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1550) in 0.08 seconds
+0256.221 (0) Table ourwpproject_burst_reports: finishing file(s) (2, 0.5 KB)
+0256.316 (0) Table ourwpproject_burst_searches: Total expected rows (via COUNT): 0
+0256.339 (0) Table ourwpproject_burst_searches: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=588) in 0.07 seconds
+0256.391 (0) Table ourwpproject_burst_searches: finishing file(s) (2, 0.3 KB)
+0256.468 (0) Table ourwpproject_burst_sessions: Total expected rows (via COUNT): 0
+0256.491 (0) Table ourwpproject_burst_sessions: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1640) in 0.06 seconds
+0256.542 (0) Table ourwpproject_burst_sessions: finishing file(s) (2, 0.6 KB)
+0256.718 (0) Table ourwpproject_burst_statistics: Total expected rows (via COUNT): 0
+0256.737 (0) Table ourwpproject_burst_statistics: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1500) in 0.16 seconds
+0256.796 (0) Table ourwpproject_burst_statistics: finishing file(s) (2, 0.5 KB)
+0256.893 (0) Table ourwpproject_burst_statistics_searches: Total expected rows (via COUNT): 0
+0256.914 (0) Table ourwpproject_burst_statistics_searches: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=880) in 0.06 seconds
+0256.969 (0) Table ourwpproject_burst_statistics_searches: finishing file(s) (2, 0.4 KB)
+0257.281 (0) Table ourwpproject_burst_uids: Total expected rows (via COUNT): 0
+0257.303 (0) Table ourwpproject_burst_uids: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=556) in 0.05 seconds
+0257.370 (0) Table ourwpproject_burst_uids: finishing file(s) (2, 0.3 KB)
+0257.441 (0) Table ourwpproject_burst_visitor_bitmaps: Total expected rows (via COUNT): 0
+0257.464 (0) Table ourwpproject_burst_visitor_bitmaps: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=851) in 0.05 seconds
+0257.512 (0) Table ourwpproject_burst_visitor_bitmaps: finishing file(s) (2, 0.4 KB)
+0257.618 (0) Table ourwpproject_ilj_linkindex: Total expected rows (via COUNT): 0
+0257.642 (0) Table ourwpproject_ilj_linkindex: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=859) in 0.08 seconds
+0257.702 (0) Table ourwpproject_ilj_linkindex: finishing file(s) (2, 0.4 KB)
+0257.818 (0) Table ourwpproject_tm_taskmeta: Total expected rows (via COUNT): 0
+0257.851 (0) Table ourwpproject_tm_taskmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=710) in 0.11 seconds
+0257.909 (0) Table ourwpproject_tm_taskmeta: finishing file(s) (2, 0.4 KB)
+0257.988 (0) Table ourwpproject_tm_tasks: Total expected rows (via COUNT): 0
+0258.018 (0) Table ourwpproject_tm_tasks: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=920) in 0.07 seconds
+0258.071 (0) Table ourwpproject_tm_tasks: finishing file(s) (2, 0.4 KB)
+0258.158 (0) Table ourwpproject_wfauditevents: Total expected rows (via COUNT): 0
+0258.179 (0) Table ourwpproject_wfauditevents: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=760) in 0.06 seconds
+0258.248 (0) Table ourwpproject_wfauditevents: finishing file(s) (2, 0.4 KB)
+0258.317 (0) Table ourwpproject_wfblockediplog: Total expected rows (approximate): 0
+0258.338 (0) Table ourwpproject_wfblockediplog: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=684) in 0.04 seconds
+0258.390 (0) Table ourwpproject_wfblockediplog: finishing file(s) (2, 0.4 KB)
+0258.467 (0) Table ourwpproject_wfblocks7: Total expected rows (via COUNT): 0
+0258.490 (0) Table ourwpproject_wfblocks7: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=850) in 0.06 seconds
+0258.537 (0) Table ourwpproject_wfblocks7: finishing file(s) (2, 0.4 KB)
+0258.834 (0) Table ourwpproject_wfconfig: Total expected rows (approximate): 231
+0259.021 (0) Table ourwpproject_wfconfig: Rows added in this batch (next record: 1000): 265 (uncompressed bytes in this segment=131619) in 0.21 seconds
+0259.104 (0) Table ourwpproject_wfconfig: finishing file(s) (2, 26.4 KB)
+0259.168 (0) Table ourwpproject_wfcrawlers: Total expected rows (approximate): 0
+0259.191 (0) Table ourwpproject_wfcrawlers: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=611) in 0.04 seconds
+0259.279 (0) Table ourwpproject_wfcrawlers: finishing file(s) (2, 0.4 KB)
+0259.347 (0) Table ourwpproject_wffilechanges: Total expected rows (approximate): 0
+0259.388 (0) Table ourwpproject_wffilechanges: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=515) in 0.06 seconds
+0259.446 (0) Table ourwpproject_wffilechanges: finishing file(s) (2, 0.3 KB)
+0259.510 (0) Table ourwpproject_wffilemods: Total expected rows (approximate): 0
+0259.531 (0) Table ourwpproject_wffilemods: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=918) in 0.04 seconds
+0259.580 (0) Table ourwpproject_wffilemods: finishing file(s) (2, 0.4 KB)
+0259.650 (0) Table ourwpproject_wfhits: Total expected rows (via COUNT): 0
+0259.672 (0) Table ourwpproject_wfhits: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=943) in 0.05 seconds
+0259.727 (0) Table ourwpproject_wfhits: finishing file(s) (2, 0.5 KB)
+0259.800 (0) Table ourwpproject_wfhoover: Total expected rows (via COUNT): 0
+0259.824 (0) Table ourwpproject_wfhoover: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=535) in 0.06 seconds
+0259.871 (0) Table ourwpproject_wfhoover: finishing file(s) (2, 0.3 KB)
+0259.945 (0) Table ourwpproject_wfissues: Total expected rows (via COUNT): 3
+0259.955 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0259.995 (0) Table ourwpproject_wfissues: Rows added in this batch (next record: 3): 3 (uncompressed bytes in this segment=2771) in 0.08 seconds
+0260.048 (0) Table ourwpproject_wfissues: finishing file(s) (2, 1.1 KB)
+0260.127 (0) Table ourwpproject_wfknownfilelist: Total expected rows (via COUNT): 0
+0260.162 (0) Table ourwpproject_wfknownfilelist: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=524) in 0.07 seconds
+0260.230 (0) Table ourwpproject_wfknownfilelist: finishing file(s) (2, 0.3 KB)
+0260.298 (0) Table ourwpproject_wflivetraffichuman: Total expected rows (approximate): 0
+0260.322 (0) Table ourwpproject_wflivetraffichuman: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=707) in 0.04 seconds
+0260.377 (0) Table ourwpproject_wflivetraffichuman: finishing file(s) (2, 0.3 KB)
+0260.448 (0) Table ourwpproject_wflocs: Total expected rows (approximate): 0
+0260.470 (0) Table ourwpproject_wflocs: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=738) in 0.04 seconds
+0260.523 (0) Table ourwpproject_wflocs: finishing file(s) (2, 0.4 KB)
+0260.625 (0) Table ourwpproject_wflogins: Total expected rows (via COUNT): 0
+0260.646 (0) Table ourwpproject_wflogins: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=729) in 0.06 seconds
+0260.712 (0) Table ourwpproject_wflogins: finishing file(s) (2, 0.4 KB)
+0260.805 (0) Table ourwpproject_wfls_2fa_secrets: Total expected rows (via COUNT): 1
+0260.816 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0260.859 (0) Table ourwpproject_wfls_2fa_secrets: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=965) in 0.09 seconds
+0260.910 (0) Table ourwpproject_wfls_2fa_secrets: finishing file(s) (2, 0.5 KB)
+0260.995 (0) Table ourwpproject_wfls_passkeys: Total expected rows (via COUNT): 0
+0261.035 (0) Table ourwpproject_wfls_passkeys: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=987) in 0.09 seconds
+0261.089 (0) Table ourwpproject_wfls_passkeys: finishing file(s) (2, 0.4 KB)
+0261.154 (0) Table ourwpproject_wfls_role_counts: Total expected rows (approximate): 0
+0261.176 (0) Table ourwpproject_wfls_role_counts: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=667) in 0.05 seconds
+0261.225 (0) Table ourwpproject_wfls_role_counts: finishing file(s) (2, 0.4 KB)
+0261.281 (0) Table ourwpproject_wfls_settings: Total expected rows (approximate): 42
+0261.506 (0) Table ourwpproject_wfls_settings: Rows added in this batch (next record: 1000): 42 (uncompressed bytes in this segment=429724) in 0.24 seconds
+0261.555 (0) Table ourwpproject_wfls_settings: finishing file(s) (2, 58.2 KB)
+0261.627 (0) Table ourwpproject_wfnotifications: Total expected rows (approximate): 2
+0261.660 (0) Table ourwpproject_wfnotifications: Rows added in this batch (next record: 1000): 2 (uncompressed bytes in this segment=1077) in 0.06 seconds
+0261.714 (0) Table ourwpproject_wfnotifications: finishing file(s) (2, 0.6 KB)
+0261.787 (0) Table ourwpproject_wfpendingissues: Total expected rows (via COUNT): 0
+0261.810 (0) Table ourwpproject_wfpendingissues: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=894) in 0.06 seconds
+0261.874 (0) Table ourwpproject_wfpendingissues: finishing file(s) (2, 0.4 KB)
+0261.932 (0) Table ourwpproject_wfreversecache: Total expected rows (approximate): 0
+0261.957 (0) Table ourwpproject_wfreversecache: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=556) in 0.05 seconds
+0262.025 (0) Table ourwpproject_wfreversecache: finishing file(s) (2, 0.3 KB)
+0262.091 (0) Table ourwpproject_wfsecurityevents: Total expected rows (via COUNT): 0
+0262.112 (0) Table ourwpproject_wfsecurityevents: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=737) in 0.05 seconds
+0262.166 (0) Table ourwpproject_wfsecurityevents: finishing file(s) (2, 0.4 KB)
+0262.235 (0) Table ourwpproject_wfsnipcache: Total expected rows (via COUNT): 0
+0262.255 (0) Table ourwpproject_wfsnipcache: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=752) in 0.05 seconds
+0262.302 (0) Table ourwpproject_wfsnipcache: finishing file(s) (2, 0.4 KB)
+0262.449 (0) Table ourwpproject_wfstatus: Total expected rows (via COUNT): 11
+0262.459 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0262.503 (0) Table ourwpproject_wfstatus: Rows added in this batch (next record: 11): 11 (uncompressed bytes in this segment=1665) in 0.17 seconds
+0262.558 (0) Table ourwpproject_wfstatus: finishing file(s) (2, 0.8 KB)
+0262.619 (0) Table ourwpproject_wftrafficrates: Total expected rows (approximate): 0
+0262.654 (0) Table ourwpproject_wftrafficrates: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=621) in 0.06 seconds
+0262.711 (0) Table ourwpproject_wftrafficrates: finishing file(s) (2, 0.3 KB)
+0262.784 (0) Table ourwpproject_wfwaffailures: Total expected rows (via COUNT): 0
+0262.805 (0) Table ourwpproject_wfwaffailures: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=582) in 0.05 seconds
+0262.848 (0) Table ourwpproject_wfwaffailures: finishing file(s) (2, 0.3 KB)
+0262.913 (0) Table ourwpproject_wpo_404_detector: Total expected rows (via COUNT): 0
+0262.933 (0) Table ourwpproject_wpo_404_detector: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=917) in 0.05 seconds
+0262.985 (0) Table ourwpproject_wpo_404_detector: finishing file(s) (2, 0.4 KB)
+0263.031 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_options.table.tmpr1116.gz (1/66/fopen): adding to final database dump
+0263.079 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_options.table.gz (2/66/fopen): adding to final database dump
+0263.091 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_users.table.tmpr2.gz (3/66/fopen): adding to final database dump
+0263.108 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_users.table.gz (4/66/fopen): adding to final database dump
+0263.123 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_usermeta.table.tmpr21.gz (5/66/fopen): adding to final database dump
+0263.144 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_usermeta.table.gz (6/66/fopen): adding to final database dump
+0263.158 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_actionscheduler_actions.table.tmpr61.gz (7/66/fopen): adding to final database dump
+0263.170 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_actionscheduler_actions.table.gz (8/66/fopen): adding to final database dump
+0263.183 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_actionscheduler_claims.table.tmpr0.gz (9/66/fopen): adding to final database dump
+0263.197 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_actionscheduler_claims.table.gz (10/66/fopen): adding to final database dump
+0263.208 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_actionscheduler_groups.table.tmpr3.gz (11/66/fopen): adding to final database dump
+0263.221 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_actionscheduler_groups.table.gz (12/66/fopen): adding to final database dump
+0263.235 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_actionscheduler_logs.table.tmpr8.gz (13/66/fopen): adding to final database dump
+0263.247 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_actionscheduler_logs.table.gz (14/66/fopen): adding to final database dump
+0263.258 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_commentmeta.table.tmpr0.gz (15/66/fopen): adding to final database dump
+0263.270 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_commentmeta.table.gz (16/66/fopen): adding to final database dump
+0263.282 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_comments.table.tmpr4.gz (17/66/fopen): adding to final database dump
+0263.295 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_comments.table.gz (18/66/fopen): adding to final database dump
+0263.304 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_links.table.tmpr0.gz (19/66/fopen): adding to final database dump
+0263.316 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_links.table.gz (20/66/fopen): adding to final database dump
+0263.325 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_postmeta.table.tmpr88.gz (21/66/fopen): adding to final database dump
+0263.337 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_postmeta.table.gz (22/66/fopen): adding to final database dump
+0263.348 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_posts.table.tmpr57.gz (23/66/fopen): adding to final database dump
+0263.360 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_posts.table.gz (24/66/fopen): adding to final database dump
+0263.371 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_term_relationships.table.tmpr100001.gz (25/66/fopen): adding to final database dump
+0263.382 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_term_relationships.table.gz (26/66/fopen): adding to final database dump
+0263.393 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_term_taxonomy.table.tmpr16.gz (27/66/fopen): adding to final database dump
+0263.405 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_term_taxonomy.table.gz (28/66/fopen): adding to final database dump
+0263.416 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_termmeta.table.tmpr0.gz (29/66/fopen): adding to final database dump
+0263.428 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_termmeta.table.gz (30/66/fopen): adding to final database dump
+0263.440 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_terms.table.tmpr16.gz (31/66/fopen): adding to final database dump
+0263.454 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_terms.table.gz (32/66/fopen): adding to final database dump
+0263.476 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_archived_months.table.tmpr0.gz (33/66/fopen): adding to final database dump
+0263.489 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_archived_months.table.gz (34/66/fopen): adding to final database dump
+0263.501 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_browser_versions.table.tmpr0.gz (35/66/fopen): adding to final database dump
+0263.513 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_browser_versions.table.gz (36/66/fopen): adding to final database dump
+0263.526 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_browsers.table.tmpr0.gz (37/66/fopen): adding to final database dump
+0263.541 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_browsers.table.gz (38/66/fopen): adding to final database dump
+0263.553 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_devices.table.tmpr0.gz (39/66/fopen): adding to final database dump
+0263.566 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_devices.table.gz (40/66/fopen): adding to final database dump
+0263.576 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_goal_statistics.table.tmpr0.gz (41/66/fopen): adding to final database dump
+0263.589 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_goal_statistics.table.gz (42/66/fopen): adding to final database dump
+0263.601 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_goals.table.tmpr2.gz (43/66/fopen): adding to final database dump
+0263.613 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_goals.table.gz (44/66/fopen): adding to final database dump
+0263.629 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_imports.table.tmpr0.gz (45/66/fopen): adding to final database dump
+0263.642 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_imports.table.gz (46/66/fopen): adding to final database dump
+0263.655 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_locations.table.tmpr0.gz (47/66/fopen): adding to final database dump
+0263.674 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_locations.table.gz (48/66/fopen): adding to final database dump
+0263.688 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_page_urls.table.tmpr0.gz (49/66/fopen): adding to final database dump
+0263.701 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_page_urls.table.gz (50/66/fopen): adding to final database dump
+0263.711 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_platforms.table.tmpr0.gz (51/66/fopen): adding to final database dump
+0263.725 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_platforms.table.gz (52/66/fopen): adding to final database dump
+0263.741 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_query_stats.table.tmpr2.gz (53/66/fopen): adding to final database dump
+0263.762 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_query_stats.table.gz (54/66/fopen): adding to final database dump
+0263.775 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_referrers.table.tmpr0.gz (55/66/fopen): adding to final database dump
+0263.788 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_referrers.table.gz (56/66/fopen): adding to final database dump
+0263.799 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_report_logs.table.tmpr0.gz (57/66/fopen): adding to final database dump
+0263.810 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_report_logs.table.gz (58/66/fopen): adding to final database dump
+0263.825 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_reports.table.tmpr0.gz (59/66/fopen): adding to final database dump
+0263.837 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_reports.table.gz (60/66/fopen): adding to final database dump
+0263.850 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_searches.table.tmpr0.gz (61/66/fopen): adding to final database dump
+0263.862 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_searches.table.gz (62/66/fopen): adding to final database dump
+0263.873 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_sessions.table.tmpr0.gz (63/66/fopen): adding to final database dump
+0263.899 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_sessions.table.gz (64/66/fopen): adding to final database dump
+0263.910 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_statistics.table.tmpr0.gz (65/66/fopen): adding to final database dump
+0263.921 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_statistics.table.gz (66/66/fopen): adding to final database dump
+0263.932 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_statistics_searches.table.tmpr0.gz (67/66/fopen): adding to final database dump
+0263.947 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_statistics_searches.table.gz (68/66/fopen): adding to final database dump
+0263.960 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_uids.table.tmpr0.gz (69/66/fopen): adding to final database dump
+0263.972 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_uids.table.gz (70/66/fopen): adding to final database dump
+0263.982 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_visitor_bitmaps.table.tmpr0.gz (71/66/fopen): adding to final database dump
+0263.995 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_burst_visitor_bitmaps.table.gz (72/66/fopen): adding to final database dump
+0264.008 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_ilj_linkindex.table.tmpr0.gz (73/66/fopen): adding to final database dump
+0264.020 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_ilj_linkindex.table.gz (74/66/fopen): adding to final database dump
+0264.031 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_tm_taskmeta.table.tmpr0.gz (75/66/fopen): adding to final database dump
+0264.044 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_tm_taskmeta.table.gz (76/66/fopen): adding to final database dump
+0264.055 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_tm_tasks.table.tmpr0.gz (77/66/fopen): adding to final database dump
+0264.067 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_tm_tasks.table.gz (78/66/fopen): adding to final database dump
+0264.079 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfauditevents.table.tmpr0.gz (79/66/fopen): adding to final database dump
+0264.090 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfauditevents.table.gz (80/66/fopen): adding to final database dump
+0264.101 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfblockediplog.table.tmpr1.gz (81/66/fopen): adding to final database dump
+0264.114 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfblockediplog.table.gz (82/66/fopen): adding to final database dump
+0264.124 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfblocks7.table.tmpr0.gz (83/66/fopen): adding to final database dump
+0264.135 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfblocks7.table.gz (84/66/fopen): adding to final database dump
+0264.147 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfconfig.table.tmpr1001.gz (85/66/fopen): adding to final database dump
+0264.161 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfconfig.table.gz (86/66/fopen): adding to final database dump
+0264.172 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfcrawlers.table.tmpr1.gz (87/66/fopen): adding to final database dump
+0264.183 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfcrawlers.table.gz (88/66/fopen): adding to final database dump
+0264.194 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wffilechanges.table.tmpr1.gz (89/66/fopen): adding to final database dump
+0264.206 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wffilechanges.table.gz (90/66/fopen): adding to final database dump
+0264.217 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wffilemods.table.tmpr1.gz (91/66/fopen): adding to final database dump
+0264.231 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wffilemods.table.gz (92/66/fopen): adding to final database dump
+0264.244 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfhits.table.tmpr0.gz (93/66/fopen): adding to final database dump
+0264.256 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfhits.table.gz (94/66/fopen): adding to final database dump
+0264.268 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfhoover.table.tmpr0.gz (95/66/fopen): adding to final database dump
+0264.281 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfhoover.table.gz (96/66/fopen): adding to final database dump
+0264.294 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfissues.table.tmpr4.gz (97/66/fopen): adding to final database dump
+0264.307 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfissues.table.gz (98/66/fopen): adding to final database dump
+0264.318 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfknownfilelist.table.tmpr0.gz (99/66/fopen): adding to final database dump
+0264.343 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfknownfilelist.table.gz (100/66/fopen): adding to final database dump
+0264.353 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wflivetraffichuman.table.tmpr1.gz (101/66/fopen): adding to final database dump
+0264.367 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wflivetraffichuman.table.gz (102/66/fopen): adding to final database dump
+0264.379 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wflocs.table.tmpr1.gz (103/66/fopen): adding to final database dump
+0264.392 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wflocs.table.gz (104/66/fopen): adding to final database dump
+0264.405 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wflogins.table.tmpr0.gz (105/66/fopen): adding to final database dump
+0264.419 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wflogins.table.gz (106/66/fopen): adding to final database dump
+0264.432 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfls_2fa_secrets.table.tmpr2.gz (107/66/fopen): adding to final database dump
+0264.445 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfls_2fa_secrets.table.gz (108/66/fopen): adding to final database dump
+0264.458 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfls_passkeys.table.tmpr0.gz (109/66/fopen): adding to final database dump
+0264.471 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfls_passkeys.table.gz (110/66/fopen): adding to final database dump
+0264.482 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfls_role_counts.table.tmpr1.gz (111/66/fopen): adding to final database dump
+0264.501 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfls_role_counts.table.gz (112/66/fopen): adding to final database dump
+0264.516 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfls_settings.table.tmpr1001.gz (113/66/fopen): adding to final database dump
+0264.539 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfls_settings.table.gz (114/66/fopen): adding to final database dump
+0264.551 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfnotifications.table.tmpr1001.gz (115/66/fopen): adding to final database dump
+0264.564 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfnotifications.table.gz (116/66/fopen): adding to final database dump
+0264.574 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfpendingissues.table.tmpr0.gz (117/66/fopen): adding to final database dump
+0264.585 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfpendingissues.table.gz (118/66/fopen): adding to final database dump
+0264.596 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfreversecache.table.tmpr1.gz (119/66/fopen): adding to final database dump
+0264.610 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfreversecache.table.gz (120/66/fopen): adding to final database dump
+0264.622 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfsecurityevents.table.tmpr0.gz (121/66/fopen): adding to final database dump
+0264.634 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfsecurityevents.table.gz (122/66/fopen): adding to final database dump
+0264.645 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfsnipcache.table.tmpr0.gz (123/66/fopen): adding to final database dump
+0264.656 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfsnipcache.table.gz (124/66/fopen): adding to final database dump
+0264.666 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfstatus.table.tmpr12.gz (125/66/fopen): adding to final database dump
+0264.678 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfstatus.table.gz (126/66/fopen): adding to final database dump
+0264.689 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wftrafficrates.table.tmpr1.gz (127/66/fopen): adding to final database dump
+0264.703 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wftrafficrates.table.gz (128/66/fopen): adding to final database dump
+0264.714 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfwaffailures.table.tmpr0.gz (129/66/fopen): adding to final database dump
+0264.726 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wfwaffailures.table.gz (130/66/fopen): adding to final database dump
+0264.738 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wpo_404_detector.table.tmpr0.gz (131/66/fopen): adding to final database dump
+0264.751 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db-table-ourwpproject_wpo_404_detector.table.gz (132/66/fopen): adding to final database dump
+0264.811 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db.gz: finished writing out complete database file (317.1 KB)
+0264.990 (0) Total database tables backed up: 66 (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db.gz, size: 324784, sha1: 864b075cf969068f92441f4bf2c650573b76d6fb, sha256: 8a09ed1967a3fba0fd6c8e3e3b3b4d2e7ab0e4a15617fc6be38fd725dbf67411)
+0265.105 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip: plugins: This file has already been successfully uploaded
+0265.115 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip: themes: This file has already been successfully uploaded
+0265.124 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-uploads.zip: uploads: This file has already been successfully uploaded
+0265.135 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-mu-plugins.zip: mu-plugins: This file has already been successfully uploaded
+0265.146 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-others.zip: others: This file has already been successfully uploaded
+0265.157 (0) backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db.gz: db: This file has not yet been successfully uploaded: will queue
+0265.169 (0) Saving backup history. Total backup size: 95.4 MB
+0265.211 (0) Requesting upload of the files that have not yet been successfully uploaded (1)
+0265.251 (0) Cloud backup selection (1/1): googledrive with instance (1/1) (last)
+0265.264 (0) Beginning dispatch of backup to remote (googledrive) (instance identifier s-29ff236cf2fccd18383f8cf964b72c16)
+0267.183 (0) Google Drive: quota usage: used=1261 MB, total=15360 MB, available=14099 MB
+0267.193 (0) Google Drive: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db.gz: Attempting to upload to Google Drive (into folder id: 1JM8LfxPPpfGvHIKJ3cKXqnxB_Qx0i6PI)
+0271.997 (0) Googledrive chunked upload: 100 % uploaded
+0272.031 (0) Google Drive: OK: Archive backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db.gz uploaded in 4.83 seconds
+0272.052 (0) Recording as successfully uploaded: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db.gz
+0272.076 (0) Deleting local file: backup_2026-10-05-0951_ORCA_b4b2cfd61fde-db.gz: OK
+0272.109 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=4, retain_db=4
+0272.130 (0) Number of backup sets in history: 1; groups (db): 1
+0272.140 (0) Examining (for databases) backup set with group_id=0, nonce=b4b2cfd61fde, datestamp=1791193906 (Oct 05 2026 09:51:46)
+0272.152 (0) This backup set is the backup set just made, so will not be deleted.
+0272.153 (0) Number of backup sets in history: 1; groups (files): 1
+0272.164 (0) Examining (for files) backup set with nonce=b4b2cfd61fde, datestamp=1791193906 (Oct 05 2026 09:51:46)
+0272.164 (0) This backup set is the backup set just made, so will not be deleted.
+0272.175 (0) This backup set is the backup set just made, so will not be deleted.
+0272.175 (0) This backup set is the backup set just made, so will not be deleted.
+0272.176 (0) This backup set is the backup set just made, so will not be deleted.
+0272.176 (0) This backup set is the backup set just made, so will not be deleted.
+0272.176 (0) This backup set remains non-empty (f=1/d=1); will retain in history
+0272.187 (0) Retain: saving new backup history (sets now: 1) and finishing retain operation
+0272.229 (0) Resume backup (b4b2cfd61fde, 0): finish run
+0272.263 (0) Decremented the semaphore (fd) by 1
+0272.284 (0) Semaphore (fd) unlocked
+0272.294 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0272.330 (0) Deleting zip manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-plugins.zip.list.tmp)
+0272.344 (0) Deleting zip manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-themes.zip.list.tmp)
+0272.357 (0) Deleting zip manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-uploads.zip.list.tmp)
+0272.370 (0) Deleting zip manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-mu-plugins.zip.list.tmp)
+0272.386 (0) Deleting zip manifest (backup_2026-10-05-0951_ORCA_b4b2cfd61fde-others.zip.list.tmp)
+0272.399 (0) No email will/can be sent - the user has not configured an email address.
+0272.412 (0) The backup succeeded and is now complete

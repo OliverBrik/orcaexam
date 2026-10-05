@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="<?php echo esc_attr(orca_get_language()); ?>">
 <head>
-    <meta charset="<?php bloginfo('charset'); ?>">
+    <meta charset="<?php echo esc_attr(get_bloginfo('charset')); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
 </head>
@@ -11,8 +11,8 @@
     <div class="container header-inner">
         <div class="logo">
             <a href="<?php echo esc_url(home_url('/')); ?>">
-                <span class="brand-name"><?php bloginfo('name'); ?></span>
-                <span class="tagline"><?php bloginfo('description'); ?></span>
+                <span class="brand-name"><?php echo esc_html(get_bloginfo('name')); ?></span>
+                <span class="tagline"><?php echo esc_html(get_bloginfo('description')); ?></span>
             </a>
         </div>
 

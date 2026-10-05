@@ -1,0 +1,1492 @@
+<?php
+/**
+ * Burst Tracking class
+ *
+ * @package Burst
+ */
+
+namespace Burst\Frontend\Tracking;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	return;
+}
+
+use Burst\Frontend\Endpoint;
+use Burst\Frontend\Ip\Ip;
+use Burst\Frontend\Search\Search;
+use Burst\Traits\Database_Helper;
+use Burst\Traits\Helper;
+use Burst\Traits\Sanitize;
+use Burst\UserAgentParser\UserAgentParser;
+
+class Tracking {
+	use Database_Helper;
+	use Helper;
+	use Sanitize;
+
+	public string $beacon_enabled;
+	public array $lookup_table_cache = [];
+	public array $goals              = [];
+
+	/**
+	 * Maximum number of completed goals accepted from a single hit.
+	 *
+	 * A real page view completes only a handful of goals; the cap bounds the
+	 * work a single anonymous request can trigger, since every reported id
+	 * becomes a row in one INSERT on burst_goal_statistics.
+	 */
+	private const MAX_COMPLETED_GOALS_PER_HIT = 50;
+
+	/**
+	 * Register the GeoIP enrichment on construction.
+	 *
+	 * Done in the constructor (not init) so it also applies on the SHORTINIT beacon
+	 * endpoint, which instantiates `new Tracking()` directly but never calls init().
+	 */
+	public function __construct() {
+		if ( ! has_filter( 'burst_before_track_hit', [ self::class, 'add_geoip_location_data' ] ) ) {
+			add_filter( 'burst_before_track_hit', [ self::class, 'add_geoip_location_data' ], 10, 3 );
+		}
+	}
+
+	/**
+	 * Enrich the tracked hit with location data.
+	 *
+	 * The reader class is resolved lazily (at hit time): free uses the core Country
+	 * reader, Pro swaps in its City reader via the burst_geoip_handler filter.
+	 *
+	 * @param array<string, mixed>      $arr          The tracking data.
+	 * @param string                    $hit_type     The type of hit.
+	 * @param array<string, mixed>|null $previous_hit Previous hit data, if any.
+	 * @return array<string, mixed>
+	 */
+	public static function add_geoip_location_data( array $arr, string $hit_type, ?array $previous_hit ): array {
+		$handler = apply_filters( 'burst_geoip_handler', Tracking_GeoIp::class );
+		return $handler::add_location_data( $arr, $hit_type, $previous_hit );
+	}
+
+	/**
+	 * Constructor
+	 */
+	public function init(): void {
+		add_action( 'rest_api_init', [ $this, 'register_track_hit_route' ] );
+	}
+
+	/**
+	 * Register the track hit route
+	 */
+	public function register_track_hit_route(): void {
+		register_rest_route(
+			'burst/v1',
+			'track',
+			[
+				'methods'             => 'POST',
+				'callback'            => [ $this, 'rest_track_hit' ],
+				'permission_callback' => '__return_true',
+			]
+		);
+	}
+
+	/**
+	 * Burst Statistics endpoint for collecting hits
+	 */
+	public function track_hit( array $data ): string {
+		$is_test_hit = $this->is_test_hit( $data['url'] ?? '' );
+		if ( Ip::is_ip_blocked() && ! $is_test_hit ) {
+			return 'ip blocked';
+		}
+
+		// Validate & sanitize all data.
+		$sanitized_data = $this->prepare_tracking_data( $data );
+
+		if ( $this->blocked_by_custom_block_rules( $sanitized_data ) ) {
+			self::error_log( 'Custom block rule prevented tracking.' );
+			return 'blocked by custom rule';
+		}
+
+		if ( $sanitized_data['referrer'] === 'spammer' ) {
+			self::error_log( 'Referrer spam prevented.' );
+			return 'referrer is spam';
+		}
+
+		// A hit needs an identity: a uid (cookie / private mode) or a
+		// fingerprint (cookieless). The shipped tracker always sends one, so a
+		// hit without either is a bot, a replay or a crafted request; storing
+		// it would create a session per hit under dictionary id 0.
+		if ( '' === $sanitized_data['uid'] && '' === $sanitized_data['fingerprint'] ) {
+			self::error_log( 'Hit without uid or fingerprint rejected.' );
+			return 'missing identity';
+		}
+
+		$should_load_ecommerce = $sanitized_data['should_load_ecommerce'];
+		unset( $sanitized_data['should_load_ecommerce'] );
+
+		// Preserve the external link URL before it is unset below; it is passed to
+		// the burst_track_external_link action, which Pro handles.
+		$external_link_url = $sanitized_data['external_link_url'] ?? '';
+
+		// If new hit, get the last row.
+		$result = $this->get_hit_type( $sanitized_data );
+		if ( empty( $result ) ) {
+			return 'failed to determine hit type';
+		}
+
+		$hit_type     = $result['hit_type'];
+		$previous_hit = $result['last_row'];
+
+		$filtered_previous_hit = $previous_hit ?? [];
+		$sanitized_data        = apply_filters( 'burst_before_track_hit', $sanitized_data, $hit_type, $filtered_previous_hit );
+
+		// Full path (page_url + parameters) of this hit; compared against the
+		// previous hit in session_needs_update() to detect intra-session
+		// navigation.
+		$current_path = $this->create_path( $sanitized_data );
+
+		$session = [
+			'city_code'          => $sanitized_data['city_code'] ?? '',
+			'referrer'           => $sanitized_data['referrer'],
+			'bounce'             => $sanitized_data['bounce'] ?? 1,
+			'browser_id'         => $sanitized_data['browser_id'] ?? 0,
+			'browser_version_id' => $sanitized_data['browser_version_id'] ?? 0,
+			'platform_id'        => $sanitized_data['platform_id'] ?? 0,
+			'device_id'          => $sanitized_data['device_id'] ?? 0,
+		];
+		$session = apply_filters( 'burst_session_data', $session, $sanitized_data, $filtered_previous_hit );
+
+		$search_term = $sanitized_data['search_term'] ?? '';
+
+		// $statistic contains only fields that belong on burst_statistics.
+		unset(
+			$sanitized_data['city_code'],
+			$sanitized_data['referrer'],
+			$sanitized_data['bounce'],
+			$sanitized_data['external_link_url'],
+			$sanitized_data['browser_id'],
+			$sanitized_data['browser_version_id'],
+			$sanitized_data['platform_id'],
+			$sanitized_data['device_id'],
+			$sanitized_data['search_term']
+		);
+		$statistic = $sanitized_data;
+
+		// Keep track of the hosts, to check if this is a multi domain setup.
+		$destructured    = $this->sanitize_url( $statistic['host'] );
+		$host            = $destructured['host'] ?? '';
+		$normalized_host = preg_replace( '/^www\./i', '', $host );
+		$is_multi_domain = get_option( 'burst_is_multi_domain' );
+
+		if ( ! $is_multi_domain ) {
+			$first_domain = get_option( 'burst_first_domain' );
+			// only update this once, on the first used domain.
+			if ( empty( $first_domain ) ) {
+				update_option( 'burst_is_multi_domain', false );
+				update_option( 'burst_first_domain', $normalized_host );
+			} elseif ( $first_domain !== $normalized_host ) {
+				// if it's different from the first used, it is multi domain.
+				update_option( 'burst_is_multi_domain', true );
+			}
+		}
+
+		if ( $this->get_option_bool( 'filtering_by_domain' ) ) {
+			$session['host'] = $host;
+		}
+
+		// sessions.has_pageview: the session-grain form of the hit-grain
+		// "404 hits never count" rule (see Session_Grain_Shape). Set on the
+		// first non-404 hit of a session and never cleared; a session that only
+		// ever requests missing pages (a bot scan) keeps 0 and is invisible to
+		// every grain alike. Gated on the 3.7.1 table init like every added
+		// column: before it the column does not exist and naming it would fail
+		// the session write.
+		$flag_pageview = ( $statistic['page_type'] ?? '' ) !== '404' && $this->tracking_schema_at_least( '3.7.1' );
+
+		// Handle session: reuse existing or create new.
+		if ( isset( $previous_hit ) && $previous_hit['session_id'] > 0 ) {
+			$statistic['session_id'] = $previous_hit['session_id'];
+			// Only the 0 → 1 transition is written (a session that started on a
+			// 404 and now reaches a real page); the flag is already set for
+			// every other session, so this costs nothing on the common path.
+			if ( $flag_pageview && 0 === (int) ( $previous_hit['has_pageview'] ?? 1 ) ) {
+				$session['has_pageview'] = 1;
+			}
+			if ( $this->session_needs_update( $previous_hit, $session, $current_path ) ) {
+				$this->update_session( (int) $statistic['session_id'], $session );
+			}
+		} elseif ( $previous_hit === null ) {
+			if ( $flag_pageview ) {
+				$session['has_pageview'] = 1;
+			}
+			// New session — include all session-level fields.
+			// start_time records the session start and uid_id the visitor's
+			// dictionary id, so session-grain queries (sessions, visitors, bounce
+			// rate per dimension) can filter on a date range without joining the
+			// statistics table. The fingerprint-as-uid substitution below runs
+			// after this branch, so apply it here as well to resolve the same
+			// identity the hits will get.
+			//
+			// Gated on the 3.7.0 table init having run (an autoloaded option
+			// read, no schema probe): in the window between the plugin files
+			// landing and the admin/cron request that runs the init, the
+			// columns do not exist yet and naming them would fail the whole
+			// session insert.
+			if ( $this->tracking_schema_current() ) {
+				$session['start_time'] = time();
+				$identity              = (string) ( $statistic['fingerprint'] ?: $statistic['uid'] );
+				$session['uid_id']     = $this->resolve_uid_id( $identity );
+				// The dictionary insert above IS the "first time ever seen"
+				// event: a visitor whose row was created in this request starts
+				// their first session. Set synchronously — no known-uids
+				// bookkeeping or recalculation cron needed. While the seed task
+				// is still inserting historic uids, "created" does not mean
+				// "new" yet; the finalize step backstops that window with one
+				// bounded sweep.
+				if ( $this->uid_dictionary_seeded() ) {
+					$session['first_time_visit'] = $this->uid_created_this_request( $identity ) ? 1 : 0;
+				}
+			}
+			$statistic['session_id'] = $this->create_session( $session );
+		}
+
+		// If there is a fingerprint, use that instead of uid.
+		if ( $statistic['fingerprint'] && ! $statistic['uid'] ) {
+			$this->store_fingerprint_in_session( $statistic['fingerprint'], $should_load_ecommerce );
+			$statistic['uid'] = $statistic['fingerprint'];
+		}
+		unset( $statistic['fingerprint'] );
+
+		// uid dictionary: once the 3.7.0 table init has run, the identity goes
+		// into the permanent uid_id column and nothing else — the legacy uid
+		// string is not written (a fresh 3.7.0 install has no uid column at
+		// all; on an upgraded site the still-NOT NULL column takes MySQL's
+		// implicit '' under WordPress' non-strict sql_mode until the finalize
+		// step retires it). The backfill only touches historic rows with
+		// uid_id 0, so rows written from here on are already converged. A
+		// rollback to a pre-3.7.0 build therefore sees the hits of the 3.7.0
+		// period without a visitor identity — accepted. Before the init (the
+		// window between the plugin files landing and the first admin/cron
+		// request) the tracker writes the pre-3.7.0 column set only, so no
+		// insert names a column that does not exist yet. The gate is an
+		// autoloaded option read, not a schema probe.
+		if ( $this->tracking_schema_current() ) {
+			$statistic['uid_id'] = $this->resolve_uid_id( (string) $statistic['uid'] );
+			unset( $statistic['uid'] );
+		} else {
+			unset( $statistic['max_scroll'], $statistic['dwell_zones'] );
+		}
+
+		// Determine if URL changed (for update hit).
+		$previous_page_url = $previous_hit['page_url'] ?? '';
+		$new_page_url      = $statistic['page_url'];
+
+		if ( $this->get_option_bool( 'track_url_change' ) ) {
+			// Query and fragment both count as a URL change; a hash-only
+			// navigation is a separate pageview for single-page sites.
+			$previous_page_url .= ( $previous_hit['parameters'] ?? '' ) . '#' . ( $previous_hit['fragment'] ?? '' );
+			$new_page_url      .= $statistic['parameters'] . '#' . $statistic['fragment'];
+		}
+		$is_same_url = $previous_page_url === $new_page_url;
+
+		if ( $hit_type === 'update' && ( $is_same_url || $previous_hit['session_id'] === '' ) ) {
+			// Accumulate time_on_page on the existing statistic row.
+			$statistic['time_on_page'] += $previous_hit['time_on_page'];
+			$statistic['ID']            = $previous_hit['ID'];
+			$this->update_statistic( $statistic );
+		} elseif ( $hit_type === 'create' ) {
+			// URLs that resolve to no post (homepage-as-archive, blog page,
+			// category/search pages) arrive with page_id 0; give them the post
+			// id the dictionary already knows for this url, or else a stable
+			// negative dictionary id, so page queries can group on the integer
+			// page_id column without a 0-bucket and one url never splits over
+			// two ids. The key space is hard split: positive = WP post id,
+			// negative = burst_page_urls.ID. 404s are skipped — they are
+			// excluded from every page query anyway.
+			// Create hits ONLY: an update payload can legitimately carry
+			// page_id 0 (sent while the tracked document is gone), and the row's
+			// page identity was already established at create — substituting
+			// there would overwrite a real post id with a negative dictionary
+			// id. A 0 on update is stripped by remove_empty_values(), leaving
+			// the stored page_id untouched.
+			// Hits carrying a post id keep it and register their url in the
+			// dictionary: page queries display the url from the dictionary
+			// only, so a post first seen after the seed ran (a new product)
+			// must have a row there — the read path cannot derive it from the
+			// permalink, as the REST optimizer leaves plugin post types
+			// unregistered. Both cases are one lookup in resolve_page_id().
+			$page_id = (int) ( $statistic['page_id'] ?? 0 );
+			if ( $page_id >= 0
+				&& ( $statistic['page_type'] ?? '' ) !== '404'
+				&& '' !== (string) ( $statistic['page_url'] ?? '' ) ) {
+				$statistic['page_id'] = $this->resolve_page_id( (string) $statistic['page_url'], $page_id );
+			}
+			do_action( 'burst_before_create_statistic', $statistic );
+			$statistic['time'] = time();
+			$insert_id         = $this->create_statistic( $statistic );
+			if ( ! empty( $search_term ) ) {
+				$frontend_search = new Search();
+				$frontend_search->init();
+				$statistic['search_term'] = $search_term;
+			}
+			do_action( 'burst_after_create_statistic', $insert_id, $statistic );
+		}
+
+		$statistic_id = $statistic['ID'] ?? ( $insert_id ?? 0 );
+
+		if ( $statistic_id > 0 ) {
+			$completed_goals = $this->get_completed_goals( $statistic['completed_goals'], $statistic['page_url'], (int) ( $statistic['page_id'] ?? 0 ) );
+			if ( ! empty( $completed_goals ) ) {
+				$this->create_goal_statistic( $statistic_id, $completed_goals );
+			}
+
+			// External link tracking is a Pro-only feature. Pro hooks
+			// burst_track_external_link from Pro/Frontend/Tracking/tracking.php
+			// (where the track_external_links option and empty-URL checks live), so
+			// the free build carries no reference to the Pro class.
+			do_action( 'burst_track_external_link', (int) $statistic_id, $external_link_url );
+		}
+
+		return 'success';
+	}
+
+	/**
+	 * Create a path from the sanitized data.
+	 */
+	public function create_path( array $sanitized_data ): string {
+		return empty( $sanitized_data['parameters'] ) ? $sanitized_data['page_url'] : $sanitized_data['page_url'] . '?' . $sanitized_data['parameters'];
+	}
+
+	/**
+	 * Apply custom block rules to the sanitized data. Rules can be simple strings or regex patterns. Examples of regex patterns:
+	 * /text-in-url[0-9]+/i
+	 * /^https:\/\/domain\./
+	 * /facebook(bot|crawler)/i
+	 *
+	 * @param array $sanitized_data The sanitized tracking data.
+	 * @return bool If the request should be blocked.
+	 */
+	private function blocked_by_custom_block_rules( array $sanitized_data ): bool {
+		$block_rules = (string) $this->get_option( 'custom_block_rules' );
+		if ( empty( $block_rules ) ) {
+			return false;
+		}
+
+		$page_url   = $sanitized_data['host'] . $this->create_path( $sanitized_data );
+		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+		$referrer   = $sanitized_data['referrer'];
+
+		// Explode by new line, trim each line and filter out empty lines.
+		$block_rules_array = array_filter(
+			array_map( 'trim', explode( "\n", $block_rules ) ),
+			fn( $rule ) => $rule !== ''
+		);
+		foreach ( $block_rules_array as $rule ) {
+			// Check if rule looks like regex (starts and ends with / and has valid delimiters).
+			$is_regex = preg_match( '/^\/.*\/[imsxu]*$/', $rule );
+
+			if ( $is_regex ) {
+				$fields_to_check = [
+					$page_url,
+					$referrer,
+					$user_agent,
+				];
+
+				foreach ( $fields_to_check as $field ) {
+                    // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Intentionally suppressing errors for user-provided regex patterns.
+					$match_result = @preg_match( $rule, $field );
+
+					// Check for regex errors (returns false on invalid pattern).
+					if ( $match_result === false ) {
+						self::error_log( sprintf( 'Invalid regex pattern in custom block rules: %s', $rule ) );
+						// Skip to next rule.
+						break;
+					}
+
+					// Check for match.
+					if ( $match_result === 1 ) {
+						return true;
+					}
+				}
+			} elseif ( stripos( $page_url, $rule ) !== false ||
+				stripos( $referrer, $rule ) !== false ||
+				stripos( $user_agent, $rule ) !== false
+			) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Burst Statistics beacon endpoint for collecting hits
+	 */
+	public function beacon_track_hit(): string {
+		$request = (string) file_get_contents( 'php://input' );
+		if ( empty( $request ) ) {
+			wp_die( 'not a valid request' );
+		}
+
+		if ( $request === 'request=test' ) {
+			http_response_code( 200 );
+			return 'success';
+		}
+
+		$data = json_decode( $request, true );
+		if ( is_array( $data ) ) {
+			$this->track_hit( $data );
+		} else {
+			self::error_log( 'The posted data has to be an array. Please check if your Javascript code is cached, using the old version.' );
+		}
+
+		http_response_code( 200 );
+
+		return 'success';
+	}
+
+	/**
+	 * Burst Statistics rest_api endpoint for collecting hits
+	 */
+	public function rest_track_hit( \WP_REST_Request $request ): \WP_REST_Response {
+		$raw_data = $request->get_json_params();
+
+		// API expects JSON string, not pre-parsed array.
+		if ( ! is_string( $raw_data ) ) {
+			return $this->rest_tracking_response(
+				[ 'error' => 'Invalid request format' ],
+				400
+			);
+		}
+
+		$data = json_decode( $raw_data, true );
+		if ( isset( $data['request'] ) && $data['request'] === 'test' ) {
+			return $this->rest_tracking_response( [ 'success' => 'test' ], 200 );
+		}
+
+		if ( is_array( $data ) ) {
+			$this->track_hit( $data );
+		} else {
+			self::error_log( 'The posted data has to be an array. Please check if your Javascript code is cached, using the old version.' );
+		}
+
+		return $this->rest_tracking_response( [ 'success' => 'hit_tracked' ], 200 );
+	}
+
+	/**
+	 * Create a non-cacheable response for the public REST tracking route.
+	 *
+	 * @param array<string, string> $data   Response data.
+	 * @param int                   $status HTTP status code.
+	 */
+	private function rest_tracking_response( array $data, int $status ): \WP_REST_Response {
+		$response = new \WP_REST_Response( $data, $status );
+		$headers  = apply_filters( 'burst_tracking_response_headers', wp_get_nocache_headers() );
+		unset( $headers['Last-Modified'] );
+		foreach ( $headers as $header => $value ) {
+			$response->header( $header, $value );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Verify if this is a test hit, using nonce verification to prevent bypassing the ip block.
+	 */
+	private function is_test_hit( string $url ): bool {
+		if ( empty( $url ) ) {
+			return false;
+		}
+
+		$test_hit = str_contains( $url, 'burst_test_hit' );
+		if ( ! $test_hit ) {
+			return false;
+		}
+		// extract nonce from url.
+		$nonce = null;
+
+		// wp_parse_url() isn't available in shortinit.
+        // phpcs:ignore
+		$parsed = parse_url( $url );
+
+		if ( isset( $parsed['query'] ) ) {
+			parse_str( $parsed['query'], $query_params );
+			$nonce = $query_params['nonce'] ?? null;
+		}
+		$stored_token = get_transient( 'burst_onboarding_token' );
+		if ( empty( $stored_token ) || empty( $nonce ) ) {
+			return false;
+		}
+		return hash_equals( $stored_token, $nonce );
+	}
+
+	/**
+	 * Prepare and sanitize raw tracking data from the client for storage.
+	 *
+	 * @param array<string, mixed> $data Raw tracking data input.
+	 * @return array{
+	 *     completed_goals: array<int>,
+	 *     parameters: string,
+	 *     page_url: string,
+	 *     host: string,
+	 *     uid: string,
+	 *     fingerprint: string,
+	 *     referrer: string,
+	 *     external_link_url: string,
+	 *     time_on_page: int,
+	 *     bounce: int,
+	 *     browser_id?: int,
+	 *     browser_version_id?: int,
+	 *     platform_id?: int,
+	 *     device_id?: int,
+	 *     browser?: string,
+	 *     browser_version?: string,
+	 *     platform?: string,
+	 *     device?: string,
+	 *     should_load_ecommerce?: bool
+	 * }
+	 */
+	public function prepare_tracking_data( array $data ): array {
+		$parser          = new UserAgentParser();
+		$user_agent_data = isset( $data['user_agent'] ) ? $parser->get_user_agent_data( $data['user_agent'] ) : [
+			'browser'         => '',
+			'browser_version' => '',
+			'platform'        => '',
+			'device'          => '',
+		];
+
+		$defaults = [
+			'url'                   => null,
+			'time'                  => null,
+			'uid'                   => null,
+			'fingerprint'           => null,
+			'referrer_url'          => null,
+			'external_link_url'     => null,
+			'user_agent'            => null,
+			'time_on_page'          => null,
+			'completed_goals'       => null,
+			'page_id'               => null,
+			'page_type'             => null,
+			'should_load_ecommerce' => false,
+		];
+		$data     = wp_parse_args( $data, $defaults );
+
+		$privacy_level = $this->get_option( 'privacy_level', 'cookie' );
+		if ( $privacy_level === 'private_mode' ) {
+			$data['fingerprint'] = null;
+			$data['uid']         = $this->get_private_uid();
+		}
+
+		// update array.
+		$sanitized_data                    = [];
+		$destructured_url                  = $this->sanitize_url( $data['url'] );
+		$completed_goals                   = is_array( $data['completed_goals'] ?? null ) ? $data['completed_goals'] : [];
+		$sanitized_data['completed_goals'] = $this->sanitize_completed_goal_ids( $completed_goals );
+		// required.
+		$sanitized_data['parameters'] = $destructured_url['parameters'];
+		// The fragment column is varchar(255); cap it so a strict sql_mode never rejects the whole hit.
+		$sanitized_data['fragment'] = substr( $destructured_url['fragment'], 0, 255 );
+		// required.
+		$sanitized_data['page_url'] = $destructured_url['path'];
+		$sanitized_data['host']     = $destructured_url['scheme'] . '://' . $destructured_url['host'];
+		// required.
+		$sanitized_data['uid']                   = $this->sanitize_uid( $data['uid'] );
+		$sanitized_data['fingerprint']           = $this->sanitize_fingerprint( $data['fingerprint'] );
+		$sanitized_data['referrer']              = $this->sanitize_referrer( $data['referrer_url'] );
+		$sanitized_data['external_link_url']     = $this->sanitize_external_link_url( $data['external_link_url'] );
+		$sanitized_data['browser_id']            = self::get_lookup_table_id( 'browser', $user_agent_data['browser'] );
+		$sanitized_data['browser_version_id']    = self::get_lookup_table_id( 'browser_version', $user_agent_data['browser_version'] );
+		$sanitized_data['platform_id']           = self::get_lookup_table_id( 'platform', $user_agent_data['platform'] );
+		$sanitized_data['device_id']             = self::get_lookup_table_id( 'device', $user_agent_data['device'] );
+		$sanitized_data['time_on_page']          = $this->sanitize_time_on_page( $data['time_on_page'] );
+		$sanitized_data['bounce']                = 1;
+		$sanitized_data['page_id']               = (int) $data['page_id'];
+		$sanitized_data['page_type']             = $this->sanitize_page_identifier( $data['page_type'] );
+		$sanitized_data['max_scroll']            = isset( $data['max_scroll'] ) ? min( 100, max( 0, (int) $data['max_scroll'] ) ) : 0;
+		$sanitized_data['dwell_zones']           = $this->sanitize_dwell_zones( $data['dwell_zones'] ?? '' );
+		$sanitized_data['should_load_ecommerce'] = filter_var( $data['should_load_ecommerce'], FILTER_VALIDATE_BOOLEAN );
+		$sanitized_data['search_term']           = isset( $data['search_term'] ) ? sanitize_text_field( wp_unslash( (string) $data['search_term'] ) ) : '';
+
+		return $sanitized_data;
+	}
+
+	/**
+	 * Generate a private mode UID.
+	 */
+	private function get_private_uid(): string {
+		$ip   = Ip::get_ip_address();
+		$ua   = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+		$salt = $this->get_rotating_salt();
+		return hash( 'sha256', $ip . $ua . $salt );
+	}
+
+	/**
+	 * Get the rotating salt for private mode tracking.
+	 */
+	private function get_rotating_salt(): string {
+		$option_name = 'burst_rotating_salt';
+		$stored      = get_option( $option_name, [] );
+		$today       = gmdate( 'Y-m-d' );
+
+		if ( ! is_array( $stored ) || empty( $stored['salt'] ) || empty( $stored['date'] ) || $stored['date'] !== $today ) {
+			$salt   = bin2hex( random_bytes( 32 ) );
+			$stored = [
+				'date' => $today,
+				'salt' => $salt,
+			];
+			update_option( $option_name, $stored, false );
+		}
+
+		return $stored['salt'];
+	}
+
+	/**
+	 * Sanitize the page identifier.
+	 *
+	 * @param string|null $page_identifier the page_identifier.
+	 * @return string the sanitized identifier.
+	 */
+	private function sanitize_page_identifier( ?string $page_identifier ): string {
+		if ( empty( $page_identifier ) ) {
+			return '';
+		}
+
+		if ( ! function_exists( 'get_post_types' ) ) {
+			require_once ABSPATH . 'wp-includes/post.php';
+		}
+
+		$page_identifier = trim( $page_identifier );
+		$post_types      = get_post_types( [ 'public' => true ] );
+		$fixed_values    = [
+			'front-page',
+			'blog-index',
+			'date-archive',
+			'404',
+			'archive-generic',
+			'wc-shop',
+			'tag',
+			'tax',
+			'author',
+			'search',
+			'category',
+		];
+		$fixed_values    = array_unique( array_merge( $fixed_values, array_keys( $post_types ) ) );
+		if ( in_array( $page_identifier, $fixed_values, true ) ) {
+			return $page_identifier;
+		}
+
+		return sanitize_title( $page_identifier );
+	}
+
+	/**
+	 * Sanitize tracked external link URL.
+	 */
+	private function sanitize_external_link_url( ?string $external_link_url ): string {
+		if ( empty( $external_link_url ) ) {
+			return '';
+		}
+
+		$url = esc_url_raw( $external_link_url, [ 'http', 'https' ] );
+		if ( empty( $url ) ) {
+			return '';
+		}
+
+		$parsed = wp_parse_url( $url );
+		if ( empty( $parsed['scheme'] ) || empty( $parsed['host'] ) ) {
+			return '';
+		}
+
+		if ( ! in_array( $parsed['scheme'], [ 'http', 'https' ], true ) ) {
+			return '';
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Determines if the current hit is an update or create operation and retrieves the last matching row if applicable.
+	 *
+	 * @param array<string, mixed> $data Data for the current hit.
+	 * @return array{
+	 *     hit_type?: 'create'|'update',
+	 *     last_row?: array<string, mixed>|null
+	 * } Associative array containing hit type and last row (if any), or an empty array if not applicable.
+	 */
+	public function get_hit_type( array $data ): array {
+		// Determine if it is an update hit based on the absence of certain data points.
+		$is_update_hit = $data['browser_id'] === 0 && $data['browser_version_id'] === 0 && $data['platform_id'] === 0 && $data['device_id'] === 0;
+
+		// Attempt to get the last user statistic based on the presence or absence of certain conditions.
+		$page_url = $is_update_hit ? $data['host'] . $this->create_path( $data ) : '';
+		$fragment = $is_update_hit ? (string) ( $data['fragment'] ?? '' ) : '';
+		$uid      = $data['fingerprint'] ?: $data['uid'];
+		$last_row = $this->get_last_user_statistic( $uid, $page_url, $fragment );
+
+		// Determine the appropriate action based on the result.
+		if ( ! empty( $last_row ) ) {
+			// A matching row exists, classify as update and return the last row.
+			$hit_type = $is_update_hit ? 'update' : 'create';
+			return [
+				'hit_type' => $hit_type,
+				'last_row' => $last_row,
+			];
+		} elseif ( $is_update_hit ) {
+			// No matching row exists for an update hit, indicating a data inconsistency or error.
+			// Indicate failure to find a matching row for an update.
+			return [];
+		} else {
+			// No row exists and it's not an update hit, classify as create with no last row.
+			return [
+				'hit_type' => 'create',
+				'last_row' => null,
+			];
+		}
+	}
+
+	/**
+	 * Check if session needs updating by comparing previous hit data with new session data.
+	 *
+	 * @param array  $previous_hit     Previous hit data from burst_statistics (may include host/city_code via JOIN).
+	 * @param array  $new_session_data New session data to be written.
+	 * @param string $current_path     Full path (page_url + parameters) of the current hit.
+	 * @return bool True if update is needed, false if data hasn't changed.
+	 */
+	private function session_needs_update( array $previous_hit, array $new_session_data, string $current_path ): bool {
+		// If we don't have previous hit data, update to be safe.
+		if ( empty( $previous_hit ) ) {
+			return true;
+		}
+
+		// The has_pageview flag is only present when it flips 0 → 1 (see
+		// track_hit()); that transition must reach the row regardless of url.
+		if ( isset( $new_session_data['has_pageview'] ) ) {
+			return true;
+		}
+
+		$old_url      = $previous_hit['page_url'] ?? '';
+		$old_params   = $previous_hit['parameters'] ?? '';
+		$old_full_url = empty( $old_params ) ? $old_url : $old_url . '?' . $old_params;
+
+		if ( $old_full_url !== $current_path ) {
+			return true;
+		}
+
+		// 2. Check host (only relevant for multi-domain with filtering enabled)
+		// Note: host will only be in previous_hit if JOIN was performed
+		if ( isset( $previous_hit['host'] ) && isset( $new_session_data['host'] ) ) {
+			$old_host = $previous_hit['host'] ?? '';
+			$new_host = $new_session_data['host'];
+
+			if ( $old_host !== $new_host ) {
+				// Host changed (cross-domain navigation).
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sanitize completed goal IDs.
+	 *
+	 * Casts every value to a positive integer, drops zero/duplicate ids and caps
+	 * the total. The endpoint is unauthenticated, so the cap keeps a single hit
+	 * from turning an arbitrarily large client array into one oversized INSERT.
+	 *
+	 * @param array<int, mixed> $completed_goals Array of goal IDs from the client.
+	 * @return array<int> Cleaned list of unique, positive goal IDs as integers.
+	 */
+	public function sanitize_completed_goal_ids( array $completed_goals ): array {
+		$completed_goals = array_map( 'absint', $completed_goals );
+		// Drop the zeros left by absint on non-numeric input.
+		$completed_goals = array_filter( $completed_goals, static fn ( int $id ): bool => $id > 0 );
+		$completed_goals = array_values( array_unique( $completed_goals ) );
+		return array_slice( $completed_goals, 0, self::MAX_COMPLETED_GOALS_PER_HIT );
+	}
+
+	/**
+	 * Get the id of the lookup table for the given item and value.
+	 *
+	 * Resolves a single value with a targeted query instead of loading the whole
+	 * lookup table into memory. The table can only grow by one row per hit (one
+	 * distinct value), the same ceiling as the statistics table, but a large
+	 * table must never make the tracking hot path more expensive - so lookups are
+	 * bounded regardless of table size, backed by a per-request memo and a
+	 * per-value object cache.
+	 */
+	public function get_lookup_table_id( string $item, ?string $value ): int {
+		if ( empty( $value ) ) {
+			return 0;
+		}
+
+		$possible_items = [ 'browser', 'browser_version', 'platform', 'device' ];
+		if ( ! in_array( $item, $possible_items, true ) ) {
+			return 0;
+		}
+
+		// Per-request memo: a value that recurs within one request costs no query.
+		if ( isset( $this->lookup_table_cache[ $item ][ $value ] ) ) {
+			return $this->lookup_table_cache[ $item ][ $value ];
+		}
+
+		// Per-value object cache: a warm cache resolves without touching the DB.
+		// Short TTL so admin cleanups (see App::clear_spam_browsers) self-heal.
+		$cache_key = self::lookup_cache_key( $item, $value );
+		$id        = wp_cache_get( $cache_key, 'burst' );
+
+		if ( false === $id ) {
+			$id = $this->resolve_lookup_table_id( $item, $value );
+			if ( $id > 0 ) {
+				// Literal TTL (seconds): time constants aren't guaranteed on the
+				// SHORTINIT beacon path, matching get_active_goals() above.
+				wp_cache_set( $cache_key, $id, 'burst', 300 );
+			}
+		}
+
+		$id = (int) $id;
+		if ( $id > 0 ) {
+			$this->lookup_table_cache[ $item ][ $value ] = $id;
+		}
+
+		return $id;
+	}
+
+	/**
+	 * Build the object-cache key for a single lookup value.
+	 *
+	 * @param string $item  Validated lookup type.
+	 * @param string $value The looked-up value.
+	 */
+	public static function lookup_cache_key( string $item, string $value ): string {
+		return 'burst_' . $item . '_lookup_' . crc32( $value );
+	}
+
+	/**
+	 * Find (or create) the lookup-table row ID for a single value.
+	 *
+	 * Targeted SELECT first, INSERT only on a miss. INSERT IGNORE plus the UNIQUE
+	 * index on `name` makes concurrent inserts of the same value race-safe: the
+	 * loser's insert is ignored and the winning id is re-read.
+	 *
+	 * @param string $item  Validated lookup type (browser|browser_version|platform|device).
+	 * @param string $value The value to resolve.
+	 */
+	private function resolve_lookup_table_id( string $item, string $value ): int {
+		global $wpdb;
+		$table = $wpdb->prefix . "burst_{$item}s";
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table derived from the validated $item safe list; value is prepared.
+		$id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$table} WHERE name = %s LIMIT 1", $value ) );
+		if ( $id > 0 ) {
+			return $id;
+		}
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table derived from the validated $item safe list; value is prepared.
+		$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$table} (name) VALUES (%s)", $value ) );
+		$id = (int) $wpdb->insert_id;
+		if ( $id > 0 ) {
+			return $id;
+		}
+
+		// Insert was ignored (a concurrent request already created the row): re-read it.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table derived from the validated $item safe list; value is prepared.
+		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$table} WHERE name = %s ORDER BY ID ASC LIMIT 1", $value ) );
+	}
+
+	/**
+	 * Get tracking options for localize_script and burst.js integration.
+	 *
+	 * @return array{
+	 *     tracking: array{
+	 *         isInitialHit: bool,
+	 *         lastUpdateTimestamp: int,
+	 *         beacon_url: string
+	 *     },
+	 *     options: array{
+	 *         cookieless: int,
+	 *         pageUrl: string,
+	 *         beacon_enabled: int,
+	 *         do_not_track: int,
+	 *         enable_turbo_mode: int,
+	 *         track_url_change: int,
+	 *         track_external_links: int,
+	 *         cookie_retention_days: int
+	 *     },
+	 *     goals: array{
+	 *         completed: array<mixed>,
+	 *         scriptUrl: string,
+	 *         active: array<array<string, mixed>>
+	 *     },
+	 *     cache: array{
+	 *         uid: string|null,
+	 *         fingerprint: string|null,
+	 *         isUserAgent: string|null,
+	 *         isDoNotTrack: bool|null,
+	 *         useCookies: bool|null
+	 *     }
+	 * }
+	 */
+	public function get_options(): array {
+		$script_version = filemtime( BURST_PATH . '/assets/js/build/burst-goals.js' );
+		return apply_filters(
+			'burst_tracking_options',
+			[
+				'tracking' => [
+					'isInitialHit'        => true,
+					'initialized'         => false,
+					'lastUpdateTimestamp' => 0,
+					'beacon_url'          => self::get_beacon_url(),
+					'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
+				],
+				'options'  => [
+					'privacy_level'         => $this->get_option( 'privacy_level', 'cookie' ),
+					'cookieless'            => ( $this->get_option( 'privacy_level', 'cookie' ) !== 'cookie' ) ? 1 : 0,
+					'pageUrl'               => get_permalink(),
+					'beacon_enabled'        => (int) $this->beacon_enabled(),
+					'do_not_track'          => $this->get_option_int( 'enable_do_not_track' ),
+					'enable_turbo_mode'     => $this->get_option_int( 'enable_turbo_mode' ),
+					'track_url_change'      => $this->get_option_int( 'track_url_change' ),
+					'track_external_links'  => $this->get_option_int( 'track_external_links' ),
+					'cookie_retention_days' => apply_filters( 'burst_cookie_retention_days', 30 ),
+					'page_id'               => is_singular() ? (int) get_queried_object_id() : 0,
+					'consent_api_active'    => \Burst\Admin\Tasks::is_wp_consent_api_active() ? 1 : 0,
+					'debug'                 => defined( 'BURST_DEBUG' ) && \BURST_DEBUG ? 1 : 0,
+				],
+				'goals'    => [
+					'completed' => [],
+					'scriptUrl' => apply_filters( 'burst_goals_script_url', BURST_URL . 'assets/js/build/burst-goals.js?v=' . $script_version ),
+					'active'    => $this->get_active_goals( [ 'clicks', 'views' ] ),
+				],
+				'cache'    => [
+					'uid'          => null,
+					'fingerprint'  => null,
+					'isUserAgent'  => null,
+					'isDoNotTrack' => null,
+					'useCookies'   => null,
+				],
+			]
+		);
+	}
+
+	/**
+	 * Check if status is beacon
+	 */
+	public function beacon_enabled(): bool {
+		if ( empty( $this->beacon_enabled ) ) {
+			$this->beacon_enabled = Endpoint::get_tracking_status() === 'beacon' ? 'true' : 'false';
+		}
+		return $this->beacon_enabled === 'true';
+	}
+
+	/**
+	 * Get all active goals from the database with single query + cached result.
+	 *
+	 * @param array $goal_types list of goal types to select.
+	 * @return array<array<string, mixed>> Filtered list of active goals.
+	 */
+	public function get_active_goals( array $goal_types ): array {
+		// Validate and clean goal types.
+		foreach ( $goal_types as $key => $type ) {
+			if ( ! in_array( $type, [ 'hook', 'visits', 'clicks', 'views' ], true ) ) {
+				unset( $goal_types[ $key ] );
+			}
+		}
+
+		// If no valid goal types remain, return empty array.
+		if ( empty( $goal_types ) ) {
+			return [];
+		}
+
+		// Prevent queries during install or uninstall.
+		if (
+			defined( 'BURST_INSTALL_TABLES_RUNNING' ) ||
+			defined( 'BURST_UNINSTALLING' )
+		) {
+			return [];
+		}
+
+		if ( ! $this->table_exists( 'burst_goals' ) ) {
+			return [];
+		}
+
+		// Check if all requested types are already cached.
+		$cache_miss = false;
+		foreach ( $goal_types as $type ) {
+			if ( ! isset( $this->goals[ $type ] ) ) {
+				$cache_miss = true;
+				break;
+			}
+		}
+
+		// If all types are cached, combine and return them.
+		if ( ! $cache_miss ) {
+			$goals = [];
+			foreach ( $goal_types as $type ) {
+				$goals = array_merge( $goals, $this->goals[ $type ] );
+			}
+			return $goals;
+		}
+
+		// Get full active goals list from in-memory or object cache.
+		if ( isset( $this->goals['all'] ) ) {
+			$all_goals = $this->goals['all'];
+		} else {
+			$all_goals = wp_cache_get( 'burst_active_goals_all', 'burst' );
+			if ( ! $all_goals ) {
+				global $wpdb;
+				// Single query: fetch ALL active goals (no type condition).
+				$all_goals = $wpdb->get_results(
+					"SELECT * FROM {$wpdb->prefix}burst_goals WHERE status = 'active'",
+					ARRAY_A
+				);
+				// Cache full set for reuse across calls.
+				wp_cache_set( 'burst_active_goals_all', $all_goals, 'burst', 60 );
+			}
+			// Memoize for this request.
+			$this->goals['all'] = $all_goals;
+		}
+
+		// Filter goals by goal type, and store in $this->goals[$type].
+		foreach ( $goal_types as $type ) {
+			if ( ! isset( $this->goals[ $type ] ) ) {
+				$this->goals[ $type ] = array_values(
+					array_filter(
+						$all_goals,
+						static function ( array $goal ) use ( $type ): bool {
+							return isset( $goal['type'] ) && $goal['type'] === $type;
+						}
+					)
+				);
+			}
+		}
+
+		// Return combined array for the requested goal_types.
+		$filtered = [];
+		foreach ( $goal_types as $type ) {
+			$filtered = array_merge( $filtered, $this->goals[ $type ] );
+		}
+
+		return $filtered;
+	}
+
+
+	/**
+	 * Checks if a specified goal is completed based on the provided page URL.
+	 *
+	 * @param int    $goal_id The ID of the goal to check.
+	 * @param string $page_url The current page URL.
+	 * @param array  $goals the available goals.
+	 * @param int    $page_id Post ID of the tracked page, as sent in the hit payload. 0 if unknown.
+	 * @return bool Returns true if the goal is completed, false otherwise.
+	 */
+	public function goal_is_completed( int $goal_id, string $page_url, array $goals, int $page_id = 0 ): bool {
+		$goal = array_filter(
+			$goals,
+			function ( $goal ) use ( $goal_id ) {
+				return isset( $goal['ID'] ) && (int) $goal['ID'] === $goal_id;
+			}
+		);
+		$goal = reset( $goal );
+
+		// Check if the goal and page URL are properly set.
+		if ( empty( $goal['type'] ) || empty( $goal['url'] ) || empty( $page_url ) ) {
+			return false;
+		}
+
+		switch ( $goal['type'] ) {
+			case 'visits':
+				// Match on the post ID of the tracked page. Runs on the tracking
+				// endpoints (REST and the SHORTINIT beacon), so there is no main
+				// query here — is_singular()/get_queried_object_id() are unusable
+				// and the beacon doesn't even load them.
+				if ( ! empty( $goal['page_id'] ) && $page_id > 0 && (int) $goal['page_id'] === $page_id ) {
+					return true;
+				}
+				// Improved URL comparison logic could go here.
+				// @TODO: Maybe add support for * and ? wildcards?.
+				if ( rtrim( $page_url, '/' ) === rtrim( $goal['url'], '/' ) ) {
+					return true;
+				}
+				break;
+
+			default:
+				return false;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get completed goals by combining client-side and server-side results.
+	 *
+	 * @param array<int> $completed_client_goals Array of goal IDs completed on the client.
+	 * @param string     $page_url               Page URL used to verify server-side goal completion.
+	 * @param int        $page_id                Post ID of the tracked page, 0 if unknown.
+	 * @return array<int> List of completed goal IDs.
+	 */
+	public function get_completed_goals( array $completed_client_goals, string $page_url, int $page_id = 0 ): array {
+		$completed_server_goals = [];
+		$server_goals           = $this->get_active_goals( [ 'visits' ] );
+		// if server side goals exist.
+		if ( count( $server_goals ) > 0 ) {
+			// loop through server side goals.
+			foreach ( $server_goals as $goal ) {
+				// if goal is completed.
+				if ( $this->goal_is_completed( $goal['ID'], $page_url, $server_goals, $page_id ) ) {
+					// add goal id to completed goals array.
+					$completed_server_goals[] = $goal['ID'];
+				}
+			}
+		}
+
+		// merge completed client goals and completed server goals.
+		return array_merge( $completed_client_goals, $completed_server_goals );
+	}
+
+	/**
+	 * Get last user statistic from the burst_statistics table.
+	 *
+	 * @param string $uid         The user identifier or fingerprint.
+	 * @param string $page_url    Optional. Specific page URL to narrow down the result.
+	 * @param string $fragment    Optional. URL fragment of the hit; when given the row must carry the same fragment.
+	 * @return array{
+	 *     ID?: int,
+	 *     session_id?: int,
+	 *     parameters?: string,
+	 *     fragment?: string,
+	 *     time_on_page?: int,
+	 *     bounce?: int,
+	 *     has_pageview?: int,
+	 *     page_url?: string
+	 * } Associative array of the last user statistic, or empty array if none found.
+	 */
+	public function get_last_user_statistic( string $uid, string $page_url = '', string $fragment = '' ): array {
+		if ( strlen( $uid ) === 0 ) {
+			return [];
+		}
+		$need_session_data = $this->get_option_bool( 'filtering_by_domain' );
+
+		global $wpdb;
+		$where = '';
+		if ( $page_url !== '' ) {
+			$destructured_url = $this->sanitize_url( $page_url );
+			$parameters       = $destructured_url['parameters'];
+			$where            = ! empty( $parameters ) ? $wpdb->prepare( ' AND s.parameters = %s', $parameters ) : '';
+			if ( $fragment !== '' ) {
+				$where .= $wpdb->prepare( ' AND s.fragment = %s', $fragment );
+			}
+		}
+
+		$where .= $wpdb->prepare( ' AND s.time > %d', strtotime( '-30 minutes' ) );
+
+		// Once the 3.7.0 table init has run, rows are matched on the permanent
+		// uid_id column — translate the browser-supplied uid string first.
+		// resolve_uid_id() caches per request, so this is free for the later
+		// resolves in the same hit. Hits written before the init carry uid_id
+		// 0 and are not matched: one session boundary per visitor active at
+		// the upgrade moment, accepted. Before the init rows are matched on
+		// the legacy varchar uid column.
+		$uid_column = 's.uid';
+		if ( $this->tracking_schema_current() ) {
+			$resolved = $this->resolve_uid_id( $uid );
+			// A failed resolve must not match rows stored under uid_id 0:
+			// different visitors would merge onto one row within the
+			// 30-minute window. Treat the hit as a new visitor instead.
+			if ( 0 === $resolved ) {
+				return [];
+			}
+			$uid        = (string) $resolved;
+			$uid_column = 's.uid_id';
+		}
+
+		$host_select = $need_session_data ? ', sess.host' : '';
+		// sessions.has_pageview exists from the 3.7.1 table init on; read it
+		// so track_hit() can flag the 0 → 1 transition without a second query.
+		$pageview_select = $this->tracking_schema_at_least( '3.7.1' ) ? ', sess.has_pageview' : '';
+
+		$last_row = $wpdb->get_row(
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where, $host_select and $pageview_select are from trusted prepared parts, $uid_column is a fixed column name.
+			$wpdb->prepare(
+				"SELECT
+                s.ID,
+                s.session_id,
+                s.parameters,
+                s.fragment,
+                s.time_on_page,
+                sess.bounce,
+                s.page_url
+                {$host_select}
+                {$pageview_select}
+            FROM {$wpdb->prefix}burst_statistics s
+            LEFT JOIN {$wpdb->prefix}burst_sessions sess ON s.session_id = sess.ID
+            WHERE {$uid_column} = %s {$where}
+            ORDER BY s.ID DESC
+            LIMIT 1",
+				$uid
+			)
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		);
+
+		return $last_row ? (array) $last_row : [];
+	}
+
+	/**
+	 * Create session in {prefix}_burst_sessions
+	 */
+	public function create_session( array $data ): int {
+		global $wpdb;
+		$data = $this->remove_empty_values( $data );
+		$wpdb->insert(
+			$wpdb->prefix . 'burst_sessions',
+			$data
+		);
+
+		if ( $wpdb->last_error ) {
+			self::error_log( 'Failed to create session. Error: ' . $wpdb->last_error );
+			return 0;
+		}
+
+		return $wpdb->insert_id;
+	}
+
+	/**
+	 * Update session in {prefix}_burst_sessions
+	 *
+	 * @param int   $session_id The session ID to update.
+	 * @param array $data Data to update in the session.
+	 * @return bool True on success, false on failure.
+	 */
+	public function update_session( int $session_id, array $data ): bool {
+		global $wpdb;
+
+		// Remove empty values from the data array.
+		$data = $this->remove_empty_values( $data );
+		// Perform the update operation.
+		$result = $wpdb->update(
+			$wpdb->prefix . 'burst_sessions',
+			$data,
+			[ 'ID' => $session_id ]
+		);
+
+		return $result !== false;
+	}
+
+	/**
+	 * Create a statistic in {prefix}_burst_statistics
+	 *
+	 * @param array $data Data to insert.
+	 * @return int The newly created statistic ID on success, or false on failure.
+	 */
+	public function create_statistic( array $data ): int {
+		global $wpdb;
+		unset( $data['host'] );
+		$data = $this->remove_empty_values( $data );
+
+		if ( ! $this->required_values_set( $data ) ) {
+            // phpcs:ignore
+            self::error_log( 'Missing required values for statistic creation. Data: ' . print_r( $data, true ) );
+			return 0;
+		}
+
+		$inserted = $wpdb->insert( $wpdb->prefix . 'burst_statistics', $data );
+		if ( $inserted === false ) {
+			self::error_log( 'Failed to create statistic. Error: ' . $wpdb->last_error );
+			return 0;
+		}
+
+		$this->stamp_last_hit_time( (int) ( $data['time'] ?? time() ) );
+
+		return $wpdb->insert_id;
+	}
+
+	/**
+	 * Record the newest hit's timestamp in the burst_last_hit_time option, at most
+	 * once per hour. Tracking_Health::has_recent_hits() reads this stamp so the
+	 * loopback re-test backoff and the dashboard tracking notice never have to run
+	 * a statistics query on requests without the admin bootstrap. Autoloaded on
+	 * purpose: this runs on the beacon hot path, where alloptions is already
+	 * loaded and a non-autoloaded read would add a query per hit.
+	 *
+	 * @param int $time Unix timestamp of the hit being recorded.
+	 */
+	private function stamp_last_hit_time( int $time ): void {
+		if ( $time - (int) get_option( 'burst_last_hit_time', 0 ) > HOUR_IN_SECONDS ) {
+			update_option( 'burst_last_hit_time', $time, true );
+		}
+	}
+
+	/**
+	 * Update a statistic in {prefix}_burst_statistics
+	 *
+	 * @param array $data Data to update, must include 'ID' for the statistic.
+	 * @return bool True on success, false on failure.
+	 */
+	public function update_statistic( array $data ): bool {
+		global $wpdb;
+		unset( $data['host'] );
+		$data = $this->remove_empty_values( $data );
+		// Ensure 'ID' is present for update.
+		if ( ! isset( $data['ID'] ) ) {
+            // phpcs:ignore
+            self::error_log( 'Missing ID for statistic update. Data: ' . print_r( $data, true ) );
+			return false;
+		}
+
+		$updated = $wpdb->update( $wpdb->prefix . 'burst_statistics', $data, [ 'ID' => (int) $data['ID'] ] );
+		if ( $updated === false ) {
+			self::error_log( 'Failed to update statistic. Error: ' . $wpdb->last_error );
+			return false;
+		}
+
+		return $updated > 0;
+	}
+
+	/**
+	 * Create goal statistic in {prefix}_burst_goal_statistics
+	 */
+	public function create_goal_statistic( int $statistic_id, array $goal_ids ): void {
+		global $wpdb;
+		$values = [];
+		foreach ( $goal_ids as $goal_id ) {
+			$values[] = $wpdb->prepare( '(%d, %d)', $goal_id, $statistic_id );
+		}
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Using prepare for each value above.
+		$wpdb->query( "INSERT IGNORE INTO {$wpdb->prefix}burst_goal_statistics (goal_id, statistic_id)  VALUES " . implode( ',', $values ) );
+	}
+
+	/**
+	 * Remove null, empty, and specific values from an array.
+	 *
+	 * Skips removal for the 'parameters' key. Also unsets 'completed_goals'.
+	 *
+	 * @param array<string, mixed> $data Input associative array of values.
+	 * @return array<string, mixed> Filtered associative array.
+	 */
+	public function remove_empty_values( array $data ): array {
+		foreach ( $data as $key => $value ) {
+			// skip parameters.
+			if ( $key === 'parameters' ) {
+				continue;
+			}
+
+			// remove null or empty string.
+			if ( $value === null || $value === '' ) {
+				unset( $data[ $key ] );
+				continue;
+			}
+
+			// remove *_id if 0.
+			if ( str_ends_with( $key, '_id' ) && (int) $value === 0 ) {
+				unset( $data[ $key ] );
+			}
+		}
+
+		unset( $data['completed_goals'] );
+		return $data;
+	}
+
+	/**
+	 * Store fingerprint in PHP session.
+	 *
+	 * @param string $fingerprint           The fingerprint to store.
+	 * @param bool   $should_load_ecommerce Whether to load ecommerce data.
+	 */
+	public function store_fingerprint_in_session( string $fingerprint, bool $should_load_ecommerce ): void {
+		$serverside_goals = $this->get_active_goals( [ 'visits' ] );
+		// no need for session without serverside goals.
+		if ( empty( $serverside_goals ) && ! $should_load_ecommerce ) {
+			return;
+		}
+
+		if ( ! $this->start_session_safely() ) {
+			return;
+		}
+
+		$_SESSION['burst_fingerprint'] = $this->sanitize_fingerprint( $fingerprint );
+	}
+
+	/**
+	 * Retrieve fingerprint from PHP session.
+	 *
+	 * @return string The stored fingerprint or empty string if not found.
+	 */
+	public function get_fingerprint_from_session(): string {
+		if ( ! $this->start_session_safely() ) {
+			return '';
+		}
+
+		return $this->sanitize_fingerprint( sanitize_text_field( $_SESSION['burst_fingerprint'] ?? '' ) );
+	}
+
+	/**
+	 * Safely start a PHP session with error handling.
+	 *
+	 * @return bool True if session started successfully, false otherwise.
+	 */
+	private function start_session_safely(): bool {
+		if ( session_status() === PHP_SESSION_ACTIVE ) {
+			return true;
+		}
+
+		// Check if session save path exists and is writable.
+		$save_path = session_save_path();
+		$is_valid  = false;
+
+		// Non-file session handlers (redis, memcached, database, custom) don't
+		// use a filesystem path, so the directory checks below don't apply and
+		// the uploads fallback would break a working setup. Detect those either
+		// by the save handler or by a URL-style save path such as "redis://" or
+		// "tcp://host:port" and leave the configured session storage untouched.
+		$is_file_handler = 'files' === ini_get( 'session.save_handler' );
+		$is_url_path     = is_string( $save_path ) && preg_match( '~^[a-z][a-z0-9+.-]*://~i', $save_path );
+
+		if ( ! $is_file_handler || $is_url_path ) {
+			$is_valid = true;
+		} elseif ( ! empty( $save_path ) ) {
+			// Silence open_basedir warnings: outside the allowed paths these
+			// return false, which correctly triggers the uploads fallback below.
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Suppressing potential open_basedir warnings for edge cases.
+			$is_valid = @is_dir( $save_path ) && @is_writable( $save_path );
+		}
+
+		if ( ! $is_valid ) {
+			// Load WordPress default constants manually.
+			require_once ABSPATH . WPINC . '/default-constants.php';
+			wp_plugin_directory_constants();
+			wp_cookie_constants();
+
+			// Try to use WordPress uploads directory as fallback.
+			$upload_dir          = wp_upload_dir();
+			$custom_session_path = $upload_dir['basedir'] . '/burst-sessions';
+
+			if ( ! file_exists( $custom_session_path ) ) {
+				wp_mkdir_p( $custom_session_path );
+			}
+
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
+			if ( is_dir( $custom_session_path ) && is_writable( $custom_session_path ) ) {
+				session_save_path( $custom_session_path );
+			}
+		}
+
+        // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Suppressing session warnings as we handle errors gracefully.
+		$result = @session_start();
+
+		if ( ! $result ) {
+			self::error_log( 'Burst: Session start failed' );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Check if required values are set. The identity is a resolved dictionary
+	 * id (uid_id), or the legacy uid string while the pre-3.7.0 write set is
+	 * still in use (see tracking_schema_current()); a uid_id of 0 is stripped
+	 * by remove_empty_values() and never counts as an identity.
+	 */
+	public function required_values_set( array $data ): bool {
+		return (
+			( isset( $data['uid'] ) || ! empty( $data['uid_id'] ) ) &&
+			isset( $data['page_url'] ) &&
+			isset( $data['parameters'] )
+		);
+	}
+}

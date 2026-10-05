@@ -21,8 +21,11 @@ $orca_category_colours = array(
     'announcements' => '#c084fc',
 );
 
-/* Create a few useful categories once when an administrator visits the blog. */
-if ( current_user_can( 'manage_categories' ) ) {
+/* Only create starter categories during an authorized form submission. */
+if ( 'POST' === ($_SERVER['REQUEST_METHOD'] ?? '')
+    && 'create_post' === ($_POST['orca_blog_action'] ?? '')
+    && current_user_can('manage_options') && current_user_can('manage_categories')
+    && orca_verify_form_nonce($_POST['orca_blog_nonce'] ?? '', 'orca_create_blog_post') ) {
     foreach ( array( 'Updates', 'Events', 'Announcements' ) as $orca_category_name ) {
         if ( ! term_exists( $orca_category_name, 'category' ) ) {
             wp_insert_term( $orca_category_name, 'category' );
@@ -37,7 +40,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
     if ( 'create_post' === $action ) {
         if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
             $error = orca_text('Kun administratorer kan udgive indlæg.', 'Only site administrators can publish posts.');
-        } elseif ( ! isset( $_POST['orca_blog_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['orca_blog_nonce'] ) ), 'orca_create_blog_post' ) ) {
+        } elseif ( ! isset( $_POST['orca_blog_nonce'] ) || ! orca_verify_form_nonce( $_POST['orca_blog_nonce'], 'orca_create_blog_post' ) ) {
             $error = orca_text('Din session er udløbet. Prøv igen.', 'Your session expired. Please try again.');
         } else {
             $title   = sanitize_text_field( wp_unslash( $_POST['post_title'] ?? '' ) );
@@ -120,7 +123,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
     if ( in_array( $action, array( 'like', 'unlike' ), true ) ) {
         $post_id  = absint( $_POST['post_id'] ?? 0 );
         $is_ajax  = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) );
-        if ( ! isset( $_POST['orca_blog_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['orca_blog_nonce'] ) ), 'orca_like_' . $post_id ) || 'post' !== get_post_type( $post_id ) ) {
+        if ( ! isset( $_POST['orca_blog_nonce'] ) || ! orca_verify_form_nonce( $_POST['orca_blog_nonce'], 'orca_like_' . $post_id ) || 'post' !== get_post_type( $post_id ) || 'publish' !== get_post_status($post_id) ) {
             if ( $is_ajax ) {
                 wp_send_json_error( array( 'message' => orca_text('Dit like kunne ikke gemmes. Prøv igen.', 'That like could not be saved. Please try again.') ), 400 );
             }
@@ -153,7 +156,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
 
     if ( 'comment' === $action ) {
         $post_id = absint( $_POST['post_id'] ?? 0 );
-        if ( ! isset( $_POST['orca_blog_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['orca_blog_nonce'] ) ), 'orca_comment_' . $post_id ) || ! comments_open( $post_id ) ) {
+        if ( ! isset( $_POST['orca_blog_nonce'] ) || ! orca_verify_form_nonce( $_POST['orca_blog_nonce'], 'orca_comment_' . $post_id ) || 'post' !== get_post_type($post_id) || 'publish' !== get_post_status($post_id) || ! comments_open( $post_id ) ) {
             $error = orca_text('Kommentarer er ikke tilgængelige for dette indlæg.', 'Comments are not available for this post.');
         } else {
             $comment = sanitize_textarea_field( wp_unslash( $_POST['comment'] ?? '' ) );
@@ -311,7 +314,7 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
             }
             ?>
             <article class="orca-card" id="post-<?php echo esc_attr( $post_id ); ?>">
-                <h2><?php the_title(); ?></h2>
+                <h2><?php echo esc_html(get_the_title()); ?></h2>
                 <?php $post_categories = get_the_category( $post_id ); if ( $post_categories ) : ?>
                     <div class="orca-categories">
                         <?php foreach ( $post_categories as $post_category ) :
@@ -320,8 +323,8 @@ if ( $filter_category && ! term_exists( $filter_category, 'category' ) ) {
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-                <p class="orca-meta"><?php echo esc_html( orca_text('Af', 'By') ); ?> <?php the_author(); ?> · <?php echo esc_html( $post_time ); ?></p>
-                <div class="orca-content"><?php the_content(); ?></div>
+                <p class="orca-meta"><?php echo esc_html( orca_text('Af', 'By') ); ?> <?php echo esc_html(get_the_author()); ?> · <?php echo esc_html( $post_time ); ?></p>
+                <div class="orca-content"><?php echo orca_safe_post_content(); ?></div>
                 <div class="orca-actions">
                     <form method="post">
                         <?php wp_nonce_field( 'orca_like_' . $post_id, 'orca_blog_nonce' ); ?>

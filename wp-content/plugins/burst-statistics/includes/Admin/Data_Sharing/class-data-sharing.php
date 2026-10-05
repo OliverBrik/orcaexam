@@ -1,0 +1,349 @@
+<?php
+
+namespace Burst\Admin\Data_Sharing;
+
+use Burst\Traits\Helper;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Class Data_Sharing
+ *
+ * Manages anonymous data collection scheduling and execution
+ */
+class Data_Sharing {
+	use Helper;
+
+	/**
+	 * The option name for storing the random offset
+	 */
+	const OFFSET_OPTION = 'burst_telemetry_offset';
+
+	/**
+	 * The cron hook name for the actual data send
+	 */
+	const CRON_HOOK = 'burst_telemetry_send';
+
+	/**
+	 * The kill switch URL
+	 */
+	const KILL_SWITCH_URL = 'https://burst.ams3.cdn.digitaloceanspaces.com/feedback/switch.txt';
+
+	private int $current_send_time;
+
+	private int $capture_data_from;
+
+	private int $last_send;
+
+	private array $api_urls = [
+		'production' => 'https://api.burst-statistics.com/v2/telemetry',
+		'staging'    => 'http://localhost:3000/v2/telemetry',
+	];
+
+	/**
+	 * Get API URL for data sharing.
+	 *
+	 * @return string The API URL to send telemetry data to
+	 */
+	private function get_api_url(): string {
+		if ( wp_get_environment_type() === 'production' ) {
+			return $this->api_urls['production'];
+		}
+
+		return $this->api_urls['staging'];
+	}
+
+	/**
+	 * Init Data Sharing
+	 */
+	public function init(): void {
+		add_action( 'burst_monthly', [ $this, 'schedule_telemetry' ] );
+
+		add_action( self::CRON_HOOK, [ $this, 'send_monthly_telemetry' ] );
+	}
+
+	/**
+	 * Schedule the telemetry send.
+	 *
+	 * The very first time, a random offset (24-720h) is used to spread the
+	 * initial load across the month over all sites. Every subsequent run uses a
+	 * small fixed delay so the send does not fire in the same request as all the
+	 * other tasks hooked onto burst_monthly.
+	 */
+	public function schedule_telemetry(): void {
+		if ( wp_next_scheduled( self::CRON_HOOK ) ) {
+			return;
+		}
+
+		$offset_hours = get_option( self::OFFSET_OPTION, false );
+
+		if ( false === $offset_hours ) {
+			// First scheduling only: random offset to spread the initial load across the month.
+			$offset_hours = wp_rand( 24, 720 );
+			update_option( self::OFFSET_OPTION, $offset_hours, false );
+			$delay = $offset_hours * HOUR_IN_SECONDS;
+		} else {
+			// Subsequent schedulings: small fixed delay so crons on burst_monthly don't all start at once.
+			$delay = 30 * MINUTE_IN_SECONDS;
+		}
+
+		wp_schedule_single_event( time() + $delay, self::CRON_HOOK );
+	}
+
+	/**
+	 * Send monthly telemetry data
+	 *
+	 * This is the actual execution method that sends data to the API
+	 */
+	public function send_monthly_telemetry(): void {
+		if ( $this->is_staging() ) {
+			return;
+		}
+
+		$this->current_send_time = time();
+
+		if ( ! $this->check_kill_switch() ) {
+			// Kill switch is activated, do not send data but update the last send time to avoid repeated checks.
+			update_option( 'burst_last_telemetry_send', $this->current_send_time, false );
+			return;
+		}
+
+		$this->last_send = (int) get_option( 'burst_last_telemetry_send', 0 );
+
+		if ( ! $this->is_send_due( $this->last_send, $this->current_send_time ) ) {
+			return;
+		}
+
+		$this->capture_data_from = $this->get_capture_start( $this->last_send, $this->current_send_time );
+
+		$aggregation = new Data_Aggregation( $this->capture_data_from, $this->current_send_time );
+		try {
+			$response = $aggregation->send_to_api( $this->get_api_url(), [], true );
+
+			if ( ! is_wp_error( $response ) ) {
+				$status_code = wp_remote_retrieve_response_code( $response );
+				if ( $status_code >= 200 && $status_code < 300 ) {
+					$body        = wp_remote_retrieve_body( $response );
+					$parsed_body = json_decode( $body, true );
+					if ( is_array( $parsed_body ) && isset( $parsed_body['community_data'] ) ) {
+						set_transient( 'burst_community_data', $parsed_body['community_data'], YEAR_IN_SECONDS );
+					}
+				}
+			}
+
+			update_option( 'burst_last_telemetry_send', $this->current_send_time, false );
+			delete_option( 'burst_ai_chat_questions' );
+		} catch ( \Exception $e ) {
+			self::error_log(
+				sprintf(
+					'Burst Telemetry Send Error: %s',
+					$e->getMessage()
+				)
+			);
+		}
+	}
+
+	/**
+	 * Whether enough time has passed since the last send to send again.
+	 *
+	 * The send is triggered by burst_monthly, which runs every MONTH_IN_SECONDS
+	 * (30 days). Comparing against a calendar month (strtotime( '-1 month' ))
+	 * skipped every send that followed a 31-day month, so the check uses the
+	 * same 30-day unit with a day of slack for cron timing.
+	 *
+	 * @param int $last_send Timestamp of the last send, 0 if never sent.
+	 * @param int $now       Current timestamp.
+	 * @return bool True when a send is due.
+	 */
+	private function is_send_due( int $last_send, int $now ): bool {
+		if ( 0 === $last_send ) {
+			return true;
+		}
+
+		return $last_send <= $now - ( MONTH_IN_SECONDS - DAY_IN_SECONDS );
+	}
+
+	/**
+	 * Get the start of the period to aggregate for this send.
+	 *
+	 * Starts right after the last send, but never more than a month back: the
+	 * endpoint buckets sites by monthly visitors, so a longer window (e.g. after
+	 * a missed send) would place the site in a too-high visitor range.
+	 *
+	 * @param int $last_send Timestamp of the last send, 0 if never sent.
+	 * @param int $now       Current timestamp.
+	 * @return int Timestamp to capture data from.
+	 */
+	private function get_capture_start( int $last_send, int $now ): int {
+		return max( $last_send + 1, $now - MONTH_IN_SECONDS );
+	}
+
+	/**
+	 * Send test telemetry data
+	 *
+	 * This method is used for testing and will send data with the is_test flag set to true.
+	 * Test data will be validated but not stored by the API.
+	 *
+	 * @param string|null $custom_endpoint Optional custom endpoint URL to send data to.
+	 * @return array Response from the API
+	 */
+	public function send_test_telemetry( ?string $custom_endpoint = null ): array {
+		$this->current_send_time = time();
+		$this->last_send         = (int) get_option( 'burst_last_telemetry_send', 0 );
+		$this->capture_data_from = $this->get_capture_start( $this->last_send, $this->current_send_time );
+
+		$aggregation = new Data_Aggregation( $this->capture_data_from, $this->current_send_time, true );
+
+		try {
+			// Use custom endpoint if provided, otherwise use default.
+			$api_url = $custom_endpoint ?? $this->get_api_url();
+
+			// Use the existing send_to_api method with return_response flag.
+			$response = $aggregation->send_to_api( $api_url, [ 'timeout' => 30 ], true );
+
+			// Check if response indicates data collection failure.
+			if ( is_array( $response ) && isset( $response['success'] ) && ! $response['success'] && isset( $response['errors'] ) ) {
+				return array_merge( $response, [ 'endpoint' => $api_url ] );
+			}
+
+			// Check for WP_Error.
+			if ( is_wp_error( $response ) ) {
+				/**
+				 * Note: This case should be rare since send_to_api is expected to throw exceptions on WP_Error, but we check just in case.
+				 *
+				 * @var \WP_Error $response
+				 */
+				return [
+					'success'  => false,
+					'message'  => 'API request failed: ' . $response->get_error_message(),
+					'endpoint' => $api_url,
+				];
+			}
+
+			if ( empty( $response ) ) {
+				return [
+					'success'  => false,
+					'message'  => 'No response received from API',
+					'endpoint' => $api_url,
+				];
+			}
+
+			$status_code = wp_remote_retrieve_response_code( $response );
+			$body        = wp_remote_retrieve_body( $response );
+			$parsed_body = json_decode( $body, true );
+
+			if ( is_array( $parsed_body ) && isset( $parsed_body['community_data'] ) ) {
+				set_transient( 'burst_community_data', $parsed_body['community_data'], YEAR_IN_SECONDS );
+			}
+
+			return [
+				'success'     => $status_code >= 200 && $status_code < 300,
+				'status_code' => $status_code,
+				'message'     => $parsed_body['message'] ?? $body,
+				'data'        => $parsed_body ?? null,
+				'endpoint'    => $api_url,
+			];
+		} catch ( \Exception $e ) {
+			return [
+				'success' => false,
+				'message' => 'Exception: ' . $e->getMessage(),
+			];
+		}
+	}
+
+	/**
+	 * Check if the current site is a staging environment.
+	 *
+	 * @return bool True if staging environment, false otherwise
+	 */
+	private function is_staging(): bool {
+		if ( wp_get_environment_type() !== 'production' ) {
+			return true;
+		}
+
+		$site_url   = site_url();
+		$parsed_url = wp_parse_url( $site_url );
+		$host       = $parsed_url['host'] ?? '';
+
+		// Check for localhost (with or without path).
+		if ( $host === 'localhost' || strpos( $site_url, 'localhost/' ) !== false ) {
+			return true;
+		}
+
+		// Check for .local domain.
+		if ( str_contains( $host, '.local' ) ) {
+			return true;
+		}
+
+		// Define staging subdomains/patterns.
+		$staging_patterns = [
+			'staging.',
+			'.dev.',
+			'.test.',
+			'.stg.',
+			'stg.',
+			'test.',
+			'beta.',
+			'acceptance.',
+			'.instawp.co',
+		];
+
+		// Check each pattern.
+		foreach ( $staging_patterns as $pattern ) {
+			// Pattern starts with a dot: check if it appears anywhere in the host.
+			if ( str_starts_with( $pattern, '.' ) ) {
+				if ( str_contains( $host, $pattern ) ) {
+					return true;
+				}
+			} elseif ( str_ends_with( $pattern, '.' ) ) {
+				if ( str_starts_with( $host, $pattern ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+	/**
+	 * Check the kill switch
+	 *
+	 * @return bool Whether to proceed with sending data
+	 */
+	private function check_kill_switch(): bool {
+		$response = wp_remote_get(
+			self::KILL_SWITCH_URL,
+			[
+				'timeout'   => 5,
+				'sslverify' => true,
+			]
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return true;
+		}
+
+		$body = wp_remote_retrieve_body( $response );
+		$body = trim( $body );
+
+		if ( 'disabled' === $body ) {
+			return false;
+		}
+
+		if ( 'enabled' === $body ) {
+			return true;
+		}
+
+		if ( is_numeric( $body ) ) {
+			$percentage = intval( $body );
+			if ( $percentage >= 0 && $percentage <= 100 ) {
+				$random = wp_rand( 1, 100 );
+
+				return $random <= $percentage;
+			}
+		}
+
+		return true;
+	}
+}

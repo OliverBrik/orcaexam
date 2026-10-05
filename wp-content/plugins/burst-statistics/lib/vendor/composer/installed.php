@@ -1,0 +1,98 @@
+<?php return array(
+    'root' => array(
+        'name' => '__root__',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => 'a4d3dd3b90e3cfc5ce596ede0a5f22fdd0f72a8c',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        '__root__' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => 'a4d3dd3b90e3cfc5ce596ede0a5f22fdd0f72a8c',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'composer/ca-bundle' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
+        ),
+        'donatj/phpuseragentparser' => array(
+            'pretty_version' => 'v1.12.0',
+            'version' => '1.12.0.0',
+            'reference' => 'f76fed972ce4a3d7d58fe99a8627132606b58046',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../donatj/phpuseragentparser',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'geoip2/geoip2' => array(
+            'pretty_version' => 'v2.13.0',
+            'version' => '2.13.0.0',
+            'reference' => '6a41d8fbd6b90052bc34dff3b4252d0f88067b23',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../geoip2/geoip2',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'matomo/referrer-spam-blacklist' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
+        ),
+        'matomo/referrer-spam-list' => array(
+            'pretty_version' => '4.0.5',
+            'version' => '4.0.5.0',
+            'reference' => 'e3254bf771f6520aa9701276a74c5a19df535d4a',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../matomo/referrer-spam-list',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'matomo/searchengine-and-social-list' => array(
+            'pretty_version' => '3.14.0',
+            'version' => '3.14.0.0',
+            'reference' => '2331533592dbfc5df354fd2313136907b1a19075',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../matomo/searchengine-and-social-list',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'maxmind-db/reader' => array(
+            'pretty_version' => 'v1.14.0',
+            'version' => '1.14.0.0',
+            'reference' => 'f3c92f68b3bec42a9aa780368399e03dc6b91e89',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../maxmind-db/reader',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'maxmind/web-service-common' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
+        ),
+        'piwik/referrer-spam-blacklist' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
+        ),
+        'piwik/searchengine-and-social-list' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
+        ),
+    ),
+);

@@ -1,0 +1,940 @@
+<?php
+namespace Burst\Admin\Mailer;
+
+use Burst\Admin\Reports\Report_Logs;
+use Burst\Admin\Reports\DomainTypes\Report_Log_Status;
+use Burst\Traits\Admin_Helper;
+use Burst\Traits\Helper;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Class to send an e-mail
+ */
+class Mailer {
+	use Helper;
+	use Admin_Helper;
+
+	/**
+	 * Report ID.
+	 */
+	public int $report_id = 0;
+
+	/**
+	 * Queue ID.
+	 */
+	public string $queue_id = '';
+
+	/**
+	 * Batch ID.
+	 */
+	public ?int $batch_id = null;
+
+	/**
+	 * Batch size.
+	 */
+	public int $batch_size = 10;
+
+	/**
+	 * Logo URL
+	 */
+	public string $logo = '';
+
+	/**
+	 * Dark mode logo URL
+	 */
+	public string $logo_dark = '';
+
+	/**
+	 * Recipient e-mail addresses
+	 */
+	public array $to = [];
+
+	/**
+	 * Pretty domain name (e.g., example.com)
+	 */
+	public string $pretty_domain = '';
+
+	/**
+	 * Email title
+	 */
+	public string $title = '';
+
+	/**
+	 * Email subtitle
+	 */
+	public string $subtitle = '';
+
+	/**
+	 * Email message body
+	 */
+	public string $message = '';
+
+	/**
+	 * Email introduction
+	 */
+	public string $introduction = '';
+
+	/**
+	 * Email AI summary
+	 */
+	public string $ai_summary = '';
+
+	/**
+	 * Brand color
+	 */
+	public string $brand_color = '';
+
+	/**
+	 * Email subject
+	 */
+	public string $subject = '';
+
+	/**
+	 * Read more section
+	 */
+	public string $read_more = '';
+
+	/**
+	 * Sent by text
+	 */
+	public string $sent_by_text = '';
+
+	/**
+	 * Email blocks
+	 */
+	public array $blocks = [];
+
+	/**
+	 * Template filenames
+	 */
+	public string $template_filename = '';
+
+	/**
+	 * Block template filename
+	 */
+	public string $block_template_filename = '';
+
+	/**
+	 * Read more template filename
+	 */
+	public string $read_more_template_filename = '';
+
+	/**
+	 * Sent count.
+	 */
+	private int $sent_count = 0;
+
+	/**
+	 * Failed count.
+	 */
+	private int $failed_count = 0;
+
+	/**
+	 * Failed emails grouped by reason
+	 *
+	 * @var array<string, array<int, string>>
+	 */
+	private array $errors = [];
+
+	/**
+	 * The read more url.
+	 */
+	private ?string $read_more_button_url = null;
+	/**
+	 * The read more url.
+	 */
+	private ?string $read_more_button_text = null;
+	/**
+	 * The read more url.
+	 */
+	private ?string $read_more_header = null;
+
+	/**
+	 * The read more url.
+	 */
+	private ?string $read_more_teaser = null;
+
+	/**
+	 * When true, the read more section is always rendered, even if a custom
+	 * footer is configured. Used by story-format reports, which require the
+	 * "view report" button to be present regardless of footer customization.
+	 */
+	private bool $force_read_more = false;
+
+	/**
+	 * Set report ID.
+	 *
+	 * @param int $report_id Report ID.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_report_id( int $report_id ): Mailer {
+		$this->report_id = $report_id;
+
+		return $this;
+	}
+
+	/**
+	 * Set queue ID.
+	 *
+	 * @param string $queue_id Queue ID.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_queue_id( string $queue_id ): Mailer {
+		$this->queue_id = $queue_id;
+
+		return $this;
+	}
+
+	/**
+	 * Set batch ID.
+	 *
+	 * @param int|null $batch_id Batch ID.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_batch_id( ?int $batch_id ): Mailer {
+		$this->batch_id = $batch_id;
+
+		return $this;
+	}
+
+	/**
+	 * Set batch size.
+	 *
+	 * @param int $batch_size Batch size.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_batch_size( int $batch_size ): Mailer {
+		$this->batch_size = $batch_size;
+
+		return $this;
+	}
+
+	/**
+	 * Set logo URL.
+	 *
+	 * @param string $logo Logo URL.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_logo( string $logo ): Mailer {
+		$this->logo = $logo;
+
+		return $this;
+	}
+
+	/**
+	 * Set dark mode logo URL.
+	 *
+	 * @param string $logo_dark Dark mode logo URL.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_logo_dark( string $logo_dark ): Mailer {
+		$this->logo_dark = $logo_dark;
+
+		return $this;
+	}
+
+	/**
+	 * Set recipient e-mail addresses.
+	 *
+	 * @param array $to Recipient e-mail addresses.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_to( array $to ): Mailer {
+		$this->to = $to;
+
+		return $this;
+	}
+
+	/**
+	 * Set pretty domain.
+	 *
+	 * @param string $pretty_domain Pretty domain.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_pretty_domain( string $pretty_domain ): Mailer {
+		$this->pretty_domain = $pretty_domain;
+
+		return $this;
+	}
+
+	/**
+	 * Set title.
+	 *
+	 * @param string $title Title.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_title( string $title ): Mailer {
+		$this->title = $title;
+
+		return $this;
+	}
+
+	/**
+	 * Set subtitle.
+	 *
+	 * @param string $subtitle Subtitle.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_subtitle( string $subtitle ): Mailer {
+		$this->subtitle = $subtitle;
+
+		return $this;
+	}
+
+	/**
+	 * Set message.
+	 *
+	 * @param string $message Message.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_message( string $message ): Mailer {
+		$this->message = $message;
+
+		return $this;
+	}
+
+	/**
+	 * Set introduction.
+	 *
+	 * @param string $introduction Introduction.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_introduction( string $introduction ): Mailer {
+		$this->introduction = $introduction;
+
+		return $this;
+	}
+
+	/**
+	 * Set AI summary.
+	 *
+	 * @param string $ai_summary AI summary text.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_ai_summary( string $ai_summary ): Mailer {
+		$this->ai_summary = $ai_summary;
+
+		return $this;
+	}
+
+	/**
+	 * Set the brand color.
+	 */
+	public function set_brand_color( string $brand_color ): Mailer {
+		$this->brand_color = $brand_color;
+
+		return $this;
+	}
+
+	/**
+	 * Set subject.
+	 *
+	 * @param string $subject Subject.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_subject( string $subject ): Mailer {
+		$this->subject = $subject;
+
+		return $this;
+	}
+
+	/**
+	 * Set read more section.
+	 *
+	 * @param string $read_more Read more section.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_read_more( string $read_more ): Mailer {
+		$this->read_more = $read_more;
+
+		return $this;
+	}
+
+	/**
+	 * Set sent by text.
+	 *
+	 * @param string $sent_by_text Sent by text.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_sent_by_text( string $sent_by_text ): Mailer {
+		$this->sent_by_text = $sent_by_text;
+
+		return $this;
+	}
+
+	/**
+	 * Set blocks.
+	 *
+	 * @param array $blocks Blocks.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_blocks( array $blocks ): Mailer {
+		$this->blocks = $blocks;
+
+		return $this;
+	}
+
+	/**
+	 * Set template filename.
+	 *
+	 * @param string $template_filename Template filename.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_template_filename( string $template_filename ): Mailer {
+		$this->template_filename = $template_filename;
+
+		return $this;
+	}
+
+	/**
+	 * Set block template filename.
+	 *
+	 * @param string $block_template_filename Block template filename.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_block_template_filename( string $block_template_filename ): Mailer {
+		$this->block_template_filename = $block_template_filename;
+
+		return $this;
+	}
+
+	/**
+	 * Set read more template filename.
+	 *
+	 * @param string $read_more_template_filename Read more template filename.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	public function set_read_more_template_filename( string $read_more_template_filename ): Mailer {
+		$this->read_more_template_filename = $read_more_template_filename;
+
+		return $this;
+	}
+
+	/**
+	 * Set sent count.
+	 *
+	 * @param int $sent_count Sent count.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	private function set_sent_count( int $sent_count ): Mailer {
+		$this->sent_count = $sent_count;
+
+		return $this;
+	}
+
+	/**
+	 * Set failed count.
+	 *
+	 * @param int $failed_count Failed count.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	private function set_failed_count( int $failed_count ): Mailer {
+		$this->failed_count = $failed_count;
+
+		return $this;
+	}
+
+	/**
+	 * Set errors.
+	 *
+	 * @param array $errors Errors.
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	private function set_errors( array $errors ): Mailer {
+		foreach ( $errors as $type => $values ) {
+			if ( ! isset( $this->errors[ $type ] ) ) {
+				$this->errors[ $type ] = [];
+			}
+
+			$this->errors[ $type ] = array_merge(
+				$this->errors[ $type ],
+				(array) $values
+			);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Clear errors.
+	 *
+	 * @return Mailer Returns the Mailer instance for method chaining.
+	 */
+	private function clear_errors(): Mailer {
+		$this->errors = [];
+
+		return $this;
+	}
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$mail_templates_path = BURST_PATH . 'includes/Admin/Mailer/templates/';
+
+		$this->set_pretty_domain( preg_replace( '/^https?:\/\//', '', home_url() ) )
+			->set_logo( BURST_URL . 'assets/img/burst-email-logo.png' )
+			->set_logo_dark( BURST_URL . 'assets/img/burst-email-logo-dark.png' );
+
+		$introduction_enabled = (bool) apply_filters( 'burst_email_introduction_enabled', false );
+		$this->set_introduction( $introduction_enabled ? (string) burst_get_option( 'email_introduction', '' ) : '' );
+		$this->set_brand_color( apply_filters( 'burst_brand_color', '#2B8133' ) );
+
+		// translators: %s is the website's domain name (e.g., example.com), used in HTML context.
+		$this->set_subject( sprintf( _x( 'Your weekly insights for %s are here!', 'domain name', 'burst-statistics' ), $this->pretty_domain ) )
+			// translators: %s is the website's domain name (e.g., example.com), used in HTML context.
+			->set_title( sprintf( _x( 'Your weekly insights for %s are here!', 'domain name', 'burst-statistics' ), '<br /><span style="font-size: 30px; font-weight: 700;">' . $this->pretty_domain . '</span><br />' ) )
+			->set_block_template_filename( apply_filters( 'burst_email_block_template', $mail_templates_path . 'block.html' ) )
+			->set_read_more_template_filename( apply_filters( 'burst_email_readmore_template', $mail_templates_path . 'read-more.html' ) )
+			->set_template_filename( apply_filters( 'burst_email_template', $mail_templates_path . 'email.html' ) )
+			->set_message( '' )
+			// set a default, can be overridden if story format.
+			->set_read_more_button_url( $this->admin_url( 'burst#/statistics' ) )
+			->set_read_more_button_text( __( 'Explore your insights', 'burst-statistics' ) )
+			->set_read_more_header( __( 'Find out more', 'burst-statistics' ) )
+			// translators: %s is the website's domain name (e.g., example.com).
+			->set_read_more_teaser( sprintf( __( 'Dive deeper into your analytics and uncover new opportunities for %s.', 'burst-statistics' ), $this->pretty_domain ) );
+	}
+
+	/**
+	 * Set the read more url.
+	 */
+	public function set_read_more_button_url( string $url ): Mailer {
+		$this->read_more_button_url = $url;
+		return $this;
+	}
+
+	/**
+	 * Get the read more url.
+	 */
+	public function get_read_more_button_url(): ?string {
+		return $this->read_more_button_url;
+	}
+
+	/**
+	 * Set the read more url.
+	 */
+	public function set_read_more_button_text( string $text ): Mailer {
+		$this->read_more_button_text = $text;
+		return $this;
+	}
+
+	/**
+	 * Set the read more url.
+	 */
+	public function set_read_more_header( string $text ): Mailer {
+		$this->read_more_header = $text;
+		return $this;
+	}
+
+	/**
+	 * Set the read more url.
+	 */
+	public function set_read_more_teaser( string $text ): Mailer {
+		$this->read_more_teaser = $text;
+		return $this;
+	}
+
+	/**
+	 * Force the read more section to render even when a custom footer is set.
+	 */
+	public function set_force_read_more( bool $force ): Mailer {
+		$this->force_read_more = $force;
+		return $this;
+	}
+
+	/**
+	 * Configure the read more section
+	 */
+	private function set_read_more_section(): Mailer {
+		$fallback_label = __( 'Or open the report directly:', 'burst-statistics' );
+
+		if ( $this->force_read_more && ! empty( $this->introduction ) ) {
+			$this->set_read_more_teaser( '' );
+		}
+
+		$this->set_read_more(
+			str_replace(
+				[
+					'{title}',
+					'{message}',
+					'{read_more_url}',
+					'{read_more_text}',
+					'{read_more_fallback_label}',
+				],
+				[
+					$this->read_more_header,
+					// translators: %s is the website's domain name (e.g., example.com).
+					$this->read_more_teaser,
+					$this->read_more_button_url,
+					$this->read_more_button_text,
+					esc_html( $fallback_label ),
+				],
+				file_get_contents( $this->read_more_template_filename ) // phpcs:ignore
+			)
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Should schedule batch sending
+	 *
+	 * @return bool True if batch sending should be scheduled, false otherwise.
+	 */
+	public function should_schedule_batch_sending(): bool {
+		if ( $this->batch_id === null ) {
+			return false;
+		}
+
+		$offset           = $this->batch_id * $this->batch_size;
+		$total_recipients = count( $this->to );
+
+		return $offset < $total_recipients;
+	}
+
+	/**
+	 * Move to the next batch
+	 */
+	public function move_to_next_batch(): void {
+		if ( $this->batch_id === null ) {
+			$this->set_batch_id( 1 );
+		}
+
+		$this->set_batch_id( ++$this->batch_id )
+			->set_sent_count( 0 )
+			->set_failed_count( 0 )
+			->clear_errors();
+	}
+
+	/**
+	 * Send an e-mail to all recipients
+	 */
+	public function send_mail_queue(): void {
+		self::error_log( "Report email: start send_mail_queue for report $this->report_id, queue $this->queue_id, batch $this->batch_id. Total recipients: " . count( $this->to ) . ", batch size: $this->batch_size." );
+
+		if ( Report_Logs::instance()->queue_exists( $this->report_id, $this->queue_id, $this->batch_id ) ) {
+			self::error_log( "Report email: batch $this->batch_id for queue $this->queue_id already processed. Skipping." );
+			return;
+		}
+
+		$offset = ( $this->batch_id - 1 ) * $this->batch_size;
+
+		$batch_recipients = array_slice( $this->to, $offset, $this->batch_size );
+		self::error_log( 'Report email: processing ' . count( $batch_recipients ) . " recipient(s) in batch $this->batch_id (offset $offset)." );
+
+		foreach ( $batch_recipients as $email ) {
+			$this->send_mail( $email );
+		}
+
+		$total = $this->sent_count + $this->failed_count;
+
+		self::error_log( "Report email: batch $this->batch_id finished. Sent: $this->sent_count, failed: $this->failed_count, total processed: $total." );
+
+		if ( $total > 0 ) {
+			if ( $this->sent_count === $total ) {
+				$status  = Report_Log_Status::SENDING_SUCCESSFUL;
+				$message = Report_Log_Status::get_log_message( Report_Log_Status::SENDING_SUCCESSFUL );
+			} elseif ( $this->failed_count === $total ) {
+				$status  = Report_Log_Status::SENDING_FAILED;
+				$message = $this->format_error_message();
+			} else {
+				$status  = Report_Log_Status::PARTLY_SENT;
+				$message = sprintf(
+					// translators: 1: number of failed emails, 2: total number of emails, 3: error message.
+					__( '%1$d out of %2$d emails failed sending with reason(s): %3$s.', 'burst-statistics' ),
+					$this->failed_count,
+					$total,
+					$this->format_error_message()
+				);
+			}
+
+			self::error_log( "Report email: logging batch $this->batch_id result with status '$status': $message" );
+
+			Report_Logs::instance()->insert_log(
+				$this->report_id,
+				$this->queue_id,
+				$this->batch_id,
+				$status,
+				$message
+			);
+		} else {
+			self::error_log( "Report email: no emails were processed in batch $this->batch_id (recipient list empty or fully sliced away)." );
+		}
+
+		if ( $this->should_schedule_batch_sending() ) {
+			$this->move_to_next_batch();
+
+			if ( ! wp_next_scheduled( 'burst_send_email_batch', [ $this->report_id, $this->queue_id, $this->batch_id ] ) ) {
+				wp_schedule_single_event(
+					time() + 5 * MINUTE_IN_SECONDS,
+					'burst_send_email_batch',
+					[ $this->report_id, $this->queue_id, $this->batch_id ]
+				);
+			} else {
+				self::error_log( "Report email: next batch $this->batch_id for queue $this->queue_id is already scheduled, not rescheduling." );
+			}
+		} else {
+			Report_Logs::instance()->finalize_queue_status(
+				$this->report_id,
+				$this->queue_id
+			);
+
+			Report_Logs::instance()->clean_old_logs();
+		}
+	}
+
+	/**
+	 * Send an e-mail with the correct login URL
+	 */
+	public function send_mail( string $email ): bool {
+		self::error_log( 'Report email: send_mail called for recipient.' );
+
+		if ( ! is_email( $email ) ) {
+			self::error_log( 'Report email is not a valid email address, skipping.' );
+			$this->set_failed_count( ++$this->failed_count )
+				->set_errors(
+					[
+						'invalid_email' => [ $email ],
+					]
+				);
+			return false;
+		}
+
+		if ( ! $this->check_email_domain( $email ) ) {
+			self::error_log( "Report email: domain check failed for '$email', skipping." );
+			$this->set_failed_count( ++$this->failed_count )
+				->set_errors(
+					[
+						'invalid_domain' => [ $email ],
+					]
+				);
+			return false;
+		}
+
+		add_action( 'wp_mail_failed', [ $this, 'log_mailer_errors' ] );
+
+		self::error_log( "Report email: calling wp_mail() for '$email' with subject '" . sanitize_text_field( $this->subject ) . "'." );
+
+		$sent = wp_mail(
+			$email,
+			sanitize_text_field( $this->subject ),
+			$this->render(),
+			[ 'Content-Type: text/html; charset=UTF-8' ]
+		);
+
+		remove_action( 'wp_mail_failed', [ $this, 'log_mailer_errors' ] );
+
+		if ( $sent ) {
+			$this->set_sent_count( ++$this->sent_count );
+		} else {
+			self::error_log( "Report email: wp_mail() returned false for '$email'. See preceding wp_mail_failed log for the reason." );
+			$this->set_failed_count( ++$this->failed_count );
+		}
+
+		return $sent;
+	}
+
+	/**
+	 * Log mailer errors.
+	 *
+	 * @param \WP_Error $error Error object.
+	 */
+	public function log_mailer_errors( \WP_Error $error ): void {
+		self::error_log( 'Report email: wp_mail_failed fired with error: ' . $error->get_error_message() );
+		$this->set_errors(
+			[
+				'mailer_error' => [ $error->get_error_message() ],
+			]
+		);
+	}
+
+	/**
+	 * Format error message for logging.
+	 *
+	 * @return string Formatted error message.
+	 */
+	private function format_error_message(): string {
+		$messages = [];
+
+		if ( ! empty( $this->errors['invalid_email'] ) ) {
+			$messages[] = sprintf(
+				// translators: %s is a list of invalid email addresses.
+				__( 'Invalid email address: %s', 'burst-statistics' ),
+				implode( ', ', array_unique( $this->errors['invalid_email'] ) )
+			);
+		}
+
+		if ( ! empty( $this->errors['invalid_domain'] ) ) {
+			$messages[] = sprintf(
+				// translators: %s is a list of invalid email domains.
+				__( 'Invalid email domain: %s', 'burst-statistics' ),
+				implode( ', ', array_unique( $this->errors['invalid_domain'] ) )
+			);
+		}
+
+		if ( ! empty( $this->errors['mailer_error'] ) ) {
+			$messages[] = implode( '; ', array_unique( $this->errors['mailer_error'] ) );
+		}
+
+		return implode( ' | ', $messages );
+	}
+
+	/**
+	 * Render the email HTML without sending it.
+	 *
+	 * @return string Rendered email HTML
+	 */
+	public function render(): string {
+		$footer_enabled = (bool) apply_filters( 'burst_email_footer_enabled', false );
+		$custom_footer  = $footer_enabled ? burst_get_option( 'email_footer' ) : '';
+		if ( ! empty( $custom_footer ) ) {
+			// Custom footer replaces the default sent-by text. The read more
+			// section is suppressed unless the caller forced it on (story
+			// reports always need the "view report" button).
+			if ( $this->force_read_more ) {
+				$this->set_read_more_section();
+			} else {
+				$this->set_read_more( '' );
+			}
+			$this->set_sent_by_text( $this->replace_footer_placeholders( $custom_footer ) );
+		} else {
+			// Otherwise, use the standard read more section and default sent by text.
+			$this->set_read_more_section();
+			$this->set_sent_by_text(
+				// translators: %s is the website's domain name (e.g., example.com).
+				sprintf( __( 'This e-mail is sent from your own WordPress website, which is: %s.', 'burst-statistics' ), $this->pretty_domain ) .
+				'<br />' . __( "If you don't want to receive these e-mails in your inbox, please go to the Burst settings page on your website and remove your email from the recipients in the report settings or contact the administrator of your website.", 'burst-statistics' )
+			);
+		}
+
+		$template   = file_get_contents( $this->template_filename ); // phpcs:ignore
+		$block_html = '';
+
+		if ( count( $this->blocks ) > 0 ) {
+            $block_template = file_get_contents( $this->block_template_filename ); // phpcs:ignore
+			foreach ( $this->blocks as $block ) {
+				// Make sure all values are set.
+				$block = wp_parse_args(
+					$block,
+					[
+						'title'    => '',
+						'subtitle' => '',
+						'table'    => '',
+						'url'      => '',
+					]
+				);
+
+				$block_html .= str_replace(
+					[ '{title}', '{subtitle}', '{table}', '{url}' ],
+					[
+						esc_html( $block['title'] ),
+						esc_html( $block['subtitle'] ),
+						wp_kses_post( $block['table'] ),
+						esc_url_raw( $block['url'] ),
+					],
+					$block_template
+				);
+			}
+		}
+
+		$email_css_path = BURST_PATH . 'assets/css/email.css';
+		$email_styles   = '<style>' . ( file_exists( $email_css_path ) ? file_get_contents( $email_css_path ) : '' ) . '</style>'; // phpcs:ignore
+
+		// Wrap the optional introduction in a styled container so the
+		// placeholder collapses cleanly when no introduction is configured.
+		$introduction_html = '';
+		if ( trim( wp_strip_all_tags( $this->introduction ) ) !== '' ) {
+			$introduction_html = '<div class="email-introduction" style="margin: 24px 0 0; padding: 0 24px; text-align: center; font-size: 14px; line-height: 1.5; color: #696969">'
+				. wp_kses_post( $this->introduction )
+				. '</div>';
+		}
+
+		$ai_summary_html = '';
+		if ( trim( wp_strip_all_tags( $this->ai_summary ) ) !== '' ) {
+			$ai_summary_html = '<div class="email-ai-summary" style="margin: 24px 24px 0; padding: 16px 20px; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">'
+				. '<div class="email-ai-summary-label" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #718096; margin-bottom: 8px;">'
+				. esc_html__( 'Summary', 'burst-statistics' )
+				. '</div>'
+				. '<div class="email-ai-summary-content" style="font-size: 14px; line-height: 1.6; color: #2d3748;">'
+				. wp_kses_post( $this->ai_summary )
+				. '</div>'
+				. '</div>';
+		}
+
+		return str_replace(
+			[
+				'{base}',
+				'{email_styles}',
+				'{title}',
+				'{logo}',
+				'{logo_dark}',
+				'{message}',
+				'{introduction}',
+				'{ai_summary}',
+				'{blocks}',
+				'{read_more}',
+				'{sent_by_text}',
+				'{domain}',
+			],
+			[
+				'<base href="' . esc_url( home_url( '/' ) ) . '">',
+				$email_styles,
+				wp_kses_post( $this->title ),
+				esc_url_raw( $this->logo ),
+				esc_url_raw( $this->logo_dark ),
+				wp_kses_post( $this->message ),
+				$introduction_html,
+				$ai_summary_html,
+				wp_kses_post( $block_html ),
+				wp_kses_post( $this->read_more ),
+				wp_kses_post( $this->sent_by_text ),
+				home_url(),
+			],
+			$template
+		);
+	}
+
+	/**
+	 * Replace footer placeholders
+	 *
+	 * @param string $footer Footer HTML.
+	 * @return string Replaced footer HTML.
+	 */
+	private function replace_footer_placeholders( string $footer ): string {
+		return str_replace(
+			'{domain}',
+			$this->pretty_domain,
+			$footer
+		);
+	}
+
+	/**
+	 * Check if the email domain exists via DNS lookup
+	 *
+	 * @param string $email Email address to check.
+	 * @return bool True if domain exists, false otherwise.
+	 */
+	public function check_email_domain( string $email ): bool {
+		$parts = explode( '@', $email );
+
+		if ( count( $parts ) !== 2 ) {
+			return false;
+		}
+
+		$domain = $parts[1];
+
+		if ( checkdnsrr( $domain, 'MX' ) ) {
+			return true;
+		}
+
+		if ( checkdnsrr( $domain, 'A' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+}

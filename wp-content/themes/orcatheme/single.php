@@ -12,9 +12,9 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_single_comment
     $name         = is_user_logged_in() ? $user->display_name : sanitize_text_field( wp_unslash( $_POST['comment_author'] ?? '' ) );
     $email        = is_user_logged_in() ? $user->user_email : sanitize_email( wp_unslash( $_POST['comment_email'] ?? '' ) );
 
-    if ( ! isset( $_POST['orca_single_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['orca_single_nonce'] ) ), 'orca_single_comment_' . $post_id ) ) {
+    if ( ! isset( $_POST['orca_single_nonce'] ) || ! orca_verify_form_nonce( $_POST['orca_single_nonce'], 'orca_single_comment_' . $post_id ) ) {
         $redirect_url = add_query_arg( 'discussion_status', 'error', $redirect_url );
-    } elseif ( '' === $comment || '' === $name || ! is_email( $email ) || ! comments_open( $post_id ) ) {
+    } elseif ( '' === $comment || '' === $name || ! is_email( $email ) || 'post' !== get_post_type($post_id) || 'publish' !== get_post_status($post_id) || ! comments_open( $post_id ) ) {
         $redirect_url = add_query_arg( 'discussion_status', 'invalid', $redirect_url );
     } else {
         $comment_id = wp_insert_comment( array(
@@ -41,9 +41,9 @@ if ( have_posts() ) :
         <main class="orca-single-post">
             <article class="orca-single-post__content">
                 <p class="orca-contact__kicker"><?php echo esc_html( orca_text('Fra Orca-fællesskabet', 'From the Orca community') ); ?></p>
-                <h1><?php the_title(); ?></h1>
-                <p class="orca-meta"><?php echo esc_html( orca_text('Af', 'By') ); ?> <?php the_author(); ?> · <?php echo esc_html( get_the_date() ); ?></p>
-                <?php the_content(); ?>
+                <h1><?php echo esc_html(get_the_title()); ?></h1>
+                <p class="orca-meta"><?php echo esc_html( orca_text('Af', 'By') ); ?> <?php echo esc_html(get_the_author()); ?> · <?php echo esc_html( get_the_date() ); ?></p>
+                <?php echo orca_safe_post_content(); ?>
             </article>
 
             <section class="orca-discussion" id="discussion">

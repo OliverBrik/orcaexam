@@ -1,0 +1,316 @@
+<?php
+namespace Burst\Admin\Burst_Onboarding;
+
+use Burst\Admin\Tour\Tour;
+use Burst\Frontend\Ip\Ip;
+use Burst\Pro\Admin\Licensing\Licensing;
+use Burst\TeamUpdraft\Onboarding\Onboarding;
+use Burst\Traits\Admin_Helper;
+use Burst\Traits\Save;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class Burst_Onboarding {
+	use Save;
+	use Admin_Helper;
+
+	/**
+	 * The onboarding, when it is active on this request.
+	 */
+	private ?Onboarding $onboarding = null;
+
+	/**
+	 * Setup hooks.
+	 */
+	public function init(): void {
+		add_action( 'plugins_loaded', [ $this, 'setup_onboarding' ] );
+		add_filter( 'burst_onboarding_field', [ $this, 'parse_field' ], 10, 2 );
+		add_filter( 'burst_license_is_valid', [ $this, 'license_is_valid' ], 10, 1 );
+		add_filter( 'burst_license_activation', [ $this, 'activate_license' ], 10, 2 );
+		add_action( 'burst_onboarding_update_options', [ $this, 'update_step_settings' ], 10, 2 );
+		add_filter( 'burst_onboarding_steps', [ $this, 'load_steps' ] );
+	}
+
+	/**
+	 * Load the steps for the onboarding process.
+	 *
+	 * @return array<int, array{
+	 * id: string,
+	 * type: string,
+	 * title: string,
+	 * subtitle?: string,
+	 * button?: array{id: string, label: string},
+	 * tour_button?: array{id: string, label: string, url: string},
+	 * fields?: array<int, array<string, mixed>>,
+	 * solutions?: array<int, string>,
+	 * bullets?: array<int, string>,
+	 * documentation?: string,
+	 * }> The onboarding steps array
+	 */
+	public function load_steps( array $steps ): array {
+		unset( $steps );
+		$steps = include __DIR__ . '/steps.php';
+		// if defined( 'BURST_HEADLESS_DOMAIN'), remove the step with id='tracking', as the tracking target is now another website.
+		if ( defined( 'BURST_HEADLESS_DOMAIN' ) ) {
+			$steps = array_filter( $steps, fn( $step ) => $step['id'] !== 'tracking' );
+			$steps = array_values( $steps );
+		}
+		return $steps;
+	}
+
+	/**
+	 * Initialize the onboarding
+	 */
+	public function setup_onboarding(): void {
+		// only run this if the page is burst, or a Burst rest request.
+		if ( ! $this->is_burst_page() ) {
+			return;
+		}
+
+		// Bypass onboarding when the tour is requested, so the wizard never overlays the tour.
+		if ( Tour::is_tour_requested() ) {
+			return;
+		}
+
+		$onboarding = new Onboarding();
+		if ( $onboarding::is_onboarding_active( 'burst', 'burst-statistics' ) ) {
+			$onboarding->is_pro                         = defined( 'BURST_PRO' );
+			$onboarding->prefix                         = 'burst';
+			$onboarding->mailing_list_endpoint          = 'https://mailinglist.burst-statistics.com';
+			$onboarding->privacy_statement_url          = 'https://burst-statistics.com/legal/privacy-statement';
+			$onboarding->caller_slug                    = 'burst-statistics';
+			$onboarding->capability                     = 'manage_burst_statistics';
+			$onboarding->support_url                    = $onboarding->is_pro ? 'https://burst-statistics.com/support' : 'https://wordpress.org/support/plugin/burst-statistics/';
+			$onboarding->documentation_url              = 'https://burst-statistics.com/docs';
+			$onboarding->upgrade_url                    = 'https://burst-statistics.com/pricing';
+			$onboarding->page_hook_suffix               = 'toplevel_page_burst';
+			$onboarding->version                        = BURST_VERSION;
+			$onboarding->languages_dir                  = BURST_PATH . 'languages';
+			$onboarding->text_domain                    = 'burst-statistics';
+			$onboarding->reload_settings_page_on_finish = true;
+			$onboarding->init();
+
+			// Runs right before the onboarding enqueues its wizard (priority 1), when the steps are
+			// final: an auto installed license has been activated on admin_init by then.
+			$this->onboarding = $onboarding;
+			add_action( "admin_print_scripts-{$onboarding->page_hook_suffix}", [ $this, 'maybe_close_empty_onboarding' ], 0 );
+		}
+	}
+
+	/**
+	 * Close the onboarding instead of showing a wizard that only has an intro and a finish page.
+	 *
+	 * That happens in pro after a completed free onboarding with a valid license: every
+	 * first_run_only step and the license step are dropped. Side effect: removes the
+	 * onboarding's script and root element hooks, and deletes burst_start_onboarding, so the
+	 * onboarding does not start again. It is not marked as completed, to keep the telemetry honest.
+	 */
+	public function maybe_close_empty_onboarding(): void {
+		if ( null === $this->onboarding || $this->has_configurable_steps( $this->onboarding->get_steps() ) ) {
+			return;
+		}
+
+		remove_action( "admin_print_scripts-{$this->onboarding->page_hook_suffix}", [ $this->onboarding, 'enqueue_onboarding_scripts' ], 1 );
+		remove_action( 'admin_footer', [ $this->onboarding, 'add_root_html' ] );
+		delete_option( 'burst_start_onboarding' );
+	}
+
+	/**
+	 * Check if the onboarding has at least one step to configure between the intro and the finish page.
+	 *
+	 * @param array<int, array{type: string}> $steps The onboarding steps, after the conditional drops.
+	 * @return bool True if there is something to configure.
+	 */
+	public function has_configurable_steps( array $steps ): bool {
+		foreach ( $steps as $step ) {
+			if ( ! in_array( $step['type'], [ 'intro', 'completed' ], true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	//phpcs:disable
+	/**
+	 * Wrapper for plugin specific option retrieval.
+	 */
+	public function get_plugin_option( string $id ) {
+		//return the option value for the given id.
+		return $this->get_option( $id );
+	}
+	//phpcs:enable
+
+	/**
+	 * Update the plugin settings for a specific step. Some settings may need to be transformed.
+	 */
+	public function update_step_settings( array $settings, array $step_fields ): void {
+		if ( ! $this->user_can_manage() ) {
+			return;
+		}
+		foreach ( $step_fields as $field ) {
+			foreach ( $settings as $setting ) {
+				if ( $setting['id'] === $field['id'] ) {
+					$value = $this->maybe_transform( $setting['id'], $setting['value'] );
+					$this->update_option( $field['id'], $value );
+				}
+			}
+		}
+	}
+
+	//phpcs:disable
+	/**
+	 * In some cases we need to transform the value before saving it
+	 */
+	public function maybe_transform( string $id, $value ) {
+		if ( $id === 'user_role_blocklist' ) {
+			$current_block_list = $this->get_option( $id );
+			if ( ! is_array( $current_block_list ) ) {
+				$current_block_list = [];
+			}
+			if ( (bool) $value === true && ! in_array( 'administrator', $current_block_list, true ) ) {
+				$current_block_list[] = 'administrator';
+				$value                = $current_block_list;
+			}
+			if ( (bool) $value === false && in_array( 'administrator', $current_block_list, true ) ) {
+				// remove administrator from block list.
+				$key = array_search( 'administrator', $current_block_list, true );
+				if ( $key !== false ) {
+					unset( $current_block_list[ $key ] );
+				}
+
+				$value = $current_block_list;
+			}
+
+			if ( !is_array($value) ) {
+				$value = [];
+			}
+			// remove empty values from the array.
+			$value = array_filter(
+				$value,
+				function ( $item ) {
+					return ! empty( $item );
+				}
+			);
+			// reindex the array.
+			$value = array_values( $value );
+		}
+
+		if ( $id === 'ip_blocklist' && (bool) $value === true ) {
+			$current_block_list = $this->get_plugin_option( 'ip_blocklist' );
+			$blocked_ips        = preg_split( '/\r\n|\r|\n/', $current_block_list );
+			$current_ip         = IP::get_ip_address();
+			// check if the current IP is already in the block list.
+			foreach ( $blocked_ips as $blocked_ip ) {
+				if ( $current_ip === trim( $blocked_ip ) ) {
+					return $value;
+				}
+			}
+			$value = $current_block_list . "\n" . $current_ip;
+		}
+
+		if ( $id === 'email_reports_mailinglist' ) {
+			$value = sanitize_email( $value );
+			$current_report_array = $this->get_plugin_option( 'email_reports_mailinglist' );
+			if ( ! is_array( $current_report_array ) ) {
+				$current_report_array = [];
+			}
+			$mail_found           = false;
+			foreach ( $current_report_array as $mailing_preferences ) {
+				if ( $mailing_preferences['email'] === $value ) {
+					$mail_found = true;
+				}
+			}
+			if ( ! $mail_found ) {
+				$current_report_array[] = [
+					'email'     => $value,
+					'frequency' => 'weekly',
+				];
+			}
+
+			$value = $current_report_array;
+		}
+		return $value;
+	}
+	//phpcs:enable
+
+	/**
+	 * Check if the license for this user is valid.
+	 */
+	public function license_is_valid(): bool {
+		if ( ! defined( 'BURST_PRO' ) ) {
+			return false;
+		}
+
+		$licensing = new Licensing();
+		return $licensing->license_is_valid();
+	}
+
+	/**
+	 * Activate the license key
+	 *
+	 * @param array                                                    $response The response array.
+	 * @param array{ license: string, email: string, password: string} $data The license data to activate.
+	 * @return array{
+	 *      success: bool,
+	 *      message: string,
+	 * } Result of activation, including success status and message.
+	 */
+	public function activate_license( array $response, array $data ): array {
+		$license = isset( $data['license'] ) ? sanitize_text_field( $data['license'] ) : false;
+
+		$this->update_option( 'license', $license );
+		$licensing           = new Licensing();
+		$output              = $licensing->license_notices();
+		$response            = [];
+		$response['success'] = $output['licenseStatus'] === 'valid';
+		$notices             = $output['notices'] ?? [];
+		// get the first message.
+		$response['message'] = $output['notices'][0]['msg'] ?? '';
+		// check if we have a warning notice. This should override the first one.
+		foreach ( $notices as $notice ) {
+			$response['message'] = $notice['msg'];
+			if ( $notice['icon'] === 'warning' ) {
+				$response['message'] = $notice['msg'] ?? '';
+				break;
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Set some defaults.
+	 *
+	 * @param array  $field The field to parse.
+	 * @param string $step_id The id of the current step.
+	 * @return array{
+	 *     id: string,
+	 *     type: string,
+	 *     default: mixed,
+	 *     label?: string,
+	 * }
+	 */
+	public function parse_field( array $field, string $step_id ): array {
+		// fix the phpcs warning.
+		unset( $step_id );
+		$field['value'] = $this->get_option( $field['id'] );
+		if ( $field['id'] === 'ip_blocklist' ) {
+			$field['default'] = true;
+			// translators: %s is the user's IP address.
+			$field['label'] = sprintf( __( 'Exclude your IP (%s) from being tracked', 'burst-statistics' ), IP::get_ip_address() );
+		}
+
+		if ( $field['id'] === 'user_role_blocklist' ) {
+			if ( empty( $field['value'] ) ||
+				( is_array( $field['value'] ) && in_array( 'administrator', $field['value'], true ) )
+			) {
+				$field['value'] = true;
+			}
+		}
+
+		return $field;
+	}
+}

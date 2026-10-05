@@ -75,9 +75,9 @@
                             <div class="testimonial-content">
 
                             <!-- Edits the styling review so that there is a capital letter first and no html tags are displayed.-->
-                                <?php echo ucfirst(trim(strip_tags(get_the_content()))); ?>
+                                <?php echo esc_html(ucfirst(trim(wp_strip_all_tags(get_the_content())))); ?>
                             </div>
-                            <h3>- <?php the_title(); ?></h3>
+                            <h3>- <?php echo esc_html(get_the_title()); ?></h3>
                         </article>
                         <?php
                     endwhile;
