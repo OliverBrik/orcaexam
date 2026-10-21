@@ -40,14 +40,14 @@ if ( have_posts() ) :
         ?>
         <main class="orca-single-post">
             <article class="orca-single-post__content">
-                <p class="orca-contact__kicker"><?php echo esc_html( orca_text('Fra Orca-fællesskabet', 'From the Orca community') ); ?></p>
+                <p class="orca-kicker"><?php echo esc_html( orca_text('Fra Orca-fællesskabet', 'From the Orca community') ); ?></p>
                 <h1><?php echo esc_html(get_the_title()); ?></h1>
                 <p class="orca-meta"><?php echo esc_html( orca_text('Af', 'By') ); ?> <?php echo esc_html(get_the_author()); ?> · <?php echo esc_html( get_the_date() ); ?></p>
                 <?php echo orca_safe_post_content(); ?>
             </article>
 
             <section class="orca-discussion" id="discussion">
-                <p class="orca-contact__kicker"><?php echo esc_html( orca_text('Samtale', 'Discussion') ); ?></p>
+                <p class="orca-kicker"><?php echo esc_html( orca_text('Samtale', 'Discussion') ); ?></p>
                 <h2><?php echo esc_html( orca_text('Hvad tænker du?', 'What do you think?') ); ?></h2>
 
                 <?php if ( 'sent' === ( $_GET['discussion_status'] ?? '' ) ) : ?>

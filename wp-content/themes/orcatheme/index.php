@@ -4,7 +4,7 @@
     <section class="frontpage-hero">
         <div class="frontpage-hero__inner container">
             <div class="frontpage-hero__content">
-                <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Betroet af virksomheder i vækst', 'Trusted by growing businesses')); ?></p>
+                <p class="orca-kicker"><?php echo esc_html(orca_text('Betroet af virksomheder i vækst', 'Trusted by growing businesses')); ?></p>
                 <h1><?php echo esc_html(orca_text('Vi hjælper virksomheder sikkert fremad.', 'We help companies move forward with confidence.')); ?></h1>
                 <p class="frontpage-hero__text">
                     <?php echo esc_html(orca_text('Orca hjælper virksomheder med at skabe stærkere kundeoplevelser, bedre processer og mere pålidelig support fra første dag.', 'Orca helps businesses build stronger customer experiences, better processes, and more reliable support from day one.')); ?>
@@ -43,7 +43,7 @@
                         <?php endif; ?>
                     <?php else : ?>
                         <div class="frontpage-hero__image-wrap">
-                            <img src="https://media.licdn.com/dms/image/v2/D4E22AQGF0-2mpZ_4rQ/feedshare-shrink_1280/B4EZ5MMp_CIwAQ-/0/1779394847558?e=1790208000&v=beta&t=px_g0WTCfoyk8IHBBO1NTAeLR9ff9NpvdhL6kfwyHm0" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" />
+                            <img src="<?php echo esc_url(get_theme_file_uri('/contact-media/orca-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" />
                         </div>
                     <?php endif; ?>
                 </div>
@@ -56,7 +56,7 @@
 
     <section class="testimonial-section">
         <div class="testimonial-wrap">
-            <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Anmeldelser', 'Reviews')); ?></p>
+            <p class="orca-kicker"><?php echo esc_html(orca_text('Anmeldelser', 'Reviews')); ?></p>
             <h2><?php echo esc_html(orca_text('Det siger vores kunder', 'What our clients say')); ?></h2>
 
             <div class="testimonial-grid">
@@ -92,56 +92,3 @@
 </main>
 
 <?php get_footer(); ?>
-
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const gallery = document.querySelector('.frontpage-hero__gallery');
-    const mainImage = gallery?.querySelector('.frontpage-hero__image-wrap img');
-    const thumbnails = gallery?.querySelectorAll('.frontpage-hero__gallery-strip [data-gallery-src]');
-
-    if (!mainImage || !thumbnails?.length) {
-        return;
-    }
-
-    const images = [
-        {
-            src: mainImage.src,
-            alt: mainImage.alt
-        },
-        ...Array.from(thumbnails).map(function (thumbnail) {
-            return {
-                src: thumbnail.dataset.gallerySrc,
-                alt: thumbnail.querySelector('img').alt
-            };
-        })
-    ];
-
-    let currentIndex = 0;
-
-    setInterval(function () {
-        currentIndex = (currentIndex + 1) % images.length;
-        const nextImage = images[currentIndex];
-        const preloadedImage = new Image();
-
-        preloadedImage.onload = function () {
-            mainImage.classList.add('is-changing');
-
-            setTimeout(function () {
-                mainImage.src = nextImage.src;
-                mainImage.alt = nextImage.alt;
-
-                requestAnimationFrame(function () {
-                    mainImage.classList.remove('is-changing');
-                });
-
-                preloadedImage.onload = null;
-                preloadedImage.removeAttribute('src');
-            }, 900);
-        };
-
-        preloadedImage.src = nextImage.src;
-    }, 5000);   
-});
-</script>

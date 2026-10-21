@@ -57,6 +57,7 @@ function orca_validate_request_shapes() {
         'orca_blog_nonce', 'post_id', 'post_title', 'post_content', 'comment',
         'comment_author', 'comment_email', 'orca_single_comment', 'orca_single_nonce',
         'discussion_status', 'blog_notice', 'blog_category', 'blog_sort', '_wpnonce',
+        'shop-service', 'shop-product',
     );
     foreach (array($_GET, $_POST) as $input) {
         foreach ($fields as $field) {
@@ -81,7 +82,8 @@ function orca_verify_form_nonce($nonce, $action) {
 
 /** Session-specific form pages must not be served from a shared page cache. */
 function orca_form_cache_headers() {
-    if (is_singular() || is_home() || is_front_page()) {
+    // The front page has no forms. Keep its public HTML eligible for caching.
+    if (!is_front_page() && (is_singular() || is_home())) {
         if (! defined('DONOTCACHEPAGE')) {
             define('DONOTCACHEPAGE', true);
         }

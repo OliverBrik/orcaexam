@@ -6,6 +6,7 @@
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
+<?php wp_body_open(); ?>
 
 <header class="site-header">
     <div class="container header-inner">
@@ -28,6 +29,9 @@
         </nav>
 
         <div class="header-actions">
+            <?php if (function_exists('wc_get_page_permalink')) : ?>
+                <a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="header-button"><?php echo esc_html(orca_text('Webshop', 'Shop')); ?></a>
+            <?php endif; ?>
             <a href="<?php echo esc_url(home_url('/blog')); ?>" class="header-button"><?php echo esc_html(orca_text('Blog', 'Blog')); ?></a>
             <a href="<?php echo esc_url(home_url('/leave-a-review')); ?>" class="header-button"><?php echo esc_html(orca_text('Skriv en anmeldelse', 'Leave a review')); ?></a>
             <a href="<?php echo esc_url(home_url('/sustainability-initiatives')); ?>" class="header-button"><?php echo esc_html(orca_text('Bæredygtighed', 'Sustainability')); ?></a>

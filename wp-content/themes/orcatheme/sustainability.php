@@ -11,7 +11,7 @@ get_header();
 <main class="orca-sustainability">
     <section class="orca-sustainability__hero" aria-labelledby="sustainability-title">
         <div class="orca-sustainability__hero-content">
-            <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Vores ansvar', 'Our responsibility')); ?></p>
+            <p class="orca-kicker"><?php echo esc_html(orca_text('Vores ansvar', 'Our responsibility')); ?></p>
             <h1 id="sustainability-title"><?php echo esc_html(orca_text('Idéer med mindre aftryk.', 'Ideas with a lighter footprint.')); ?></h1>
             <p><?php echo esc_html(orca_text('Vi hjælper virksomheder med at kommunikere mere bevidst, skabe relationer der holder, og vælge løsninger der giver mening både for mennesker og planeten.', 'We help businesses communicate more consciously, build relationships that last, and choose solutions that make sense for people and the planet.')); ?></p>
         </div>
@@ -19,7 +19,7 @@ get_header();
 
     <section class="orca-sustainability__intro" aria-labelledby="sustainability-intro-title">
         <div>
-            <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Mere end et løfte', 'More than a promise')); ?></p>
+            <p class="orca-kicker"><?php echo esc_html(orca_text('Mere end et løfte', 'More than a promise')); ?></p>
             <h2 id="sustainability-intro-title"><?php echo esc_html(orca_text('Bæredygtighed ligger i måden, vi arbejder på.', 'Sustainability lives in the way we work.')); ?></h2>
         </div>
         <p><?php echo esc_html(orca_text('For os handler bæredygtighed ikke om at pynte sig med store ord. Det handler om de små valg i hverdagen: færre unødige produktioner, tydeligere budskaber, inkluderende oplevelser og samarbejder, der skaber værdi over tid.', 'To us, sustainability is not about decorating our work with big words. It is about everyday choices: fewer unnecessary productions, clearer messages, inclusive experiences, and partnerships that create value over time.')); ?></p>
@@ -27,7 +27,7 @@ get_header();
 
     <section class="orca-sustainability__initiatives" aria-labelledby="initiatives-title">
         <div class="orca-sustainability__section-heading">
-            <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Sådan gør vi', 'How we contribute')); ?></p>
+            <p class="orca-kicker"><?php echo esc_html(orca_text('Sådan gør vi', 'How we contribute')); ?></p>
             <h2 id="initiatives-title"><?php echo esc_html(orca_text('Fem områder, hvor omtanke kan mærkes.', 'Five areas where care makes a difference.')); ?></h2>
         </div>
 
@@ -65,7 +65,7 @@ get_header();
             <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fm=webp&fit=crop&w=800&q=60" alt="<?php echo esc_attr(orca_text('Hænder der passer på en lille plante', 'Hands caring for a small plant')); ?>" loading="lazy" />
         </figure>
         <div>
-            <p class="orca-contact__kicker"><?php echo esc_html(orca_text('Sammen om næste skridt', 'The next step, together')); ?></p>
+            <p class="orca-kicker"><?php echo esc_html(orca_text('Sammen om næste skridt', 'The next step, together')); ?></p>
             <h2><?php echo esc_html(orca_text('Det behøver ikke være perfekt for at gøre en forskel.', 'It does not have to be perfect to make a difference.')); ?></h2>
             <p><?php echo esc_html(orca_text('Vi tror på ærlige fremskridt. Derfor starter vi med at forstå, hvor I står, og finder derefter de initiativer, der passer til jeres mennesker, mål og hverdag.', 'We believe in honest progress. We start by understanding where you are, then find the initiatives that fit your people, goals, and everyday work.')); ?></p>
             <a class="orca-sustainability__link" href="<?php echo esc_url(home_url('/contact')); ?>"><?php echo esc_html(orca_text('Tal med os om jeres næste skridt', 'Talk to us about your next step')); ?> <span aria-hidden="true">→</span></a>
