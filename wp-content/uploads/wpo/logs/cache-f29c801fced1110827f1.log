@@ -12,3 +12,10 @@
 [2026-10-19 10:13:48 : INFO] - Full Cache Purge triggered by: plugin activation/deactivation 
 [2026-10-19 10:13:48 : INFO] - Full Cache Purge triggered by: plugin activation/deactivation 
 [2026-10-19 10:14:10 : INFO] - Full Cache Purge triggered by: plugin activation/deactivation 
+[2026-10-19 10:18:04 : INFO] - Cache for URL: http://examreq.local/cart/ has been purged, triggered by action: save_post 
+[2026-10-19 10:18:04 : INFO] - Cache for author page URL: http://examreq.local/author/admin/ associated with post_type: page and Title: "Cart" has been purged, triggered by action: save_post 
+[2026-10-19 10:27:16 : INFO] - Cache for URL: http://examreq.local/cart/ has been purged, triggered by action: save_post 
+[2026-10-19 10:27:16 : INFO] - Cache for author page URL: http://examreq.local/author/admin/ associated with post_type: page and Title: "Cart" has been purged, triggered by action: save_post 
+[2026-10-19 10:27:27 : INFO] - Cache for URL: http://examreq.local/cart/ has been purged, triggered by action: save_post 
+[2026-10-19 10:27:27 : INFO] - Cache for author page URL: http://examreq.local/author/admin/ associated with post_type: page and Title: "Cart" has been purged, triggered by action: save_post 
+[2026-10-19 10:27:58 : INFO] - Full Cache Purge triggered by: plugin activation/deactivation 
