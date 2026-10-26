@@ -32,9 +32,9 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
 
     if ( 'create_post' === $action ) {
         if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
-            $error = orca_text('Kun administratorer kan udgive indlæg.', 'Only site administrators can publish posts.');
+            $error = 'Kun administratorer kan udgive indlæg.';
         } elseif ( ! isset( $_POST['orca_blog_nonce'] ) || ! orca_verify_form_nonce( $_POST['orca_blog_nonce'], 'orca_create_blog_post' ) ) {
-            $error = orca_text('Din session er udløbet. Prøv igen.', 'Your session expired. Please try again.');
+            $error = 'Din session er udløbet. Prøv igen.';
         } else {
             $title   = sanitize_text_field( wp_unslash( $_POST['post_title'] ?? '' ) );
             $content = wp_kses_post( wp_unslash( $_POST['post_content'] ?? '' ) );
@@ -52,9 +52,9 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
             }
 
             if ( '' === $title || '' === trim( wp_strip_all_tags( $content ) ) ) {
-                $error = orca_text('Tilføj både en titel og tekst til indlægget.', 'Please add both a title and post text.');
+                $error = 'Tilføj både en titel og tekst til indlægget.';
             } elseif ( empty( $category_ids ) ) {
-                $error = orca_text('Vælg mindst én kategori.', 'Please choose at least one category.');
+                $error = 'Vælg mindst én kategori.';
             } else {
                 $post_id = wp_insert_post( array(
                     'post_title'   => $title,
@@ -65,7 +65,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
                 ), true );
 
                 if ( is_wp_error( $post_id ) ) {
-                    $error = orca_text('Indlægget kunne ikke udgives. Prøv igen.', 'The post could not be published. Please try again.');
+                    $error = 'Indlægget kunne ikke udgives. Prøv igen.';
                 } else {
                     if ( $category_ids ) {
                         wp_set_post_categories( $post_id, $category_ids, false );
@@ -97,7 +97,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
                             if ( ! is_wp_error( $attachment_id ) && wp_attachment_is_image( $attachment_id ) ) {
                                 $media_html .= '<figure class="orca-post-image">' . wp_get_attachment_image( $attachment_id, 'large', false, array( 'loading' => 'lazy' ) ) . '</figure>';
                             } elseif ( ! is_wp_error( $attachment_id ) && 0 === strpos( (string) get_post_mime_type( $attachment_id ), 'video/' ) ) {
-                                $media_html .= '<figure class="orca-post-video"><video controls preload="metadata"><source src="' . esc_url( wp_get_attachment_url( $attachment_id ) ) . '" type="' . esc_attr( get_post_mime_type( $attachment_id ) ) . '">' . esc_html( orca_text('Din browser understøtter ikke denne video.', 'Your browser does not support this video.') ) . '</video></figure>';
+                                $media_html .= '<figure class="orca-post-video"><video controls preload="metadata"><source src="' . esc_url( wp_get_attachment_url( $attachment_id ) ) . '" type="' . esc_attr( get_post_mime_type( $attachment_id ) ) . '">' . esc_html( 'Din browser understøtter ikke denne video.' ) . '</video></figure>';
                             }
                         }
 
@@ -118,14 +118,14 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
         $is_ajax  = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) );
         if ( ! isset( $_POST['orca_blog_nonce'] ) || ! orca_verify_form_nonce( $_POST['orca_blog_nonce'], 'orca_like_' . $post_id ) || 'post' !== get_post_type( $post_id ) || 'publish' !== get_post_status($post_id) ) {
             if ( $is_ajax ) {
-                wp_send_json_error( array( 'message' => orca_text('Dit like kunne ikke gemmes. Prøv igen.', 'That like could not be saved. Please try again.') ), 400 );
+                wp_send_json_error( array( 'message' => 'Dit like kunne ikke gemmes. Prøv igen.' ), 400 );
             }
-            $error = orca_text('Dit like kunne ikke gemmes. Opdater siden, og prøv igen.', 'That like could not be saved. Please refresh and try again.');
+            $error = 'Dit like kunne ikke gemmes. Opdater siden, og prøv igen.';
         } elseif ( 'like' === $action && isset( $_COOKIE['orca_liked_' . $post_id] ) ) {
             if ( $is_ajax ) {
                 wp_send_json_success( array( 'likes' => (int) get_post_meta( $post_id, '_orca_likes', true ), 'liked' => true ) );
             }
-            $notice = orca_text('Du har allerede liket dette indlæg.', 'You have already liked this post.');
+            $notice = 'Du har allerede liket dette indlæg.';
         } elseif ( 'unlike' === $action ) {
             $likes = max( 0, (int) get_post_meta( $post_id, '_orca_likes', true ) - 1 );
             update_post_meta( $post_id, '_orca_likes', $likes );
@@ -150,7 +150,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
     if ( 'comment' === $action ) {
         $post_id = absint( $_POST['post_id'] ?? 0 );
         if ( ! isset( $_POST['orca_blog_nonce'] ) || ! orca_verify_form_nonce( $_POST['orca_blog_nonce'], 'orca_comment_' . $post_id ) || 'post' !== get_post_type($post_id) || 'publish' !== get_post_status($post_id) || ! comments_open( $post_id ) ) {
-            $error = orca_text('Kommentarer er ikke tilgængelige for dette indlæg.', 'Comments are not available for this post.');
+            $error = 'Kommentarer er ikke tilgængelige for dette indlæg.';
         } else {
             $comment = sanitize_textarea_field( wp_unslash( $_POST['comment'] ?? '' ) );
             $name    = sanitize_text_field( wp_unslash( $_POST['comment_author'] ?? '' ) );
@@ -158,7 +158,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
             $user    = wp_get_current_user();
 
             if ( '' === $comment || ( ! is_user_logged_in() && ( '' === $name || ! is_email( $email ) ) ) ) {
-                $error = orca_text('Indtast en kommentar, navn og en gyldig e-mailadresse.', 'Please enter a comment, name, and valid email address.');
+                $error = 'Indtast en kommentar, navn og en gyldig e-mailadresse.';
             } else {
                 $comment_id = wp_insert_comment( array(
                     'comment_post_ID'      => $post_id,
@@ -172,18 +172,18 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['orca_blog_action'] 
                     wp_safe_redirect( add_query_arg( 'blog_notice', 'commented', $page_url ) . '#post-' . $post_id );
                     exit;
                 }
-                $error = orca_text('Din kommentar kunne ikke gemmes. Prøv igen.', 'Your comment could not be saved. Please try again.');
+                $error = 'Din kommentar kunne ikke gemmes. Prøv igen.';
             }
         }
     }
 }
 
 if ( 'published' === ( $_GET['blog_notice'] ?? '' ) ) {
-    $notice = orca_text('Dit indlæg er udgivet.', 'Your post has been published.');
+    $notice = 'Dit indlæg er udgivet.';
 } elseif ( 'liked' === ( $_GET['blog_notice'] ?? '' ) ) {
-    $notice = orca_text('Tak for dit like!', 'Thanks for liking this post!');
+    $notice = 'Tak for dit like!';
 } elseif ( 'commented' === ( $_GET['blog_notice'] ?? '' ) ) {
-    $notice = orca_text('Tak! Din kommentar er udgivet.', 'Thanks! Your comment has been posted.');
+    $notice = 'Tak! Din kommentar er udgivet.';
 }
 
 $filter_category = absint( $_GET['blog_category'] ?? 0 );

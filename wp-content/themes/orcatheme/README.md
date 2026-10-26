@@ -31,7 +31,7 @@ Bevar navnene `contact.php`, `blog.php`, `testimonial.php` og `sustainability.ph
 
 ## Genbrug
 
-- Brug `orca_text()` til dansk/engelsk tekst.
+- Skriv brugerrettet tekst på dansk og brug eksisterende escape-funktioner ved output.
 - Brug `orca-hero`, `orca-eyebrow` og `orca-kicker` til fælles hero- og sektionsstile. Farver og overflader findes som CSS-variabler øverst i `theme.css`.
 - Kontaktformularens muligheder og servervalidering kommer fra `orca_contact_services()`; tilføj nye services dér.
 - Brug `orca_shop_enquiry_url()` til links fra produkter og services til kontaktformularen.

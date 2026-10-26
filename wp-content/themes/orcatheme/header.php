@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="<?php echo esc_attr(orca_get_language()); ?>">
+<html lang="da">
 <head>
     <meta charset="<?php echo esc_attr(get_bloginfo('charset')); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,7 @@
             </a>
         </div>
 
-        <nav class="main-nav" aria-label="<?php echo esc_attr(orca_text('Primær navigation', 'Main navigation')); ?>">
+        <nav class="main-nav" aria-label="<?php echo esc_attr('Primær navigation'); ?>">
             <?php
             wp_nav_menu(array(
                 'theme_location' => 'primary',
@@ -30,20 +30,15 @@
 
         <div class="header-actions">
             <?php if (function_exists('wc_get_page_permalink')) : ?>
-                <a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="header-button"><?php echo esc_html(orca_text('Webshop', 'Shop')); ?></a>
+                <a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="header-button"><?php echo esc_html('Webshop'); ?></a>
             <?php endif; ?>
-            <a href="<?php echo esc_url(home_url('/blog')); ?>" class="header-button"><?php echo esc_html(orca_text('Blog', 'Blog')); ?></a>
-            <a href="<?php echo esc_url(home_url('/leave-a-review')); ?>" class="header-button"><?php echo esc_html(orca_text('Skriv en anmeldelse', 'Leave a review')); ?></a>
-            <a href="<?php echo esc_url(home_url('/sustainability-initiatives')); ?>" class="header-button"><?php echo esc_html(orca_text('Bæredygtighed', 'Sustainability')); ?></a>
-            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="header-button"><?php echo esc_html(orca_text('Kontakt os', 'Contact us')); ?></a>
+            <a href="<?php echo esc_url(home_url('/blog')); ?>" class="header-button"><?php echo esc_html('Blog'); ?></a>
+            <a href="<?php echo esc_url(home_url('/leave-a-review')); ?>" class="header-button"><?php echo esc_html('Skriv en anmeldelse'); ?></a>
+            <a href="<?php echo esc_url(home_url('/sustainability-initiatives')); ?>" class="header-button"><?php echo esc_html('Bæredygtighed'); ?></a>
+            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="header-button"><?php echo esc_html('Kontakt os'); ?></a>
             <?php if (function_exists('wc_get_page_permalink')) : ?>
                 <?php echo orca_cart_link_markup(); ?>
             <?php endif; ?>
-            <nav class="language-switcher" aria-label="<?php echo esc_attr(orca_text('Vælg sprog', 'Choose language')); ?>">
-                <a href="<?php echo esc_url(orca_language_url('da')); ?>" lang="da"<?php echo 'da' === orca_get_language() ? ' aria-current="true"' : ''; ?>>DA</a>
-                <span aria-hidden="true">/</span>
-                <a href="<?php echo esc_url(orca_language_url('en')); ?>" lang="en"<?php echo 'en' === orca_get_language() ? ' aria-current="true"' : ''; ?>>EN</a>
-            </nav>
         </div>
     </div>
 </header>

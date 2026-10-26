@@ -63,7 +63,7 @@ add_filter('nonce_user_logged_out', 'orca_guest_nonce_identity', 10, 2);
 /** These fields are text, never arrays; reject malformed requests early. */
 function orca_validate_request_shapes() {
     $fields = array(
-        'lang', 'contact-status', 'contact-type', 'contact_type', 'name', 'company',
+        'contact-status', 'contact-type', 'contact_type', 'name', 'company',
         'email', 'message', 'service', 'consent', 'phone', 'budget', 'deadline',
         'website', 'orca_contact_nonce', 'testimonial_submit', 'testimonial_name',
         'testimonial_review', 'orca_testimonial_nonce', 'orca_blog_action',
@@ -78,9 +78,6 @@ function orca_validate_request_shapes() {
                 wp_die('Invalid form data.', '', array('response' => 400));
             }
         }
-    }
-    if (isset($_COOKIE['orca_language']) && ! is_string($_COOKIE['orca_language'])) {
-        unset($_COOKIE['orca_language']);
     }
 }
 add_action('init', 'orca_validate_request_shapes', 0);
@@ -110,10 +107,6 @@ function orca_public_cache_headers() {
     }
 
     if (function_exists('orca_is_commerce_page') && orca_is_commerce_page()) {
-        return;
-    }
-
-    if (isset($_COOKIE['orca_language']) || isset($_GET['lang'])) {
         return;
     }
 

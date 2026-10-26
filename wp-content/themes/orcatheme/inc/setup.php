@@ -8,6 +8,18 @@ function orca_theme_setup() {
 }
 add_action('after_setup_theme', 'orca_theme_setup');
 
+function orca_danish_menu_title($title) {
+    $translations = array(
+        'Home' => 'Forside',
+        'Reviews' => 'Anmeldelser',
+        'Contact' => 'Kontakt',
+        'About us' => 'Om os',
+    );
+
+    return isset($translations[$title]) ? $translations[$title] : $title;
+}
+add_filter('nav_menu_item_title', 'orca_danish_menu_title');
+
 function orca_asset_version($relative_path) {
     $file = get_theme_file_path($relative_path);
     return is_file($file) ? (string) filemtime($file) : wp_get_theme()->get('Version');
@@ -29,8 +41,8 @@ function orca_theme_assets() {
     }
     if ($scripts['blog']) {
         wp_localize_script('orca-blog', 'orcaBlogLabels', array(
-            'liked' => orca_text('♥ Liket', '♥ Liked'),
-            'like' => orca_text('♥ Like', '♥ Like'),
+            'liked' => '♥ Liket',
+            'like' => '♥ Like',
             'likeCount' => 'like',
             'likesCount' => 'likes',
         ));

@@ -6,28 +6,28 @@ defined('ABSPATH') || exit;
 function orca_contact_services($type = 'quote') {
     if ('support' === $type) {
         return array(
-            'technical' => orca_text('Teknisk problem', 'Technical issue'),
-            'content' => orca_text('Rettelse af indhold', 'Content update'),
-            'access' => orca_text('Login eller adgang', 'Login or access'),
-            'billing' => orca_text('Faktura eller abonnement', 'Invoice or subscription'),
-            'other' => orca_text('Andet', 'Other'),
+            'technical' => 'Teknisk problem',
+            'content' => 'Rettelse af indhold',
+            'access' => 'Login eller adgang',
+            'billing' => 'Faktura eller abonnement',
+            'other' => 'Andet',
         );
     }
     return array(
-        'website' => orca_text('Hjemmeside eller webshop', 'Website or online store'),
-        'branding' => orca_text('Branding og visuel identitet', 'Branding and visual identity'),
-        'marketing' => orca_text('Reklame og kampagner', 'Advertising and campaigns'),
-        'social-media' => orca_text('Sociale medier', 'Social media'),
-        'seo' => orca_text('SEO og online synlighed', 'SEO and online visibility'),
-        'complete' => orca_text('En samlet digital løsning', 'A complete digital solution'),
-        'other' => orca_text('Andet', 'Other'),
+        'website' => 'Hjemmeside eller webshop',
+        'branding' => 'Branding og visuel identitet',
+        'marketing' => 'Reklame og kampagner',
+        'social-media' => 'Sociale medier',
+        'seo' => 'SEO og online synlighed',
+        'complete' => 'En samlet digital løsning',
+        'other' => 'Andet',
     );
 }
 
 function orca_contact_service_options($type = 'quote', $selected = '') {
     $placeholder = 'support' === $type
-        ? orca_text('Vælg emne', 'Choose a topic')
-        : orca_text('Vælg en service', 'Choose a service');
+        ? 'Vælg emne'
+        : 'Vælg en service';
     echo '<option value="">' . esc_html($placeholder) . '</option>';
     foreach (orca_contact_services($type) as $value => $label) {
         printf('<option value="%s"%s>%s</option>', esc_attr($value), selected($selected, $value, false), esc_html($label));

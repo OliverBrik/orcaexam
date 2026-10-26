@@ -40,20 +40,20 @@ if ( have_posts() ) :
         ?>
         <main class="orca-single-post">
             <article class="orca-single-post__content">
-                <p class="orca-kicker"><?php echo esc_html( orca_text('Fra Orca-fællesskabet', 'From the Orca community') ); ?></p>
+                <p class="orca-kicker"><?php echo esc_html( 'Fra Orca-fællesskabet' ); ?></p>
                 <h1><?php echo esc_html(get_the_title()); ?></h1>
-                <p class="orca-meta"><?php echo esc_html( orca_text('Af', 'By') ); ?> <?php echo esc_html(get_the_author()); ?> · <?php echo esc_html( get_the_date() ); ?></p>
+                <p class="orca-meta"><?php echo esc_html( 'Af' ); ?> <?php echo esc_html(get_the_author()); ?> · <?php echo esc_html( get_the_date() ); ?></p>
                 <?php echo orca_safe_post_content(); ?>
             </article>
 
             <section class="orca-discussion" id="discussion">
-                <p class="orca-kicker"><?php echo esc_html( orca_text('Samtale', 'Discussion') ); ?></p>
-                <h2><?php echo esc_html( orca_text('Hvad tænker du?', 'What do you think?') ); ?></h2>
+                <p class="orca-kicker"><?php echo esc_html( 'Samtale' ); ?></p>
+                <h2><?php echo esc_html( 'Hvad tænker du?' ); ?></h2>
 
                 <?php if ( 'sent' === ( $_GET['discussion_status'] ?? '' ) ) : ?>
-                    <p class="orca-message orca-success"><?php echo esc_html( orca_text('Tak! Din kommentar afventer godkendelse.', 'Thanks! Your comment is awaiting moderation.') ); ?></p>
+                    <p class="orca-message orca-success"><?php echo esc_html( 'Tak! Din kommentar afventer godkendelse.' ); ?></p>
                 <?php elseif ( in_array( $_GET['discussion_status'] ?? '', array( 'error', 'invalid' ), true ) ) : ?>
-                    <p class="orca-message orca-error"><?php echo esc_html( orca_text('Kommentaren kunne ikke sendes. Kontrollér felterne, og prøv igen.', 'Your comment could not be sent. Check the fields and try again.') ); ?></p>
+                    <p class="orca-message orca-error"><?php echo esc_html( 'Kommentaren kunne ikke sendes. Kontrollér felterne, og prøv igen.' ); ?></p>
                 <?php endif; ?>
 
                 <?php foreach ( get_comments( array( 'post_id' => $post_id, 'status' => 'approve', 'order' => 'ASC' ) ) as $comment ) : ?>
@@ -67,11 +67,11 @@ if ( have_posts() ) :
                     <form class="orca-discussion__form" method="post">
                         <?php wp_nonce_field( 'orca_single_comment_' . $post_id, 'orca_single_nonce' ); ?>
                         <?php if ( ! is_user_logged_in() ) : ?>
-                            <label><?php echo esc_html( orca_text('Navn', 'Name') ); ?><input name="comment_author" required></label>
-                            <label><?php echo esc_html( orca_text('E-mail', 'Email') ); ?><input type="email" name="comment_email" required></label>
+                            <label><?php echo esc_html( 'Navn' ); ?><input name="comment_author" required></label>
+                            <label><?php echo esc_html( 'E-mail' ); ?><input type="email" name="comment_email" required></label>
                         <?php endif; ?>
-                        <label><?php echo esc_html( orca_text('Din kommentar', 'Your comment') ); ?><textarea name="comment" required></textarea></label>
-                        <button type="submit" name="orca_single_comment"><?php echo esc_html( orca_text('Send kommentar', 'Post comment') ); ?></button>
+                        <label><?php echo esc_html( 'Din kommentar' ); ?><textarea name="comment" required></textarea></label>
+                        <button type="submit" name="orca_single_comment"><?php echo esc_html( 'Send kommentar' ); ?></button>
                     </form>
                 <?php endif; ?>
             </section>
@@ -80,7 +80,7 @@ if ( have_posts() ) :
     endwhile;
 else :
     ?>
-    <main class="orca-single-post"><p class="orca-empty"><?php echo esc_html( orca_text('Indlægget blev ikke fundet.', 'The post could not be found.') ); ?></p></main>
+    <main class="orca-single-post"><p class="orca-empty"><?php echo esc_html( 'Indlægget blev ikke fundet.' ); ?></p></main>
     <?php
 endif;
 
