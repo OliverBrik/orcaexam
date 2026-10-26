@@ -36,6 +36,9 @@
             <a href="<?php echo esc_url(home_url('/leave-a-review')); ?>" class="header-button"><?php echo esc_html(orca_text('Skriv en anmeldelse', 'Leave a review')); ?></a>
             <a href="<?php echo esc_url(home_url('/sustainability-initiatives')); ?>" class="header-button"><?php echo esc_html(orca_text('Bæredygtighed', 'Sustainability')); ?></a>
             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="header-button"><?php echo esc_html(orca_text('Kontakt os', 'Contact us')); ?></a>
+            <?php if (function_exists('wc_get_page_permalink')) : ?>
+                <?php echo orca_cart_link_markup(); ?>
+            <?php endif; ?>
             <nav class="language-switcher" aria-label="<?php echo esc_attr(orca_text('Vælg sprog', 'Choose language')); ?>">
                 <a href="<?php echo esc_url(orca_language_url('da')); ?>" lang="da"<?php echo 'da' === orca_get_language() ? ' aria-current="true"' : ''; ?>>DA</a>
                 <span aria-hidden="true">/</span>

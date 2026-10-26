@@ -5,6 +5,33 @@ function orca_is_commerce_page() {
     return function_exists('is_woocommerce') && (is_woocommerce() || is_cart() || is_checkout() || is_account_page());
 }
 
+function orca_cart_link_markup() {
+    $item_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
+    $hidden     = $item_count < 1 ? ' hidden' : '';
+    $label      = orca_text('Kurv', 'Cart');
+    $item_label = 1 === $item_count ? orca_text('vare', 'item') : orca_text('varer', 'items');
+
+    return sprintf(
+        '<span class="orca-cart-link-container"%1$s><a href="%2$s" class="header-button orca-cart-link">%3$s <span class="orca-cart-link__count">(%4$d %5$s)</span></a></span>',
+        $hidden,
+        esc_url(wc_get_cart_url()),
+        esc_html($label),
+        $item_count,
+        esc_html($item_label)
+    );
+}
+
+add_filter('woocommerce_add_to_cart_fragments', function ($fragments) {
+    $fragments['.orca-cart-link-container'] = orca_cart_link_markup();
+    return $fragments;
+});
+
+add_action('wp_enqueue_scripts', function () {
+    if (function_exists('WC') && ! orca_is_commerce_page()) {
+        wp_enqueue_script('wc-cart-fragments');
+    }
+}, 25);
+
 add_action('after_setup_theme', function () {
     add_theme_support('woocommerce', array('product_grid' => array('default_columns' => 3, 'default_rows' => 4)));
     add_theme_support('wc-product-gallery-zoom');
