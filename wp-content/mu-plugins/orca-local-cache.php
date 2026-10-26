@@ -20,8 +20,8 @@ function orca_local_cache_config($config) {
         'enable_user_caching' => false,
         'enable_schedule_preload' => false,
         'enable_sitemap_preload' => false,
-        // A selected language and shopping sessions always use live HTML.
-        'cache_exception_cookies' => array('orca_language', 'woocommerce_', 'wp_woocommerce_session_'),
+        // Shopping sessions always use live HTML.
+        'cache_exception_cookies' => array('woocommerce_', 'wp_woocommerce_session_'),
         'cache_ignore_query_variables' => array(),
     ));
 }
