@@ -24,12 +24,13 @@
                 $gallery_files     = glob( $gallery_directory . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE );
                 $gallery_files     = is_array( $gallery_files ) ? $gallery_files : array();
                 sort( $gallery_files, SORT_NATURAL | SORT_FLAG_CASE );
+                $hero_dimensions = $gallery_files ? getimagesize( $gallery_files[0] ) : false;
                 ?>
                 <div class="frontpage-hero__gallery" aria-label="<?php echo esc_attr( orca_text('Billedgalleri', 'Photo gallery') ); ?>">
                     <?php if ( $gallery_files ) : ?>
                         <div class="frontpage-hero__image-wrap">
                             <div class="frontpage-hero__image-frame">
-                                <img src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_files[0] ) ) ); ?>" alt="<?php echo esc_attr( orca_text('Billede fra Orca-galleriet', 'Image from the Orca gallery') ); ?>" />
+                                <img src="<?php echo esc_url( $gallery_url . rawurlencode( basename( $gallery_files[0] ) ) ); ?>" alt="<?php echo esc_attr( orca_text('Billede fra Orca-galleriet', 'Image from the Orca gallery') ); ?>"<?php echo is_array( $hero_dimensions ) ? ' width="' . esc_attr( $hero_dimensions[0] ) . '" height="' . esc_attr( $hero_dimensions[1] ) . '"' : ''; ?> loading="eager" fetchpriority="high" decoding="async" />
                             </div>
                         </div>
                         <?php if ( count( $gallery_files ) > 1 ) : ?>
@@ -43,7 +44,7 @@
                         <?php endif; ?>
                     <?php else : ?>
                         <div class="frontpage-hero__image-wrap">
-                            <img src="<?php echo esc_url(get_theme_file_uri('/contact-media/orca-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" />
+                            <img src="<?php echo esc_url(get_theme_file_uri('/contact-media/orca-staff.jpg')); ?>" alt="<?php echo esc_attr(orca_text('Smilende team samlet på arbejdspladsen', 'Business team smiling together')); ?>" width="2048" height="1536" loading="eager" fetchpriority="high" decoding="async" />
                         </div>
                     <?php endif; ?>
                 </div>

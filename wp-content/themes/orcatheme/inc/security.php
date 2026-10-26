@@ -104,6 +104,25 @@ function orca_form_cache_headers() {
 }
 add_action('template_redirect', 'orca_form_cache_headers');
 
+function orca_public_cache_headers() {
+    if (is_admin() || is_user_logged_in() || orca_request_needs_guest_form_session()) {
+        return;
+    }
+
+    if (function_exists('orca_is_commerce_page') && orca_is_commerce_page()) {
+        return;
+    }
+
+    if (isset($_COOKIE['orca_language']) || isset($_GET['lang'])) {
+        return;
+    }
+
+    header_remove('Cache-Control');
+    header_remove('Pragma');
+    header('Cache-Control: public, max-age=3600, s-maxage=3600');
+}
+add_action('send_headers', 'orca_public_cache_headers');
+
 /** Keep post formatting and uploaded video sources, but remove executable HTML. */
 function orca_safe_post_content() {
     $allowed = wp_kses_allowed_html('post');

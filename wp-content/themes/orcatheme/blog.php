@@ -71,30 +71,39 @@ get_header();
     </div>
 
     <?php
-    $post_query_args = array( 'post_type' => 'post', 'post_status' => 'publish', 'posts_per_page' => -1, 'ignore_sticky_posts' => true );
+    $post_query_args = array(
+        'post_type'           => 'post',
+        'post_status'         => 'publish',
+        'posts_per_page'      => 10,
+        'paged'               => max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) ),
+        'ignore_sticky_posts' => true,
+    );
     if ( $filter_category ) {
         $post_query_args['category__in'] = array( $filter_category );
     }
+    if ( in_array( $filter_sort, array( 'most-liked', 'least-liked' ), true ) ) {
+        $post_query_args['meta_query'] = array(
+            'relation' => 'OR',
+            'likes'    => array(
+                'key'     => '_orca_likes',
+                'compare' => 'EXISTS',
+                'type'    => 'NUMERIC',
+            ),
+            'no_likes' => array(
+                'key'     => '_orca_likes',
+                'compare' => 'NOT EXISTS',
+            ),
+        );
+        $post_query_args['orderby'] = 'likes';
+        $post_query_args['order']   = 'most-liked' === $filter_sort ? 'DESC' : 'ASC';
+    } elseif ( in_array( $filter_sort, array( 'most-commented', 'least-commented' ), true ) ) {
+        $post_query_args['orderby'] = 'comment_count';
+        $post_query_args['order']   = 'most-commented' === $filter_sort ? 'DESC' : 'ASC';
+    } else {
+        $post_query_args['orderby'] = 'date';
+        $post_query_args['order']   = 'oldest' === $filter_sort ? 'ASC' : 'DESC';
+    }
     $posts = new WP_Query( $post_query_args );
-
-    usort( $posts->posts, function ( $first_post, $second_post ) use ( $filter_sort ) {
-        if ( 'most-liked' === $filter_sort ) {
-            return (int) get_post_meta( $second_post->ID, '_orca_likes', true ) <=> (int) get_post_meta( $first_post->ID, '_orca_likes', true );
-        }
-        if ( 'least-liked' === $filter_sort ) {
-            return (int) get_post_meta( $first_post->ID, '_orca_likes', true ) <=> (int) get_post_meta( $second_post->ID, '_orca_likes', true );
-        }
-        if ( 'most-commented' === $filter_sort ) {
-            return (int) $second_post->comment_count <=> (int) $first_post->comment_count;
-        }
-        if ( 'least-commented' === $filter_sort ) {
-            return (int) $first_post->comment_count <=> (int) $second_post->comment_count;
-        }
-        $date_order = strtotime( $second_post->post_date ) <=> strtotime( $first_post->post_date );
-        return 'oldest' === $filter_sort ? -$date_order : $date_order;
-    } );
-    $posts->post_count = count( $posts->posts );
-    $posts->rewind_posts();
     if ( $posts->have_posts() ) :
         while ( $posts->have_posts() ) : $posts->the_post();
             $post_id            = get_the_ID();
@@ -173,6 +182,25 @@ get_header();
         <?php endwhile; wp_reset_postdata();
     else : ?>
         <p class="orca-empty"><?php echo esc_html( orca_text('Der er endnu ingen blogindlæg.', 'There are no blog posts yet.') ); ?></p>
+    <?php endif; ?>
+    <?php if ( $posts->max_num_pages > 1 ) : ?>
+        <nav class="orca-pagination" aria-label="<?php echo esc_attr( orca_text('Blognavigation', 'Blog pagination') ); ?>">
+            <?php
+            echo wp_kses_post( paginate_links( array(
+                'base'      => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
+                'format'    => '?paged=%#%',
+                'current'   => max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) ),
+                'total'     => $posts->max_num_pages,
+                'type'      => 'list',
+                'prev_text' => esc_html( orca_text('Forrige', 'Previous') ),
+                'next_text' => esc_html( orca_text('Næste', 'Next') ),
+                'add_args'  => array_filter( array(
+                    'blog_category' => $filter_category,
+                    'blog_sort'     => $filter_sort,
+                ) ),
+            ) ) );
+            ?>
+        </nav>
     <?php endif; ?>
         </div>
     </section>
