@@ -37,7 +37,20 @@ function orca_guest_form_session() {
         $GLOBALS['orca_guest_form_identity'] = $parts[0];
     }
 }
-add_action('init', 'orca_guest_form_session', 1);
+
+function orca_request_needs_guest_form_session() {
+    return is_page_template('contact.php')
+        || is_page_template('testimonial.php')
+        || is_page_template('blog.php')
+        || is_single();
+}
+
+function orca_prepare_guest_form_session() {
+    if (orca_request_needs_guest_form_session()) {
+        orca_guest_form_session();
+    }
+}
+add_action('template_redirect', 'orca_prepare_guest_form_session', 1);
 
 function orca_guest_nonce_identity($user_id, $action) {
     if (is_string($action) && strpos($action, 'orca_') === 0) {
@@ -82,8 +95,7 @@ function orca_verify_form_nonce($nonce, $action) {
 
 /** Session-specific form pages must not be served from a shared page cache. */
 function orca_form_cache_headers() {
-    // The front page has no forms. Keep its public HTML eligible for caching.
-    if (!is_front_page() && (is_singular() || is_home())) {
+    if (orca_request_needs_guest_form_session()) {
         if (! defined('DONOTCACHEPAGE')) {
             define('DONOTCACHEPAGE', true);
         }
