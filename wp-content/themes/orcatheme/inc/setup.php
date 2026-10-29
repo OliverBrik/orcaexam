@@ -26,7 +26,7 @@ function orca_asset_version($relative_path) {
 }
 
 function orca_theme_assets() {
-    wp_enqueue_style('orca-fonts', 'https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700&display=swap', array(), null);
+    wp_enqueue_style('orca-fonts', get_theme_file_uri('/assets/css/fonts.css'), array(), orca_asset_version('/assets/css/fonts.css'));
     wp_enqueue_style('orca-theme-style', get_theme_file_uri('/assets/css/theme.css'), array('orca-fonts'), orca_asset_version('/assets/css/theme.css'));
 
     $scripts = array(

@@ -66,6 +66,7 @@
                     'post_type' => 'testimonial',
                     'post_status' => 'publish',
                     'posts_per_page' => 10,
+                    'no_found_rows' => true,
                 ));
 
                 if ($testimonial_query->have_posts()) :

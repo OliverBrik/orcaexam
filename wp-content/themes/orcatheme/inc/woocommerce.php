@@ -5,6 +5,15 @@ function orca_is_commerce_page() {
     return function_exists('is_woocommerce') && (is_woocommerce() || is_cart() || is_checkout() || is_account_page());
 }
 
+// Transaction blocks already ship compiled assets; keep their dependency order
+// and runtime URLs intact rather than reprocessing them through WP-Optimize.
+add_filter('wpo_minify_run_on_page', function ($run) {
+    if (function_exists('is_cart') && (is_cart() || is_checkout() || is_account_page())) {
+        return false;
+    }
+    return $run;
+});
+
 function orca_cart_link_markup() {
     $item_count = function_exists('WC') && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
     $hidden     = $item_count < 1 ? ' hidden' : '';
@@ -26,11 +35,52 @@ add_filter('woocommerce_add_to_cart_fragments', function ($fragments) {
     return $fragments;
 });
 
-add_action('wp_enqueue_scripts', function () {
-    if (function_exists('WC') && ! orca_is_commerce_page()) {
-        wp_enqueue_script('wc-cart-fragments');
+/** Keep WooCommerce assets for embedded products as well as its own routes. */
+function orca_needs_commerce_assets() {
+    $needed = orca_is_commerce_page();
+    $post = get_queried_object();
+    if (! $needed && $post instanceof WP_Post) {
+        $content = $post->post_content;
+        $needed = strpos($content, '<!-- wp:woocommerce/') !== false;
+        foreach (array('products', 'product', 'product_page', 'product_category', 'product_categories', 'add_to_cart', 'add_to_cart_url', 'sale_products', 'best_selling_products', 'top_rated_products', 'featured_products', 'recent_products', 'related_products', 'woocommerce_cart', 'woocommerce_checkout', 'woocommerce_my_account', 'woocommerce_order_tracking') as $shortcode) {
+            if (has_shortcode($content, $shortcode)) {
+                $needed = true;
+                break;
+            }
+        }
     }
-}, 25);
+    return (bool) apply_filters('orca_needs_commerce_assets', $needed);
+}
+
+function orca_commerce_assets() {
+    if (! function_exists('WC')) { return; }
+    $needs_commerce = orca_needs_commerce_assets();
+    $uses_cart_store = (is_cart() && has_block('woocommerce/cart'))
+        || (is_checkout() && has_block('woocommerce/checkout'));
+    $file = '/assets/js/cart-link.js';
+    wp_enqueue_script('orca-cart-link', get_theme_file_uri($file), $uses_cart_store ? array('wc-blocks-data-store') : array(), orca_asset_version($file), true);
+    wp_localize_script('orca-cart-link', 'orcaCartLink', array(
+        'endpoint' => WC_AJAX::get_endpoint('get_refreshed_fragments'),
+        'managedByWooCommerce' => $needs_commerce,
+        'usesCartStore' => $uses_cart_store,
+        'itemSingular' => 'vare',
+        'itemPlural' => 'varer',
+    ));
+    if ($needs_commerce) {
+        wp_enqueue_script('wc-cart-fragments');
+        return;
+    }
+
+    // Visitors reading content do not need product buttons, shop layout or a
+    // fragments request for an empty cart. Keep order attribution intact.
+    foreach (array('wc-cart-fragments', 'wc-add-to-cart', 'woocommerce') as $handle) {
+        wp_dequeue_script($handle);
+    }
+    foreach (array('woocommerce-general', 'woocommerce-layout', 'woocommerce-smallscreen', 'woocommerce-inline') as $handle) {
+        wp_dequeue_style($handle);
+    }
+}
+add_action('wp_enqueue_scripts', 'orca_commerce_assets', 99);
 
 add_action('after_setup_theme', function () {
     add_theme_support('woocommerce', array('product_grid' => array('default_columns' => 3, 'default_rows' => 4)));

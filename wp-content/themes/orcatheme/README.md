@@ -8,7 +8,6 @@ Projektet er en klassisk WordPress-installation med WooCommerce. Egen kode ligge
 | --- | --- |
 | `functions.php` | Indlæser temaets moduler. |
 | `inc/setup.php` | Temastøtte, navigation og versionsstyret indlæsning af CSS/JavaScript. |
-| `inc/language.php` | Dansk/engelsk tekst og sprogvalg. |
 | `inc/security.php` | Gæstesessioner, nonce-kontrol, inputformater og sikker visning. |
 | `inc/contact.php` | Fælles serviceliste, formularvalidering og lagring af henvendelser. |
 | `inc/contact-inbox.php` | Privat indbakke under **Henvendelser** i WordPress. |
@@ -18,12 +17,27 @@ Projektet er en klassisk WordPress-installation med WooCommerce. Egen kode ligge
 | `template-parts/shop/` | Webshoppens hero, katalogintroduktion, services og footerindhold. |
 | `assets/css/theme.css` | Fælles design og sidestile i den oprindelige kaskaderækkefølge. |
 | `assets/css/shop.css` | Stile afgrænset til webshoppen. |
+| `assets/css/fonts.css`, `assets/fonts/` | Lokal Archivo Narrow 700 (latin/latin-ext) og SIL OFL-licens; ingen Google Fonts-forespørgsel ved sidebygning. |
 | `assets/js/` | Forsidens galleri, kontaktsidens video/faner og bloginteraktioner. |
 | `header.php`, `footer.php` | Fælles dokumentskal og WordPress-hooks. |
 | `gallery/` | Forsidens billeder; alle billeder i mappen bruges automatisk. |
 | `contact-media/` | Kontaktbilleder og video, der først indlæses ved afspilning. |
 
 Rodens `style.css` er temaets WordPress-manifest. CSS og JavaScript indlæses via enqueue-funktionerne med filernes ændringstid som version, så ændringer opdaterer browsercachen. Sidescripts indlæses kun på de relevante sider.
+
+## Hastighed og kurv
+
+Behold WP-Optimizes sidecache. Fonten leveres lokalt, så pluginets CSS-behandling ikke skal hente filstørrelsen hos Google. Efter deployment skal installationens HTML-cache tømmes; filversioner alene ændrer ikke HTML, som allerede ligger i sidecachen.
+
+Kurv, checkout og konto undtages fra WP-Optimize-minificering via `wpo_minify_run_on_page`. Under browserkontrollen viste den minificerede kurv en tom kurv trods en vare i Store API; de oprindelige WooCommerce-filer viste varen korrekt. Sidecachen og minificering på almindelige sider bevares.
+
+`orca_needs_commerce_assets()` bevarer WooCommerce-ressourcer på shop-, produkt-, kurv-, checkout- og kontosider samt sider med WooCommerce-blokke/-shortcodes. Andre integrationer kan bruge filteret med samme navn til at bevare ressourcer, fx når produkter indsættes fra en anden kilde end sidens gemte indhold.
+
+På almindelige indholdssider fjernes de generelle WooCommerce-stile, produktknapscriptet og cart-fragments. Den lille `assets/js/cart-link.js` opdaterer headerens kurv via WooCommerces eksisterende endpoint, når `woocommerce_items_in_cart` viser, at der er varer. En tom kurv udløser ingen forespørgsel. Browserhistorik og WooCommerces lagerhændelser fra andre faner opdaterer også visningen. Shopsider bruger fortsat WooCommerces fragments-script. På blokbaseret kurv/checkout følger headeren `wc/store/cart` direkte, også ved antalændringer og fjernelse af sidste vare, uden endnu et HTTP-kald. Ordreattribution bevares.
+
+Gæstens signerede formularsession gendannes også ved nonce-verifikation, fordi kontaktens `admin-post.php` ikke kører `template_redirect`. POST med manglende eller ugyldig sessionscookie bliver fortsat afvist.
+
+Kør `php -n tests/performance-regression.php` fra temamappen for databasefri kontrol af WordPress-nonces og politikken for shopressourcer. Kør `node tests/cart-link.test.cjs` for kurvtællerens tomme/aktive kurv, browserhistorik, fanesynkronisering og blokhændelser. Testene erstatter ikke en browserkontrol af køb eller rigtig maillevering.
 
 ## Sideskabeloner
 

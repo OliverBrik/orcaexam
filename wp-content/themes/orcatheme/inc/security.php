@@ -84,6 +84,11 @@ add_action('init', 'orca_validate_request_shapes', 0);
 
 /** A guest token must be accompanied by the visitor session that issued it. */
 function orca_verify_form_nonce($nonce, $action) {
+    // admin-post.php does not run template_redirect; restore the signed identity
+    // here as well so a contact submission uses the visitor who received the token.
+    if (! is_user_logged_in() && empty($GLOBALS['orca_guest_form_identity'])) {
+        orca_guest_form_session();
+    }
     if (! is_string($nonce) || (! is_user_logged_in() && empty($GLOBALS['orca_guest_form_identity']))) {
         return false;
     }
